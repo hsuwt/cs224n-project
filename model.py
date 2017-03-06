@@ -32,8 +32,7 @@ def build(alg, input, nodes, drp):
         M = Dropout(drp)(M)
         return M
     elif 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg:
-        return_sequences = False
-        if '128' in alg or 'baseline' in alg: return_sequences = True
+        return_sequences = True
         if 'RNN' in alg:
             M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
             M2 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
@@ -51,28 +50,15 @@ def build(alg, input, nodes, drp):
         return M1
 
 def build_model(alg, nodes1, nodes2, drp):
-    if 'baseline' in alg:
+    if 'LM' in alg:
         input = gen_input('melody')
         M = build(alg, input, nodes1, drp)
-        if 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg:
-            output = TimeDistributed(Dense(12, activation='sigmoid'))(M)
-        else:
-            M = Dense(128 * 12, activation='sigmoid')(M)
-            output = Reshape((128, 12))(M)
-        model = Model(input=input, output=output)
-    elif 'LM' in alg:
-        input = gen_input('melody')
-        M = build(alg, input, nodes1, drp)
-        if 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg:
-            output = TimeDistributed(Dense(12, activation='sigmoid'))(M)
+        output = TimeDistributed(Dense(12, activation='sigmoid'))(M)
     elif 'pair' in alg:
         input = gen_input('pair')
         M = build(alg, input, nodes1, drp)
-        if '128' in alg:
-            output = TimeDistributed(Dense(1, activation='sigmoid'))(M)
-        else:
-            output = Dense(1, activation='sigmoid')(M)
-        model = Model(input=input, output=output)
+        output = TimeDistributed(Dense(1 , activation='sigmoid'))(M)
+    model = Model(input=input, output=output)
     model.compile(optimizer=RMSprop(), loss='binary_crossentropy', metrics=['accuracy'])
     return model
 

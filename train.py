@@ -3,7 +3,8 @@ from model import *
 import time
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2: alg = 'GRU_pair_L2_rand'
+    #if len(sys.argv) < 2: alg = 'GRU_pair_L2_rand'
+    if len(sys.argv) < 2: alg = 'GRU_LM'
     else: alg = sys.argv[1]
     if len(sys.argv) < 3: nodes1 = 64
     else: nodes1 = int(sys.argv[2])
@@ -11,7 +12,7 @@ if __name__ == "__main__":
     else: nodes2 = int(sys.argv[3])
     if len(sys.argv) < 5: nb_epoch = 400
     else: nb_epoch = int(sys.argv[4])
-    if len(sys.argv) < 6: nb_epoch_pred = 20
+    if len(sys.argv) < 6: nb_epoch_pred = 100
     else: nb_epoch_pred = int(sys.argv[5])
     if len(sys.argv) < 7: dropout_rate = 0.5
     else: dropout_rate = float(sys.argv[6])
@@ -55,15 +56,31 @@ if __name__ == "__main__":
             # csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
 
         # testing
-        if 'baseline' in alg:
-            pred = np.array(model.predict(x_test))
-        else:
-            if '128' in alg:
-                idx = np.argmax(np.sum(np.array(model.predict(x_test)).reshape((nb_test, nb_train, 128)), 2), axis=1)
-            else:
-                idx = np.argmax(np.array(model.predict(x_test)).reshape((nb_test, nb_train)), axis=1)
-            pred = C[idx]
-        bestN, uniqIdx, norm = print_result(pred, c, C, alg, True, 1)
+        pred = np.array(model.predict(x_test))
+        if 'LM' in alg:
+            pred = pred.reshape((nb_test, 128, 12))
+            errCntAvg = 0
+            for i in range(nb_test):
+                # print "song" + str(i)
+                for j in range(128):
+                    top3 = top3notes(pred[i][j])
+                    # print "answ:",
+                    # print y[i][j]
+                    # print "pred:",
+                    # print top3
+                    err = np.sum(np.abs(y[i][j] - top3))
+                    errCntAvg += err
+                    # print err
+            errCntAvg /= float(128*nb_test)
+            print(errCntAvg)
+            print("")
+            continue
+        pred = pred.reshape((nb_test, nb_train, 128))
+        idx = np.argmax(np.sum(pred, 2), axis=1)
+        c_hat = C[idx]
+        bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+        errCntAvg = np.average(np.abs(c_hat - c))
+        print(errCntAvg)
 
         trn_loss = history[1][-1]
         val_loss = history[2][-1]
@@ -74,5 +91,5 @@ if __name__ == "__main__":
 
         # record & save model
         record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
-        save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+        #save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
 

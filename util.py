@@ -187,68 +187,33 @@ def load_data(alg, nb_test):
     return M, m, C, c
 
 def get_XY(alg, M, C):
+    if 'LM' in alg:
+        return M, C
     n = M.shape[0]
-    # N = negative example for training
     idx = np.random.randint(n, size=n)
-    NC = C[idx]
-    O = np.ones((n))
-    Z = np.zeros((n))
-    Z_128 = np.zeros((n, 128))
-    L1_128 = np.sum(abs(C - NC), 2)
-    L1 = np.sum(L1_128, 1)
-    L1_128 = L1_128.reshape((n, 128, 1))
-    L2 = np.sqrt(L1)
-    L2_128 = np.sqrt(L1_128)
-    if 'L1' in alg or 'L2' in alg:
+    C_neg = C[idx]
+    Ones = np.ones((n, 128))
+    Zeros = np.zeros((n, 128))
+    if 'L1' in alg or 'L2' in alg: # use L1 or L2 of two sources of chord as labels
+        L1 = np.sum(abs(C - C_neg), 2)
+        L1 = L1.reshape((n, 128, 1))
+        L2 = np.sqrt(L1)
         if 'rand' in alg:
-            if 'pair' in alg:
-                X = np.concatenate((M, NC), 2)
-            if '128' in alg:
-                if 'L1' in alg:
-                    Y = L1_128
-                else:
-                    Y = L2_128
-            else:
-                if 'L1' in alg:
-                    Y = L1
-                else:
-                    Y = L2
+            X = np.concatenate((M, C_neg), 2)
+            Y = L1 if 'L1' in alg else L2
         else:
-            if 'pair' in alg:
-                MNC = np.concatenate((M, NC), 2)
-                MC = np.concatenate((M, C), 2)
-                X = np.concatenate((MC, MNC), 0)
-            if '128' in alg:
-                if 'L1' in alg:
-                    Y = np.concatenate((Z_128, L1_128), 0)
-                else:
-                    Y = np.concatenate((Z_128, L2_128), 0)
-            else:
-                if 'L1' in alg:
-                    Y = np.concatenate((Z, L1), 0)
-                else:
-                    Y = np.concatenate((Z, L2), 0)
-
-        max_err = 12.0
-        if '128' not in alg:
-            max_err *= 128
+            MC_neg = np.concatenate((M, C_neg), 2)
+            MC = np.concatenate((M, C), 2)
+            X = np.concatenate((MC, MC_neg), 0)
+            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg else np.concatenate((Zeros, L2), 0)
         if 'L2' in alg:
-            max_err = np.sqrt(max_err)
-        Y = 1 - Y / max_err
-    else:
-        if 'pair' in alg:
-            MC   = np.concatenate((M,  C), 2)
-            MNC  = np.concatenate((M, NC), 2)
-            X = np.concatenate((MC, MNC), 0)
-            Y = np.concatenate((O, Z), 0)
-        elif 'sep' in alg:
-            X = [np.concatenate((M, M), 0), np.concatenate((C, NC), 0)]
-            Y = np.concatenate((O, Z), 0)
-        elif 'baseline' in alg:
-            X = M
-            Y = C
-        else:
-            print('Error')
+            max_err = np.sqrt(12.0)
+        Y = 1 - Y / 12.0
+    else: # use 1 as positive labels and 0 as negative labels
+        MC   = np.concatenate((M,  C), 2)
+        MC_neg  = np.concatenate((M, C_neg), 2)
+        X = np.concatenate((MC, MC_neg), 0)
+        Y = np.concatenate((Ones, Zeros), 0)
     return X, Y
 
 def get_test(alg, m, C):
@@ -256,10 +221,10 @@ def get_test(alg, m, C):
     m_rep, C_rep = rep(m, C)
     if 'pair' in alg:
         return np.concatenate((m_rep, C_rep), 2)
-    elif 'baseline' in alg:
-        return m
+    elif 'LM' in alg:
+        return m;
     else:
-        print('Error')
+        print('Error in get_test')
 
 def print_result(pred, y, Y, alg, printCP, bestN):
     print('\nAlg: %s' %(alg))
@@ -399,3 +364,11 @@ def Melody_Matrix_to_Section_Composed(melody_matrix):
             if mm == mi:
                 section_composed[m/16][mm+1] += 1
     return section_composed
+
+def top3notes(chord):
+    idx = sorted(range(len(chord)), key=lambda k: chord[k])
+    z = np.zeros((12))
+    z[idx[-1]] = 1
+    z[idx[-2]] = 1
+    z[idx[-3]] = 1
+    return z
