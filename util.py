@@ -2,6 +2,7 @@ import os
 import sys
 import csv
 import numpy as np
+import pretty_midi
 
 def rotate(chroma, semitone):
     if semitone == 0: return chroma
@@ -372,3 +373,49 @@ def top3notes(chord):
     z[idx[-2]] = 1
     z[idx[-3]] = 1
     return z
+
+
+def Matrices_to_MIDI(melody_matrix, chord_matrix):
+    assert(melody_matrix.shape[0] == chord_matrix.shape[0])
+    assert(melody_matrix.shape[1] == 12 and chord_matrix.shape[1] ==12)
+   
+    defaultMelOct = 5 # default melody octave
+    defaultChrdOct = 3
+    length = melody_matrix.shape[0]
+    song = pretty_midi.PrettyMIDI()
+    agp_program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano') # use for chords
+    bap_program = pretty_midi.instrument_name_to_program('Bright Acoustic Piano') # use for melody
+    melody = prety_midi.Instrument(program= agp_program)
+    chords = prety_midi.Instrument(program= bap_program)
+    
+    for i in range(length):
+        # Synthesizing melody
+        m_note_nb_new = melody_matrix[i].index(1) if 1 in melody_matrix[i] else None
+        if i==0:
+            m_note_nb_cur = m_note_nb_new
+            m_time = 1
+        elif m_note_nb_new==m_note_nb_cur:
+            m_time+=1
+        else:
+            note = pretty_midi.Note(velocity=100, pitch=(m_note_nb_cur +12*(defaultMelOct + 1)) , start=0, end=.5*m_time)
+            melody.notes.append(note)            
+            m_note_nb_cur = m_note_nb_new
+            m_time = 1 
+        
+        # Synthesizing chord
+        chords_new = numpy.where(melody_matrix[i] == 1)[0]
+        if i ==0:
+            chords_cur = chords_new
+            c_time = 1
+        elif numpy.array_equal(chords_cur, chords_new):
+            c_time +=1 
+        else:
+            for n in chords_cur.tolist():
+                note = pretty_midi.Note(velocity=100, pitch=(n +12*(defaultChrdOct + 1)) , start=0, end=.5*c_time)
+                chords.notes.append(note)  
+            chords_cur = chords_new
+            c_time = 1  
+            
+    song.instruments.append(melody)
+    song.instruments.append(chords)
+    return song
