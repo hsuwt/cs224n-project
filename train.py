@@ -10,9 +10,9 @@ if __name__ == "__main__":
     else: nodes1 = int(sys.argv[2])
     if len(sys.argv) < 4: nodes2 = 64
     else: nodes2 = int(sys.argv[3])
-    if len(sys.argv) < 5: nb_epoch = 400
+    if len(sys.argv) < 5: nb_epoch = 200
     else: nb_epoch = int(sys.argv[4])
-    if len(sys.argv) < 6: nb_epoch_pred = 100
+    if len(sys.argv) < 6: nb_epoch_pred = 50
     else: nb_epoch_pred = int(sys.argv[5])
     if len(sys.argv) < 7: dropout_rate = 0.5
     else: dropout_rate = float(sys.argv[6])

@@ -1,5 +1,6 @@
 import os
 import csv
+from attention_lstm import AttentionLSTM
 from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
 from keras.layers import LSTM, GRU, SimpleRNN, TimeDistributed
@@ -31,7 +32,7 @@ def build(alg, input, nodes, drp):
         M = Dense(nodes, activation='relu')(M)
         M = Dropout(drp)(M)
         return M
-    elif 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg:
+    elif 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg or 'attention' in alg:
         return_sequences = True
         if 'RNN' in alg:
             M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
@@ -39,6 +40,12 @@ def build(alg, input, nodes, drp):
         elif 'LSTM' in alg:
             M1 = LSTM(nodes, return_sequences=return_sequences)(input)
             M2 = LSTM(nodes, return_sequences=return_sequences)(input)
+            if 'attention' in alg:
+                import numpy as np
+		vec1 = np.zeros((100))
+		vec2 = np.zeros((100))
+                M1 = AttentionLSTM(nodes, vec1, single_attention_param=True, return_sequences=return_sequences)(M1)
+                M2 = AttentionLSTM(nodes, vec2, single_attention_param=True, return_sequences=return_sequences)(M2)
         elif 'GRU' in alg:
             M1 = GRU(nodes, return_sequences=return_sequences)(input)
             M2 = GRU(nodes, return_sequences=return_sequences)(input)
