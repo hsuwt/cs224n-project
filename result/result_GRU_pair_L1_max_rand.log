@@ -1,0 +1,49 @@
+Alg=GRU_pair_L1_max_rand, epoch=1Alg=GRU_pair_L1_max_rand, epoch=2Alg=GRU_pair_L1_max_rand, epoch=3Alg=GRU_pair_L1_max_rand, epoch=4Alg=GRU_pair_L1_max_rand, epoch=5Alg=GRU_pair_L1_max_rand, epoch=6Alg=GRU_pair_L1_max_rand, epoch=7Alg=GRU_pair_L1_max_rand, epoch=8Alg=GRU_pair_L1_max_rand, epoch=9Alg=GRU_pair_L1_max_rand, epoch=10Alg=GRU_pair_L1_max_rand, epoch=11Alg=GRU_pair_L1_max_rand, epoch=12Alg=GRU_pair_L1_max_rand, epoch=13Alg=GRU_pair_L1_max_rand, epoch=14Alg=GRU_pair_L1_max_rand, epoch=15Alg=GRU_pair_L1_max_rand, epoch=16Alg=GRU_pair_L1_max_rand, epoch=17Alg=GRU_pair_L1_max_rand, epoch=18Alg=GRU_pair_L1_max_rand, epoch=19Alg=GRU_pair_L1_max_rand, epoch=20
+Alg: GRU_pair_L1_max_rand
+unique idx: 4/948
+L1 after mapping   = 7.310
+L1 lower bound     = 2.072
+
+Alg: GRU_pair_L1_max_rand
+unique idx: 4/948
+L1 after mapping   = 3.451
+L1 lower bound     = 0.878
+trn_loss=0.660, trn_acc=0.060
+val_loss=0.690, val_acc=0.010
+Alg=GRU_pair_L1_max_rand, epoch=21Alg=GRU_pair_L1_max_rand, epoch=22Alg=GRU_pair_L1_max_rand, epoch=23Alg=GRU_pair_L1_max_rand, epoch=24Alg=GRU_pair_L1_max_rand, epoch=25Alg=GRU_pair_L1_max_rand, epoch=26Alg=GRU_pair_L1_max_rand, epoch=27Alg=GRU_pair_L1_max_rand, epoch=28Alg=GRU_pair_L1_max_rand, epoch=29Alg=GRU_pair_L1_max_rand, epoch=30Alg=GRU_pair_L1_max_rand, epoch=31Alg=GRU_pair_L1_max_rand, epoch=32Alg=GRU_pair_L1_max_rand, epoch=33Alg=GRU_pair_L1_max_rand, epoch=34Alg=GRU_pair_L1_max_rand, epoch=35Alg=GRU_pair_L1_max_rand, epoch=36Alg=GRU_pair_L1_max_rand, epoch=37Alg=GRU_pair_L1_max_rand, epoch=38Alg=GRU_pair_L1_max_rand, epoch=39Alg=GRU_pair_L1_max_rand, epoch=40
+Alg: GRU_pair_L1_max_rand
+unique idx: 3/948
+L1 after mapping   = 7.532
+L1 lower bound     = 2.072
+
+Alg: GRU_pair_L1_max_rand
+unique idx: 3/948
+L1 after mapping   = 3.566
+L1 lower bound     = 0.878
+trn_loss=0.650, trn_acc=0.060
+val_loss=0.690, val_acc=0.010
+Alg=GRU_pair_L1_max_rand, epoch=41Alg=GRU_pair_L1_max_rand, epoch=42Alg=GRU_pair_L1_max_rand, epoch=43Alg=GRU_pair_L1_max_rand, epoch=44Alg=GRU_pair_L1_max_rand, epoch=45Alg=GRU_pair_L1_max_rand, epoch=46Alg=GRU_pair_L1_max_rand, epoch=47Alg=GRU_pair_L1_max_rand, epoch=48Alg=GRU_pair_L1_max_rand, epoch=49Alg=GRU_pair_L1_max_rand, epoch=50Alg=GRU_pair_L1_max_rand, epoch=51Alg=GRU_pair_L1_max_rand, epoch=52Alg=GRU_pair_L1_max_rand, epoch=53Alg=GRU_pair_L1_max_rand, epoch=54Alg=GRU_pair_L1_max_rand, epoch=55Alg=GRU_pair_L1_max_rand, epoch=56Alg=GRU_pair_L1_max_rand, epoch=57Alg=GRU_pair_L1_max_rand, epoch=58Alg=GRU_pair_L1_max_rand, epoch=59Alg=GRU_pair_L1_max_rand, epoch=60
+Alg: GRU_pair_L1_max_rand
+unique idx: 9/948
+L1 after mapping   = 6.968
+L1 lower bound     = 2.072
+
+Alg: GRU_pair_L1_max_rand
+unique idx: 9/948
+L1 after mapping   = 3.192
+L1 lower bound     = 0.878
+trn_loss=0.640, trn_acc=0.080
+val_loss=0.690, val_acc=0.010
+Alg=GRU_pair_L1_max_rand, epoch=61Alg=GRU_pair_L1_max_rand, epoch=62Alg=GRU_pair_L1_max_rand, epoch=63Alg=GRU_pair_L1_max_rand, epoch=64Alg=GRU_pair_L1_max_rand, epoch=65Alg=GRU_pair_L1_max_rand, epoch=66Alg=GRU_pair_L1_max_rand, epoch=67Alg=GRU_pair_L1_max_rand, epoch=68Alg=GRU_pair_L1_max_rand, epoch=69Alg=GRU_pair_L1_max_rand, epoch=70Alg=GRU_pair_L1_max_rand, epoch=71Alg=GRU_pair_L1_max_rand, epoch=72Alg=GRU_pair_L1_max_rand, epoch=73Alg=GRU_pair_L1_max_rand, epoch=74Alg=GRU_pair_L1_max_rand, epoch=75Alg=GRU_pair_L1_max_rand, epoch=76Alg=GRU_pair_L1_max_rand, epoch=77Alg=GRU_pair_L1_max_rand, epoch=78Alg=GRU_pair_L1_max_rand, epoch=79Alg=GRU_pair_L1_max_rand, epoch=80
+Alg: GRU_pair_L1_max_rand
+unique idx: 5/948
+L1 after mapping   = 7.832
+L1 lower bound     = 2.072
+
+Alg: GRU_pair_L1_max_rand
+unique idx: 5/948
+L1 after mapping   = 3.636
+L1 lower bound     = 0.878
+trn_loss=0.640, trn_acc=0.070
+val_loss=0.680, val_acc=0.010
+Alg=GRU_pair_L1_max_rand, epoch=81Alg=GRU_pair_L1_max_rand, epoch=82Alg=GRU_pair_L1_max_rand, epoch=83Alg=GRU_pair_L1_max_rand, epoch=84Alg=GRU_pair_L1_max_rand, epoch=85Alg=GRU_pair_L1_max_rand, epoch=86Alg=GRU_pair_L1_max_rand, epoch=87Alg=GRU_pair_L1_max_rand, epoch=88Alg=GRU_pair_L1_max_rand, epoch=89Alg=GRU_pair_L1_max_rand, epoch=90Alg=GRU_pair_L1_max_rand, epoch=91Alg=GRU_pair_L1_max_rand, epoch=92Alg=GRU_pair_L1_max_rand, epoch=93Alg=GRU_pair_L1_max_rand, epoch=94Alg=GRU_pair_L1_max_rand, epoch=95Alg=GRU_pair_L1_max_rand, epoch=96Alg=GRU_pair_L1_max_rand, epoch=97Alg=GRU_pair_L1_max_rand, epoch=98Alg=GRU_pair_L1_max_rand, epoch=99Alg=GRU_pair_L1_max_rand, epoch=100

@@ -1,0 +1,280 @@
+Alg=GRU_root3P3N, epoch=1Alg=GRU_root3P3N, epoch=2Alg=GRU_root3P3N, epoch=3Alg=GRU_root3P3N, epoch=4Alg=GRU_root3P3N, epoch=5Alg=GRU_root3P3N, epoch=6Alg=GRU_root3P3N, epoch=7Alg=GRU_root3P3N, epoch=8Alg=GRU_root3P3N, epoch=9Alg=GRU_root3P3N, epoch=10Alg=GRU_root3P3N, epoch=11Alg=GRU_root3P3N, epoch=12Alg=GRU_root3P3N, epoch=13Alg=GRU_root3P3N, epoch=14Alg=GRU_root3P3N, epoch=15Alg=GRU_root3P3N, epoch=16Alg=GRU_root3P3N, epoch=17Alg=GRU_root3P3N, epoch=18Alg=GRU_root3P3N, epoch=19Alg=GRU_root3P3N, epoch=20
+Alg: GRU_root3P3N
+unique idx: 58/948
+hamDis before mapping  = 6.156
+hamDis after mapping   = 6.156
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 58/948
+hamDis before mapping  = 3.042
+hamDis after mapping   = 3.042
+hamDis lower bound     = 0.878
+trn_loss=0.290, trn_acc=0.880
+val_loss=0.230, val_acc=0.960
+Alg=GRU_root3P3N, epoch=21Alg=GRU_root3P3N, epoch=22Alg=GRU_root3P3N, epoch=23Alg=GRU_root3P3N, epoch=24Alg=GRU_root3P3N, epoch=25Alg=GRU_root3P3N, epoch=26Alg=GRU_root3P3N, epoch=27Alg=GRU_root3P3N, epoch=28Alg=GRU_root3P3N, epoch=29Alg=GRU_root3P3N, epoch=30Alg=GRU_root3P3N, epoch=31Alg=GRU_root3P3N, epoch=32Alg=GRU_root3P3N, epoch=33Alg=GRU_root3P3N, epoch=34Alg=GRU_root3P3N, epoch=35Alg=GRU_root3P3N, epoch=36Alg=GRU_root3P3N, epoch=37Alg=GRU_root3P3N, epoch=38Alg=GRU_root3P3N, epoch=39Alg=GRU_root3P3N, epoch=40
+Alg: GRU_root3P3N
+unique idx: 61/948
+hamDis before mapping  = 6.079
+hamDis after mapping   = 6.079
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 61/948
+hamDis before mapping  = 2.978
+hamDis after mapping   = 2.978
+hamDis lower bound     = 0.878
+trn_loss=0.230, trn_acc=0.910
+val_loss=0.370, val_acc=0.910
+Alg=GRU_root3P3N, epoch=41Alg=GRU_root3P3N, epoch=42Alg=GRU_root3P3N, epoch=43Alg=GRU_root3P3N, epoch=44Alg=GRU_root3P3N, epoch=45Alg=GRU_root3P3N, epoch=46Alg=GRU_root3P3N, epoch=47Alg=GRU_root3P3N, epoch=48Alg=GRU_root3P3N, epoch=49Alg=GRU_root3P3N, epoch=50Alg=GRU_root3P3N, epoch=51Alg=GRU_root3P3N, epoch=52Alg=GRU_root3P3N, epoch=53Alg=GRU_root3P3N, epoch=54Alg=GRU_root3P3N, epoch=55Alg=GRU_root3P3N, epoch=56Alg=GRU_root3P3N, epoch=57Alg=GRU_root3P3N, epoch=58Alg=GRU_root3P3N, epoch=59Alg=GRU_root3P3N, epoch=60
+Alg: GRU_root3P3N
+unique idx: 68/948
+hamDis before mapping  = 6.275
+hamDis after mapping   = 6.275
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 68/948
+hamDis before mapping  = 3.057
+hamDis after mapping   = 3.057
+hamDis lower bound     = 0.878
+trn_loss=0.190, trn_acc=0.930
+val_loss=0.280, val_acc=0.910
+Alg=GRU_root3P3N, epoch=61Alg=GRU_root3P3N, epoch=62Alg=GRU_root3P3N, epoch=63Alg=GRU_root3P3N, epoch=64Alg=GRU_root3P3N, epoch=65Alg=GRU_root3P3N, epoch=66Alg=GRU_root3P3N, epoch=67Alg=GRU_root3P3N, epoch=68Alg=GRU_root3P3N, epoch=69Alg=GRU_root3P3N, epoch=70Alg=GRU_root3P3N, epoch=71Alg=GRU_root3P3N, epoch=72Alg=GRU_root3P3N, epoch=73Alg=GRU_root3P3N, epoch=74Alg=GRU_root3P3N, epoch=75Alg=GRU_root3P3N, epoch=76Alg=GRU_root3P3N, epoch=77Alg=GRU_root3P3N, epoch=78Alg=GRU_root3P3N, epoch=79Alg=GRU_root3P3N, epoch=80
+Alg: GRU_root3P3N
+unique idx: 65/948
+hamDis before mapping  = 6.000
+hamDis after mapping   = 6.000
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 65/948
+hamDis before mapping  = 2.950
+hamDis after mapping   = 2.950
+hamDis lower bound     = 0.878
+trn_loss=0.190, trn_acc=0.930
+val_loss=0.780, val_acc=0.800
+Alg=GRU_root3P3N, epoch=81Alg=GRU_root3P3N, epoch=82Alg=GRU_root3P3N, epoch=83Alg=GRU_root3P3N, epoch=84Alg=GRU_root3P3N, epoch=85Alg=GRU_root3P3N, epoch=86Alg=GRU_root3P3N, epoch=87Alg=GRU_root3P3N, epoch=88Alg=GRU_root3P3N, epoch=89Alg=GRU_root3P3N, epoch=90Alg=GRU_root3P3N, epoch=91Alg=GRU_root3P3N, epoch=92Alg=GRU_root3P3N, epoch=93Alg=GRU_root3P3N, epoch=94Alg=GRU_root3P3N, epoch=95Alg=GRU_root3P3N, epoch=96Alg=GRU_root3P3N, epoch=97Alg=GRU_root3P3N, epoch=98Alg=GRU_root3P3N, epoch=99Alg=GRU_root3P3N, epoch=100
+Alg: GRU_root3P3N
+unique idx: 81/948
+hamDis before mapping  = 6.054
+hamDis after mapping   = 6.054
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 81/948
+hamDis before mapping  = 2.862
+hamDis after mapping   = 2.862
+hamDis lower bound     = 0.878
+trn_loss=0.160, trn_acc=0.950
+val_loss=1.280, val_acc=0.700
+Alg=GRU_root3P3N, epoch=101Alg=GRU_root3P3N, epoch=102Alg=GRU_root3P3N, epoch=103Alg=GRU_root3P3N, epoch=104Alg=GRU_root3P3N, epoch=105Alg=GRU_root3P3N, epoch=106Alg=GRU_root3P3N, epoch=107Alg=GRU_root3P3N, epoch=108Alg=GRU_root3P3N, epoch=109Alg=GRU_root3P3N, epoch=110Alg=GRU_root3P3N, epoch=111Alg=GRU_root3P3N, epoch=112Alg=GRU_root3P3N, epoch=113Alg=GRU_root3P3N, epoch=114Alg=GRU_root3P3N, epoch=115Alg=GRU_root3P3N, epoch=116Alg=GRU_root3P3N, epoch=117Alg=GRU_root3P3N, epoch=118Alg=GRU_root3P3N, epoch=119Alg=GRU_root3P3N, epoch=120
+Alg: GRU_root3P3N
+unique idx: 76/948
+hamDis before mapping  = 5.931
+hamDis after mapping   = 5.931
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 76/948
+hamDis before mapping  = 2.823
+hamDis after mapping   = 2.823
+hamDis lower bound     = 0.878
+trn_loss=0.150, trn_acc=0.950
+val_loss=1.170, val_acc=0.740
+Alg=GRU_root3P3N, epoch=121Alg=GRU_root3P3N, epoch=122Alg=GRU_root3P3N, epoch=123Alg=GRU_root3P3N, epoch=124Alg=GRU_root3P3N, epoch=125Alg=GRU_root3P3N, epoch=126Alg=GRU_root3P3N, epoch=127Alg=GRU_root3P3N, epoch=128Alg=GRU_root3P3N, epoch=129Alg=GRU_root3P3N, epoch=130Alg=GRU_root3P3N, epoch=131Alg=GRU_root3P3N, epoch=132Alg=GRU_root3P3N, epoch=133Alg=GRU_root3P3N, epoch=134Alg=GRU_root3P3N, epoch=135Alg=GRU_root3P3N, epoch=136Alg=GRU_root3P3N, epoch=137Alg=GRU_root3P3N, epoch=138Alg=GRU_root3P3N, epoch=139Alg=GRU_root3P3N, epoch=140
+Alg: GRU_root3P3N
+unique idx: 70/948
+hamDis before mapping  = 6.037
+hamDis after mapping   = 6.037
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 70/948
+hamDis before mapping  = 2.835
+hamDis after mapping   = 2.835
+hamDis lower bound     = 0.878
+trn_loss=0.150, trn_acc=0.950
+val_loss=1.040, val_acc=0.750
+Alg=GRU_root3P3N, epoch=141Alg=GRU_root3P3N, epoch=142Alg=GRU_root3P3N, epoch=143Alg=GRU_root3P3N, epoch=144Alg=GRU_root3P3N, epoch=145Alg=GRU_root3P3N, epoch=146Alg=GRU_root3P3N, epoch=147Alg=GRU_root3P3N, epoch=148Alg=GRU_root3P3N, epoch=149Alg=GRU_root3P3N, epoch=150Alg=GRU_root3P3N, epoch=151Alg=GRU_root3P3N, epoch=152Alg=GRU_root3P3N, epoch=153Alg=GRU_root3P3N, epoch=154Alg=GRU_root3P3N, epoch=155Alg=GRU_root3P3N, epoch=156Alg=GRU_root3P3N, epoch=157Alg=GRU_root3P3N, epoch=158Alg=GRU_root3P3N, epoch=159Alg=GRU_root3P3N, epoch=160
+Alg: GRU_root3P3N
+unique idx: 67/948
+hamDis before mapping  = 6.187
+hamDis after mapping   = 6.187
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 67/948
+hamDis before mapping  = 2.952
+hamDis after mapping   = 2.952
+hamDis lower bound     = 0.878
+trn_loss=0.140, trn_acc=0.950
+val_loss=0.940, val_acc=0.770
+Alg=GRU_root3P3N, epoch=161Alg=GRU_root3P3N, epoch=162Alg=GRU_root3P3N, epoch=163Alg=GRU_root3P3N, epoch=164Alg=GRU_root3P3N, epoch=165Alg=GRU_root3P3N, epoch=166Alg=GRU_root3P3N, epoch=167Alg=GRU_root3P3N, epoch=168Alg=GRU_root3P3N, epoch=169Alg=GRU_root3P3N, epoch=170Alg=GRU_root3P3N, epoch=171Alg=GRU_root3P3N, epoch=172Alg=GRU_root3P3N, epoch=173Alg=GRU_root3P3N, epoch=174Alg=GRU_root3P3N, epoch=175Alg=GRU_root3P3N, epoch=176Alg=GRU_root3P3N, epoch=177Alg=GRU_root3P3N, epoch=178Alg=GRU_root3P3N, epoch=179Alg=GRU_root3P3N, epoch=180
+Alg: GRU_root3P3N
+unique idx: 73/948
+hamDis before mapping  = 5.810
+hamDis after mapping   = 5.810
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 73/948
+hamDis before mapping  = 2.753
+hamDis after mapping   = 2.753
+hamDis lower bound     = 0.878
+trn_loss=0.140, trn_acc=0.950
+val_loss=1.120, val_acc=0.730
+Alg=GRU_root3P3N, epoch=181Alg=GRU_root3P3N, epoch=182Alg=GRU_root3P3N, epoch=183Alg=GRU_root3P3N, epoch=184Alg=GRU_root3P3N, epoch=185Alg=GRU_root3P3N, epoch=186Alg=GRU_root3P3N, epoch=187Alg=GRU_root3P3N, epoch=188Alg=GRU_root3P3N, epoch=189Alg=GRU_root3P3N, epoch=190Alg=GRU_root3P3N, epoch=191Alg=GRU_root3P3N, epoch=192Alg=GRU_root3P3N, epoch=193Alg=GRU_root3P3N, epoch=194Alg=GRU_root3P3N, epoch=195Alg=GRU_root3P3N, epoch=196Alg=GRU_root3P3N, epoch=197Alg=GRU_root3P3N, epoch=198Alg=GRU_root3P3N, epoch=199Alg=GRU_root3P3N, epoch=200
+Alg: GRU_root3P3N
+unique idx: 76/948
+hamDis before mapping  = 5.672
+hamDis after mapping   = 5.672
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 76/948
+hamDis before mapping  = 2.659
+hamDis after mapping   = 2.659
+hamDis lower bound     = 0.878
+trn_loss=0.130, trn_acc=0.960
+val_loss=1.430, val_acc=0.730
+Alg=GRU_root3P3N, epoch=201Alg=GRU_root3P3N, epoch=202Alg=GRU_root3P3N, epoch=203Alg=GRU_root3P3N, epoch=204Alg=GRU_root3P3N, epoch=205Alg=GRU_root3P3N, epoch=206Alg=GRU_root3P3N, epoch=207Alg=GRU_root3P3N, epoch=208Alg=GRU_root3P3N, epoch=209Alg=GRU_root3P3N, epoch=210Alg=GRU_root3P3N, epoch=211Alg=GRU_root3P3N, epoch=212Alg=GRU_root3P3N, epoch=213Alg=GRU_root3P3N, epoch=214Alg=GRU_root3P3N, epoch=215Alg=GRU_root3P3N, epoch=216Alg=GRU_root3P3N, epoch=217Alg=GRU_root3P3N, epoch=218Alg=GRU_root3P3N, epoch=219Alg=GRU_root3P3N, epoch=220
+Alg: GRU_root3P3N
+unique idx: 72/948
+hamDis before mapping  = 6.043
+hamDis after mapping   = 6.043
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 72/948
+hamDis before mapping  = 2.865
+hamDis after mapping   = 2.865
+hamDis lower bound     = 0.878
+trn_loss=0.130, trn_acc=0.960
+val_loss=1.290, val_acc=0.700
+Alg=GRU_root3P3N, epoch=221Alg=GRU_root3P3N, epoch=222Alg=GRU_root3P3N, epoch=223Alg=GRU_root3P3N, epoch=224Alg=GRU_root3P3N, epoch=225Alg=GRU_root3P3N, epoch=226Alg=GRU_root3P3N, epoch=227Alg=GRU_root3P3N, epoch=228Alg=GRU_root3P3N, epoch=229Alg=GRU_root3P3N, epoch=230Alg=GRU_root3P3N, epoch=231Alg=GRU_root3P3N, epoch=232Alg=GRU_root3P3N, epoch=233Alg=GRU_root3P3N, epoch=234Alg=GRU_root3P3N, epoch=235Alg=GRU_root3P3N, epoch=236Alg=GRU_root3P3N, epoch=237Alg=GRU_root3P3N, epoch=238Alg=GRU_root3P3N, epoch=239Alg=GRU_root3P3N, epoch=240
+Alg: GRU_root3P3N
+unique idx: 63/948
+hamDis before mapping  = 6.529
+hamDis after mapping   = 6.529
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 63/948
+hamDis before mapping  = 3.127
+hamDis after mapping   = 3.127
+hamDis lower bound     = 0.878
+trn_loss=0.110, trn_acc=0.970
+val_loss=1.540, val_acc=0.750
+Alg=GRU_root3P3N, epoch=241Alg=GRU_root3P3N, epoch=242Alg=GRU_root3P3N, epoch=243Alg=GRU_root3P3N, epoch=244Alg=GRU_root3P3N, epoch=245Alg=GRU_root3P3N, epoch=246Alg=GRU_root3P3N, epoch=247Alg=GRU_root3P3N, epoch=248Alg=GRU_root3P3N, epoch=249Alg=GRU_root3P3N, epoch=250Alg=GRU_root3P3N, epoch=251Alg=GRU_root3P3N, epoch=252Alg=GRU_root3P3N, epoch=253Alg=GRU_root3P3N, epoch=254Alg=GRU_root3P3N, epoch=255Alg=GRU_root3P3N, epoch=256Alg=GRU_root3P3N, epoch=257Alg=GRU_root3P3N, epoch=258Alg=GRU_root3P3N, epoch=259Alg=GRU_root3P3N, epoch=260
+Alg: GRU_root3P3N
+unique idx: 85/948
+hamDis before mapping  = 5.677
+hamDis after mapping   = 5.677
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 85/948
+hamDis before mapping  = 2.722
+hamDis after mapping   = 2.722
+hamDis lower bound     = 0.878
+trn_loss=0.120, trn_acc=0.960
+val_loss=2.540, val_acc=0.550
+Alg=GRU_root3P3N, epoch=261Alg=GRU_root3P3N, epoch=262Alg=GRU_root3P3N, epoch=263Alg=GRU_root3P3N, epoch=264Alg=GRU_root3P3N, epoch=265Alg=GRU_root3P3N, epoch=266Alg=GRU_root3P3N, epoch=267Alg=GRU_root3P3N, epoch=268Alg=GRU_root3P3N, epoch=269Alg=GRU_root3P3N, epoch=270Alg=GRU_root3P3N, epoch=271Alg=GRU_root3P3N, epoch=272Alg=GRU_root3P3N, epoch=273Alg=GRU_root3P3N, epoch=274Alg=GRU_root3P3N, epoch=275Alg=GRU_root3P3N, epoch=276Alg=GRU_root3P3N, epoch=277Alg=GRU_root3P3N, epoch=278Alg=GRU_root3P3N, epoch=279Alg=GRU_root3P3N, epoch=280
+Alg: GRU_root3P3N
+unique idx: 74/948
+hamDis before mapping  = 6.022
+hamDis after mapping   = 6.022
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 74/948
+hamDis before mapping  = 2.803
+hamDis after mapping   = 2.803
+hamDis lower bound     = 0.878
+trn_loss=0.130, trn_acc=0.960
+val_loss=1.500, val_acc=0.740
+Alg=GRU_root3P3N, epoch=281Alg=GRU_root3P3N, epoch=282Alg=GRU_root3P3N, epoch=283Alg=GRU_root3P3N, epoch=284Alg=GRU_root3P3N, epoch=285Alg=GRU_root3P3N, epoch=286Alg=GRU_root3P3N, epoch=287Alg=GRU_root3P3N, epoch=288Alg=GRU_root3P3N, epoch=289Alg=GRU_root3P3N, epoch=290Alg=GRU_root3P3N, epoch=291Alg=GRU_root3P3N, epoch=292Alg=GRU_root3P3N, epoch=293Alg=GRU_root3P3N, epoch=294Alg=GRU_root3P3N, epoch=295Alg=GRU_root3P3N, epoch=296Alg=GRU_root3P3N, epoch=297Alg=GRU_root3P3N, epoch=298Alg=GRU_root3P3N, epoch=299Alg=GRU_root3P3N, epoch=300
+Alg: GRU_root3P3N
+unique idx: 75/948
+hamDis before mapping  = 6.141
+hamDis after mapping   = 6.141
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 75/948
+hamDis before mapping  = 2.820
+hamDis after mapping   = 2.820
+hamDis lower bound     = 0.878
+trn_loss=0.110, trn_acc=0.960
+val_loss=1.360, val_acc=0.730
+Alg=GRU_root3P3N, epoch=301Alg=GRU_root3P3N, epoch=302Alg=GRU_root3P3N, epoch=303Alg=GRU_root3P3N, epoch=304Alg=GRU_root3P3N, epoch=305Alg=GRU_root3P3N, epoch=306Alg=GRU_root3P3N, epoch=307Alg=GRU_root3P3N, epoch=308Alg=GRU_root3P3N, epoch=309Alg=GRU_root3P3N, epoch=310Alg=GRU_root3P3N, epoch=311Alg=GRU_root3P3N, epoch=312Alg=GRU_root3P3N, epoch=313Alg=GRU_root3P3N, epoch=314Alg=GRU_root3P3N, epoch=315Alg=GRU_root3P3N, epoch=316Alg=GRU_root3P3N, epoch=317Alg=GRU_root3P3N, epoch=318Alg=GRU_root3P3N, epoch=319Alg=GRU_root3P3N, epoch=320
+Alg: GRU_root3P3N
+unique idx: 77/948
+hamDis before mapping  = 5.854
+hamDis after mapping   = 5.854
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 77/948
+hamDis before mapping  = 2.754
+hamDis after mapping   = 2.754
+hamDis lower bound     = 0.878
+trn_loss=0.110, trn_acc=0.960
+val_loss=1.630, val_acc=0.730
+Alg=GRU_root3P3N, epoch=321Alg=GRU_root3P3N, epoch=322Alg=GRU_root3P3N, epoch=323Alg=GRU_root3P3N, epoch=324Alg=GRU_root3P3N, epoch=325Alg=GRU_root3P3N, epoch=326Alg=GRU_root3P3N, epoch=327Alg=GRU_root3P3N, epoch=328Alg=GRU_root3P3N, epoch=329Alg=GRU_root3P3N, epoch=330Alg=GRU_root3P3N, epoch=331Alg=GRU_root3P3N, epoch=332Alg=GRU_root3P3N, epoch=333Alg=GRU_root3P3N, epoch=334Alg=GRU_root3P3N, epoch=335Alg=GRU_root3P3N, epoch=336Alg=GRU_root3P3N, epoch=337Alg=GRU_root3P3N, epoch=338Alg=GRU_root3P3N, epoch=339Alg=GRU_root3P3N, epoch=340
+Alg: GRU_root3P3N
+unique idx: 79/948
+hamDis before mapping  = 6.140
+hamDis after mapping   = 6.140
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 79/948
+hamDis before mapping  = 2.853
+hamDis after mapping   = 2.853
+hamDis lower bound     = 0.878
+trn_loss=0.100, trn_acc=0.970
+val_loss=2.450, val_acc=0.600
+Alg=GRU_root3P3N, epoch=341Alg=GRU_root3P3N, epoch=342Alg=GRU_root3P3N, epoch=343Alg=GRU_root3P3N, epoch=344Alg=GRU_root3P3N, epoch=345Alg=GRU_root3P3N, epoch=346Alg=GRU_root3P3N, epoch=347Alg=GRU_root3P3N, epoch=348Alg=GRU_root3P3N, epoch=349Alg=GRU_root3P3N, epoch=350Alg=GRU_root3P3N, epoch=351Alg=GRU_root3P3N, epoch=352Alg=GRU_root3P3N, epoch=353Alg=GRU_root3P3N, epoch=354Alg=GRU_root3P3N, epoch=355Alg=GRU_root3P3N, epoch=356Alg=GRU_root3P3N, epoch=357Alg=GRU_root3P3N, epoch=358Alg=GRU_root3P3N, epoch=359Alg=GRU_root3P3N, epoch=360
+Alg: GRU_root3P3N
+unique idx: 81/948
+hamDis before mapping  = 6.099
+hamDis after mapping   = 6.099
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 81/948
+hamDis before mapping  = 2.864
+hamDis after mapping   = 2.864
+hamDis lower bound     = 0.878
+trn_loss=0.110, trn_acc=0.960
+val_loss=1.920, val_acc=0.650
+Alg=GRU_root3P3N, epoch=361Alg=GRU_root3P3N, epoch=362Alg=GRU_root3P3N, epoch=363Alg=GRU_root3P3N, epoch=364Alg=GRU_root3P3N, epoch=365Alg=GRU_root3P3N, epoch=366Alg=GRU_root3P3N, epoch=367Alg=GRU_root3P3N, epoch=368Alg=GRU_root3P3N, epoch=369Alg=GRU_root3P3N, epoch=370Alg=GRU_root3P3N, epoch=371Alg=GRU_root3P3N, epoch=372Alg=GRU_root3P3N, epoch=373Alg=GRU_root3P3N, epoch=374Alg=GRU_root3P3N, epoch=375Alg=GRU_root3P3N, epoch=376Alg=GRU_root3P3N, epoch=377Alg=GRU_root3P3N, epoch=378Alg=GRU_root3P3N, epoch=379Alg=GRU_root3P3N, epoch=380
+Alg: GRU_root3P3N
+unique idx: 87/948
+hamDis before mapping  = 5.913
+hamDis after mapping   = 5.913
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 87/948
+hamDis before mapping  = 2.831
+hamDis after mapping   = 2.831
+hamDis lower bound     = 0.878
+trn_loss=0.110, trn_acc=0.960
+val_loss=1.970, val_acc=0.620
+Alg=GRU_root3P3N, epoch=381Alg=GRU_root3P3N, epoch=382Alg=GRU_root3P3N, epoch=383Alg=GRU_root3P3N, epoch=384Alg=GRU_root3P3N, epoch=385Alg=GRU_root3P3N, epoch=386Alg=GRU_root3P3N, epoch=387Alg=GRU_root3P3N, epoch=388Alg=GRU_root3P3N, epoch=389Alg=GRU_root3P3N, epoch=390Alg=GRU_root3P3N, epoch=391Alg=GRU_root3P3N, epoch=392Alg=GRU_root3P3N, epoch=393Alg=GRU_root3P3N, epoch=394Alg=GRU_root3P3N, epoch=395Alg=GRU_root3P3N, epoch=396Alg=GRU_root3P3N, epoch=397Alg=GRU_root3P3N, epoch=398Alg=GRU_root3P3N, epoch=399Alg=GRU_root3P3N, epoch=400
+Alg: GRU_root3P3N
+unique idx: 80/948
+hamDis before mapping  = 5.897
+hamDis after mapping   = 5.897
+hamDis lower bound     = 1.907
+
+Alg: GRU_root3P3N
+unique idx: 80/948
+hamDis before mapping  = 2.777
+hamDis after mapping   = 2.777
+hamDis lower bound     = 0.878
+trn_loss=0.110, trn_acc=0.960
+val_loss=2.180, val_acc=0.600
