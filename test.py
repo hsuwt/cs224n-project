@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # m = testing melody
     # C = training chord progression
     # c = testing chord progression
-    M, m, C, c = load_data(alg, nb_test)
+    M, m, C, c = load_data(nb_test)
     nb_train = M.shape[0]
     model = load_model(alg)
     x, y = get_XY(alg, m, c)

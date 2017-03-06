@@ -167,7 +167,7 @@ def toCandidateBestN(CP, allCP, bestN):
         bestIdx[i] = np.argsort(dis)[:bestN]
     return bestIdx
 
-def load_data(alg, nb_test):
+def load_data(nb_test):
     C = np.genfromtxt('csv/chord.csv', delimiter=',')
     # Data in melody.csv and root.csv are represented as [0,11].
     # Thus, we first span it to boolean matrix
@@ -366,9 +366,7 @@ def Melody_Matrix_to_Section_Composed(melody_matrix):
     return section_composed
 
 def top3notes(chord):
-    idx = sorted(range(len(chord)), key=lambda k: chord[k])
-    z = np.zeros((12))
-    z[idx[-1]] = 1
-    z[idx[-2]] = 1
-    z[idx[-3]] = 1
-    return z
+    idx = np.argsort(chord)
+    idx[idx < 9] = 0
+    idx[idx >= 12-3] = 1
+    return idx

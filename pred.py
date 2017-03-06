@@ -4,7 +4,7 @@ from model import *
 def pred(melody, alg):
     # melody.shape = (128, 12)
     n_test = 100
-    M, m, C, c = load_data(alg, n_test)
+    M, m, C, c = load_data(n_test)
     m = np.reshape(melody, (1, 128, 12))
     n_train = M.shape[0]
     model = load_model(alg)
