@@ -3,8 +3,8 @@ from model import *
 import time
 
 if __name__ == "__main__":
-    #if len(sys.argv) < 2: alg = 'GRU_pair_L2_rand'
-    if len(sys.argv) < 2: alg = 'GRU_LM'
+    if len(sys.argv) < 2: alg = 'BGRU_pair_L1_rand'
+    #if len(sys.argv) < 2: alg = 'BGRU_LM'
     else: alg = sys.argv[1]
     if len(sys.argv) < 3: nodes1 = 64
     else: nodes1 = int(sys.argv[2])
@@ -72,24 +72,27 @@ if __name__ == "__main__":
                     errCntAvg += err
                     # print err
             errCntAvg /= float(128*nb_test)
+            np.savetxt('pred_LM.csv', top3)
+            print("\n")
             print(errCntAvg)
-            print("")
-            continue
-        pred = pred.reshape((nb_test, nb_train, 128))
-        idx = np.argmax(np.sum(pred, 2), axis=1)
-        c_hat = C[idx]
-        bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
-        errCntAvg = np.average(np.abs(c_hat - c))
-        print(errCntAvg)
 
-        trn_loss = history[1][-1]
-        val_loss = history[2][-1]
-        trn_acc  = history[3][-1]
-        val_acc  = history[4][-1]
-        print("trn_loss=%.3f, trn_acc=%.3f" %(trn_loss, trn_acc))
-        print("val_loss=%.3f, val_acc=%.3f" %(val_loss, val_acc))
+        elif 'pair' in alg:
+            pred = pred.reshape((nb_test, nb_train, 128))
+            idx = np.argmax(np.sum(pred, 2), axis=1)
+            c_hat = C[idx]
+            bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+            errCntAvg = np.average(np.abs(c_hat - c))
+            np.savetxt('pred_pair.csv', c_hat)
+            print(errCntAvg)
 
-        # record & save model
-        record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
-        #save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+            trn_loss = history[1][-1]
+            val_loss = history[2][-1]
+            trn_acc  = history[3][-1]
+            val_acc  = history[4][-1]
+            print("trn_loss=%.3f, trn_acc=%.3f" %(trn_loss, trn_acc))
+            print("val_loss=%.3f, val_acc=%.3f" %(val_loss, val_acc))
+
+            # record & save model
+            record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
+            #save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
 
