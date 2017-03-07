@@ -367,22 +367,11 @@ def Melody_Matrix_to_Section_Composed(melody_matrix):
     return section_composed
 
 def top3notes(chord):
-<<<<<<< HEAD
-    idx = sorted(range(len(chord)), key=lambda k: chord[k])
-    z = np.zeros((12))
-    z[idx[-1]] = 1
-    z[idx[-2]] = 1
-    z[idx[-3]] = 1
-    return z
-
-
-
-=======
     idx = np.argsort(chord)
     idx[idx < 9] = 0
     idx[idx >= 12-3] = 1
     return idx
->>>>>>> 9bc53a6f8da433164fbf8b5cb9cec49f04d00a4a
+
 
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
