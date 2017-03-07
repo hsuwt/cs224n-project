@@ -10,9 +10,9 @@ if __name__ == "__main__":
     else: nodes1 = int(sys.argv[2])
     if len(sys.argv) < 4: nodes2 = 64
     else: nodes2 = int(sys.argv[3])
-    if len(sys.argv) < 5: nb_epoch = 400
+    if len(sys.argv) < 5: nb_epoch = 200
     else: nb_epoch = int(sys.argv[4])
-    if len(sys.argv) < 6: nb_epoch_pred = 100
+    if len(sys.argv) < 6: nb_epoch_pred = 50
     else: nb_epoch_pred = int(sys.argv[5])
     if len(sys.argv) < 7: dropout_rate = 0.5
     else: dropout_rate = float(sys.argv[6])
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     # m = testing melody
     # C = training chord progression
     # c = testing chord progression
-    M, m, C, c = load_data(alg, nb_test)
+    M, m, C, c = load_data(nb_test)
     nb_train = M.shape[0]
     model = build_model(alg, nodes1, nodes2, dropout_rate)
     history = [['epoch'], ['loss'],['val_loss'],['acc'],['val_acc']]
@@ -60,20 +60,10 @@ if __name__ == "__main__":
         if 'LM' in alg:
             pred = pred.reshape((nb_test, 128, 12))
             errCntAvg = 0
-            for i in range(nb_test):
-                # print "song" + str(i)
-                for j in range(128):
-                    top3 = top3notes(pred[i][j])
-                    # print "answ:",
-                    # print y[i][j]
-                    # print "pred:",
-                    # print top3
-                    err = np.sum(np.abs(y[i][j] - top3))
-                    errCntAvg += err
-                    # print err
-            errCntAvg /= float(128*nb_test)
-            np.savetxt('pred_LM.csv', top3)
-            print("\n")
+            top3 = top3notes(pred)
+            errCntAvg = np.average(np.abs(y - top3)) * 12
+            with open('pred_LM.csv', 'w') as f:
+                np.savetxt(f, top3.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
             print(errCntAvg)
 
         elif 'pair' in alg:
@@ -81,8 +71,9 @@ if __name__ == "__main__":
             idx = np.argmax(np.sum(pred, 2), axis=1)
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
-            errCntAvg = np.average(np.abs(c_hat - c))
-            np.savetxt('pred_pair.csv', c_hat)
+            errCntAvg = np.average(np.abs(c_hat - c)) * 12
+            with open('pred_pair.csv', 'w') as f:
+                np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
             print(errCntAvg)
 
             trn_loss = history[1][-1]
