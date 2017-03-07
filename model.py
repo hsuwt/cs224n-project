@@ -1,12 +1,13 @@
 import os
 import csv
-from attention_lstm import AttentionLSTM
+from attention_lstm import AttentionLSTM, AttentionLSTMWrapper
 from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
-from keras.layers import LSTM, GRU, SimpleRNN, TimeDistributed
+from keras.layers import LSTM, GRU, SimpleRNN, TimeDistributed, Lambda
 from keras.models import Model, model_from_json
 from keras.optimizers import RMSprop, Adagrad
 from keras.callbacks import EarlyStopping
+from keras import backend as K
 
 modelpath = 'model2/'
 
@@ -34,21 +35,26 @@ def build(alg, input, nodes, drp):
         return M
     elif 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg or 'attention' in alg:
         return_sequences = True
-        if 'RNN' in alg:
+        if 'attention' in alg:
+            f_rnn = LSTM(nodes, return_sequences=return_sequences)
+            b_rnn = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)
+            M1 = f_rnn(input)
+            M2 = b_rnn(input)
+            M1 = Dropout(drp)(M1)
+            M2 = Dropout(drp)(M2)
+            maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
+            maxpool.supports_masking = True
+            pool = merge([maxpool(M1), maxpool(M2)], mode='concat', concat_axis=-1)
+            return AttentionLSTM(nodes, pool, single_attention_param=True) 
+        elif 'RNN' in alg:
             M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
-            M2 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
-        elif 'LSTM' in alg:
-            M1 = LSTM(nodes, return_sequences=return_sequences)(input)
-            M2 = LSTM(nodes, return_sequences=return_sequences)(input)
-            if 'attention' in alg:
-                import numpy as np
-		vec1 = np.zeros((100))
-		vec2 = np.zeros((100))
-                M1 = AttentionLSTM(nodes, vec1, single_attention_param=True, return_sequences=return_sequences)(M1)
-                M2 = AttentionLSTM(nodes, vec2, single_attention_param=True, return_sequences=return_sequences)(M2)
+            M2 = SimpleRNN(nodes, return_sequences=return_sequences, go_backwards=True)(input)
         elif 'GRU' in alg:
             M1 = GRU(nodes, return_sequences=return_sequences)(input)
-            M2 = GRU(nodes, return_sequences=return_sequences)(input)
+            M2 = GRU(nodes, return_sequences=return_sequences, go_backwards=True)(input)
+        elif 'LSTM' in alg:
+            M1 = LSTM(nodes, return_sequences=return_sequences)(input)
+            M2 = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)(input)
         M1 = Dropout(drp)(M1)
         M2 = Dropout(drp)(M2)
         if 'B' in alg:

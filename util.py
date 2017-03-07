@@ -2,7 +2,7 @@ import os
 import sys
 import csv
 import numpy as np
-import pretty_midi
+#import pretty_midi
 
 def rotate(chroma, semitone):
     if semitone == 0: return chroma
