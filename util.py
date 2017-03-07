@@ -2,7 +2,7 @@ import os
 import sys
 import csv
 import numpy as np
-import pretty_midi
+# import pretty_midi
 
 def rotate(chroma, semitone):
     if semitone == 0: return chroma
@@ -181,9 +181,6 @@ def load_data(nb_test):
             M[i][M_dense.shape[1]*notes+j] = 1
     M = np.swapaxes(M.reshape((M.shape[0],12,128)), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0],12,128)), 1, 2)
-    if chord_repr == 'semantic':
-        C = parse_chord(C)
-
     m = M[:nb_test]
     c = C[:nb_test]
     M = M[nb_test:]
@@ -197,10 +194,9 @@ def get_XY(alg, M, C):
             with open('csv/chord-1hot-signatures.pickle', 'rb') as pfile:
                 sign2chord = pkl.load(pfile)
                 N = len(sign2chord)
-                iterate_shape = [C.shape[0] * 128, N+1]
-                newC = np.zeros(iterate_shape)
-                for i, x in enumerate(C.reshape(iterate_shape)):
-                    newC[i] = [sign2chord.get(str(x), N)]
+                newC = np.zeros([C.shape[0] * 128, N+1])
+                for i, x in enumerate(C.reshape([C.shape[0] * 128, 12])):
+                    newC[i][sign2chord.get(str(x), N)] = 1
                 C = newC.reshape([C.shape[0], 128, N+1])
         return M, C
 
