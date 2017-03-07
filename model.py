@@ -29,35 +29,34 @@ def gen_input(feat):
     return Input(shape=(128, dim))
 
 def build(alg, input, nodes, drp):
-    if 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg or 'attention' in alg:
-        return_sequences = True
-        # if 'attention' in alg:
-            # f_rnn = LSTM(nodes, return_sequences=return_sequences)
-            # b_rnn = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)
-            # M1 = f_rnn(input)
-            # M2 = b_rnn(input)
-            # M1 = Dropout(drp)(M1)
-            # M2 = Dropout(drp)(M2)
-            # maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
-            # maxpool.supports_masking = True
-            # pool = merge([maxpool(M1), maxpool(M2)], mode='concat', concat_axis=-1)
-            # return AttentionLSTM(nodes, pool, single_attention_param=True)
-        if 'RNN' in alg:
-            M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
-            M2 = SimpleRNN(nodes, return_sequences=return_sequences, go_backwards=True)(input)
-        elif 'GRU' in alg:
-            M1 = GRU(nodes, return_sequences=return_sequences)(input)
-            M2 = GRU(nodes, return_sequences=return_sequences, go_backwards=True)(input)
-        elif 'LSTM' in alg:
-            M1 = LSTM(nodes, return_sequences=return_sequences)(input)
-            M2 = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)(input)
-        M1 = Dropout(drp)(M1)
-        M2 = Dropout(drp)(M2)
-        if 'B' in alg:
-            M1 = merge([M1, M2], mode='concat')
-        if 'Attention' in alg:
-            M1 = AttLayer()(M1)
-        return M1
+    return_sequences = True
+    # if 'attention' in alg:
+        # f_rnn = LSTM(nodes, return_sequences=return_sequences)
+        # b_rnn = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)
+        # M1 = f_rnn(input)
+        # M2 = b_rnn(input)
+        # M1 = Dropout(drp)(M1)
+        # M2 = Dropout(drp)(M2)
+        # maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
+        # maxpool.supports_masking = True
+        # pool = merge([maxpool(M1), maxpool(M2)], mode='concat', concat_axis=-1)
+        # return AttentionLSTM(nodes, pool, single_attention_param=True)
+    if 'RNN' in alg:
+        M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
+        M2 = SimpleRNN(nodes, return_sequences=return_sequences, go_backwards=True)(input)
+    elif 'GRU' in alg:
+        M1 = GRU(nodes, return_sequences=return_sequences)(input)
+        M2 = GRU(nodes, return_sequences=return_sequences, go_backwards=True)(input)
+    elif 'LSTM' in alg:
+        M1 = LSTM(nodes, return_sequences=return_sequences)(input)
+        M2 = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)(input)
+    M1 = Dropout(drp)(M1)
+    M2 = Dropout(drp)(M2)
+    if 'Bidirectional' in alg:
+        M1 = merge([M1, M2], mode='concat')
+    if 'Attention' in alg:
+        M1 = AttLayer()(M1)
+    return M1
 
 def build_model(alg, nodes1, nodes2, drp):
     if 'LM' in alg:
