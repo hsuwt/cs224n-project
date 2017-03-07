@@ -1,25 +1,22 @@
 from util import *
 from model import *
 import time
+import argparse
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2: alg = 'BGRU_pair_L1_rand'
-    #if len(sys.argv) < 2: alg = 'BGRU_LM'
-    else: alg = sys.argv[1]
-    if len(sys.argv) < 3: nodes1 = 64
-    else: nodes1 = int(sys.argv[2])
-    if len(sys.argv) < 4: nodes2 = 64
-    else: nodes2 = int(sys.argv[3])
-    if len(sys.argv) < 5: nb_epoch = 200
-    else: nb_epoch = int(sys.argv[4])
-    if len(sys.argv) < 6: nb_epoch_pred = 50
-    else: nb_epoch_pred = int(sys.argv[5])
-    if len(sys.argv) < 7: dropout_rate = 0.5
-    else: dropout_rate = float(sys.argv[6])
-    if len(sys.argv) < 8: batch_size = 212
-    else: batch_size = int(sys.argv[7])
-    if len(sys.argv) < 9: nb_test = 65
-    else: nb_test = int(sys.argv[8])
+    parser = argparse.ArgumentParser(description='Train model.')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='BGRU_pair_L1_rand')
+    parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
+    parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
+    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=50)
+    parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
+    parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
+    parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
+    args = parser.parse_args()
+    globals().update(vars(args))
+
+    alg = parse_algorithm(args.algorithm)
 
     # M = training melody
     # m = testing melody
