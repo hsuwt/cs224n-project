@@ -51,7 +51,7 @@ if __name__ == "__main__":
             #hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y), callbacks=[es])
 
         # write history
-        history = write_history(history, hist, nb_epoch_pred * (i+1))
+        # history = write_history(history, hist, nb_epoch_pred * (i+1))
         # with open('history/' + alg + '_' + str(nodes1) + '_' + str(nodes2) + '.csv', 'w') as csvfile:
             # csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
 
