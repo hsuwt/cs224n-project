@@ -1,6 +1,7 @@
 import os
 import csv
 from attention_lstm import AttentionLSTM, AttentionLSTMWrapper
+from AttLayer import AttLayer
 from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
 from keras.layers import LSTM, GRU, SimpleRNN, TimeDistributed, Lambda
@@ -28,25 +29,20 @@ def gen_input(feat):
     return Input(shape=(128, dim))
 
 def build(alg, input, nodes, drp):
-    if 'DNN' in alg:
-        M = Flatten()(input)
-        M = Dense(nodes, activation='relu')(M)
-        M = Dropout(drp)(M)
-        return M
-    elif 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg or 'attention' in alg:
+    if 'RNN' in alg or 'LSTM' in alg or 'GRU' in alg or 'attention' in alg:
         return_sequences = True
-        if 'attention' in alg:
-            f_rnn = LSTM(nodes, return_sequences=return_sequences)
-            b_rnn = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)
-            M1 = f_rnn(input)
-            M2 = b_rnn(input)
-            M1 = Dropout(drp)(M1)
-            M2 = Dropout(drp)(M2)
-            maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
-            maxpool.supports_masking = True
-            pool = merge([maxpool(M1), maxpool(M2)], mode='concat', concat_axis=-1)
-            return AttentionLSTM(nodes, pool, single_attention_param=True) 
-        elif 'RNN' in alg:
+        # if 'attention' in alg:
+            # f_rnn = LSTM(nodes, return_sequences=return_sequences)
+            # b_rnn = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)
+            # M1 = f_rnn(input)
+            # M2 = b_rnn(input)
+            # M1 = Dropout(drp)(M1)
+            # M2 = Dropout(drp)(M2)
+            # maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
+            # maxpool.supports_masking = True
+            # pool = merge([maxpool(M1), maxpool(M2)], mode='concat', concat_axis=-1)
+            # return AttentionLSTM(nodes, pool, single_attention_param=True)
+        if 'RNN' in alg:
             M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
             M2 = SimpleRNN(nodes, return_sequences=return_sequences, go_backwards=True)(input)
         elif 'GRU' in alg:
@@ -58,8 +54,9 @@ def build(alg, input, nodes, drp):
         M1 = Dropout(drp)(M1)
         M2 = Dropout(drp)(M2)
         if 'B' in alg:
-            M = merge([M1, M2], mode='concat')
-            return M
+            M1 = merge([M1, M2], mode='concat')
+        if 'attention' in alg:
+            M1 = AttLayer()(M1)
         return M1
 
 def build_model(alg, nodes1, nodes2, drp):
@@ -73,6 +70,8 @@ def build_model(alg, nodes1, nodes2, drp):
         input = gen_input('pair')
         M = build(alg, input, nodes1, drp)
         output = TimeDistributed(Dense(1 , activation='sigmoid'))(M)
+    else:
+        print "err!!!!!"
     model = Model(input=input, output=output)
     loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
     model.compile(optimizer=RMSprop(), loss=loss)
