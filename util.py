@@ -181,6 +181,9 @@ def load_data(nb_test):
             M[i][M_dense.shape[1]*notes+j] = 1
     M = np.swapaxes(M.reshape((M.shape[0],12,128)), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0],12,128)), 1, 2)
+    if chord_repr == 'semantic':
+        C = parse_chord(C)
+
     m = M[:nb_test]
     c = C[:nb_test]
     M = M[nb_test:]
@@ -189,7 +192,18 @@ def load_data(nb_test):
 
 def get_XY(alg, M, C):
     if 'LM' in alg:
+        if 'one-hot' in alg:
+            import pickle as pkl
+            with open('csv/chord-1hot-signatures.pickle', 'rb') as pfile:
+                sign2chord = pkl.load(pfile)
+                N = len(sign2chord)
+                iterate_shape = [C.shape[0] * 128, N+1]
+                newC = np.zeros(iterate_shape)
+                for i, x in enumerate(C.reshape(iterate_shape)):
+                    newC[i] = [sign2chord.get(str(x), N)]
+                C = newC.reshape([C.shape[0], 128, N+1])
         return M, C
+
     n = M.shape[0]
     idx = np.random.randint(n, size=n)
     C_neg = C[idx]
@@ -377,7 +391,7 @@ def top3notes(chord):
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     assert(melody_matrix.shape[0] == chord_matrix.shape[0])
     assert(melody_matrix.shape[1] == 12 and chord_matrix.shape[1] ==12)
-   
+
     defaultMelOct = 5 # default melody octave
     defaultChrdOct = 3
     length = melody_matrix.shape[0]
@@ -386,7 +400,7 @@ def Matrices_to_MIDI(melody_matrix, chord_matrix):
     bap_program = pretty_midi.instrument_name_to_program('Bright Acoustic Piano') # use for melody
     melody = prety_midi.Instrument(program= agp_program)
     chords = prety_midi.Instrument(program= bap_program)
-    
+
     for i in range(length):
         # Synthesizing melody
         m_note_nb_new = melody_matrix[i].index(1) if 1 in melody_matrix[i] else None
@@ -397,24 +411,24 @@ def Matrices_to_MIDI(melody_matrix, chord_matrix):
             m_time+=1
         else:
             note = pretty_midi.Note(velocity=100, pitch=(m_note_nb_cur +12*(defaultMelOct + 1)) , start=0, end=.5*m_time)
-            melody.notes.append(note)            
+            melody.notes.append(note)
             m_note_nb_cur = m_note_nb_new
-            m_time = 1 
-        
+            m_time = 1
+
         # Synthesizing chord
         chords_new = numpy.where(melody_matrix[i] == 1)[0]
         if i ==0:
             chords_cur = chords_new
             c_time = 1
         elif numpy.array_equal(chords_cur, chords_new):
-            c_time +=1 
+            c_time +=1
         else:
             for n in chords_cur.tolist():
                 note = pretty_midi.Note(velocity=100, pitch=(n +12*(defaultChrdOct + 1)) , start=0, end=.5*c_time)
-                chords.notes.append(note)  
+                chords.notes.append(note)
             chords_cur = chords_new
-            c_time = 1  
-            
+            c_time = 1
+
     song.instruments.append(melody)
     song.instruments.append(chords)
     return song
