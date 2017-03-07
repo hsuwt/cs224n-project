@@ -2,9 +2,6 @@ import os
 import sys
 import csv
 import numpy as np
-<<<<<<< HEAD
-#import pretty_midi
-=======
 # import pretty_midi
 import pickle as pkl
 
@@ -14,7 +11,6 @@ def parse_algorithm(alg_str):
     if 'one-hot' in alg:
         alg['one-hot-dim'] = 0 # to be filled in
     return alg
->>>>>>> 5f866b55069903a3ca19502b8656122bf87b4293
 
 def rotate(chroma, semitone):
     if semitone == 0: return chroma
