@@ -167,7 +167,13 @@ def toCandidateBestN(CP, allCP, bestN):
         bestIdx[i] = np.argsort(dis)[:bestN]
     return bestIdx
 
-def load_data(alg, nb_test):
+def load_data(alg, nb_test, chord_repr = 'default'):
+    """
+
+    :param alg: algorithm. Not used
+    :param nb_test: size of test set, should be less than the total number of data entry
+    :return:
+    """
     C = np.genfromtxt('csv/chord.csv', delimiter=',')
     # Data in melody.csv and root.csv are represented as [0,11].
     # Thus, we first span it to boolean matrix
@@ -180,6 +186,9 @@ def load_data(alg, nb_test):
             M[i][M_dense.shape[1]*notes+j] = 1
     M = np.swapaxes(M.reshape((M.shape[0],12,128)), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0],12,128)), 1, 2)
+    if chord_repr == 'semantic':
+        C = parse_chord(C)
+
     m = M[:nb_test]
     c = C[:nb_test]
     M = M[nb_test:]
@@ -188,7 +197,18 @@ def load_data(alg, nb_test):
 
 def get_XY(alg, M, C):
     if 'LM' in alg:
+        if 'one-hot' in alg:
+            import pickle as pkl
+            with open('csv/chord-1hot-signatures.pickle', 'rb') as pfile:
+                sign2chord = pkl.load(pfile)
+                N = len(sign2chord)
+                iterate_shape = [C.shape[0] * 128, N+1]
+                newC = np.zeros(iterate_shape)
+                for i, x in enumerate(C.reshape(iterate_shape)):
+                    newC[i] = [sign2chord.get(str(x), N)]
+                C = newC.reshape([C.shape[0], 128, N+1])
         return M, C
+
     n = M.shape[0]
     idx = np.random.randint(n, size=n)
     C_neg = C[idx]
