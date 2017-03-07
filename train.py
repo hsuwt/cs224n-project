@@ -25,6 +25,8 @@ if __name__ == "__main__":
     # C = training chord progression
     # c = testing chord progression
     M, m, C, c = load_data(nb_test)
+    x, y = get_XY(alg, m, c) # NOTE: after this the alg will have "one-hot-dim"
+
     nb_train = M.shape[0]
     model = build_model(alg, nodes1, nodes2, dropout_rate)
     history = [['epoch'], ['loss'],['val_loss'],['acc'],['val_acc']]
@@ -36,7 +38,6 @@ if __name__ == "__main__":
     # Y = training ground truth
     # y = validation ground truth
     # x_test = testing features (to evaluate unique_idx & norms)
-    x, y = get_XY(alg, m, c)
     x_test = get_test(alg, m, C)
     
     es = EarlyStopping(monitor='val_loss', patience=2)
