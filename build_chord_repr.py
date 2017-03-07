@@ -20,14 +20,18 @@ def get_uniq(c):
 def build_repr(s):
     N = len(cs)
     repr_set = {}
+    reverse_set = []
     for i, x in enumerate(s):
         repr_set[x] = i
-    return repr_set
+        reverse_set.append(x)
+    return repr_set, reverse_set
 
 if __name__ == '__main__':
     c = load_data()
     cs = get_uniq(c)
     print "Discovered %d different chord signatures, out of %d possibilities" % (len(cs), 2<<12)
-    r = build_repr(cs)
+    r, rev = build_repr(cs)
     with open('csv/chord-1hot-signatures.pickle', 'wb') as pfile:
         pkl.dump(r, pfile)
+    with open('csv/chord-1hot-signatures-rev.pickle', 'wb') as pfile:
+        pkl.dump(rev, pfile)

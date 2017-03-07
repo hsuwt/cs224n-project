@@ -3,9 +3,11 @@ import sys
 import csv
 import numpy as np
 # import pretty_midi
+import pickle as pkl
+
 
 def parse_algorithm(alg_str):
-    alg = alg_str.strip().split()
+    alg = {x:None for x in alg_str.strip().split()}
     if 'one-hot' in alg:
         alg['one-hot-dim'] = 0 # to be filled in
     return alg
@@ -196,15 +198,14 @@ def load_data(nb_test):
 def get_XY(alg, M, C):
     if 'LM' in alg:
         if 'one-hot' in alg:
-            import pickle as pkl
             with open('csv/chord-1hot-signatures.pickle', 'rb') as pfile:
                 sign2chord = pkl.load(pfile)
                 N = len(sign2chord)
-                newC = np.zeros([C.shape[0] * 128, N+1])
+                newC = np.zeros([C.shape[0] * 128, N])
                 for i, x in enumerate(C.reshape([C.shape[0] * 128, 12])):
-                    newC[i][sign2chord.get(str(x), N)] = 1
-                C = newC.reshape([C.shape[0], 128, N+1])
-                alg['one-hot-dim'] = N+1
+                    newC[i][sign2chord[str(x)]] = 1
+                C = newC.reshape([C.shape[0], 128, N])
+                alg['one-hot-dim'] = N
         return M, C
 
     n = M.shape[0]
@@ -389,7 +390,25 @@ def top3notes(chord):
     idx[idx >= 12-3] = 1
     return idx
 
-
+def onehot2notes_translator():
+    """
+    generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
+    :return: f: the translator function
+    """
+    with open('csv/chord-1hot-signatures-rev.pickle', 'rb') as pfile:
+        chord2sign = pkl.load(pfile)
+        def f(chord):
+            """
+            :param chord: 1-hot representation of chords in (M, T, XDIM)
+            :return: chord signature in (M, T, 12)
+            """
+            M, T, Dim = chord.shape
+            res = np.empty([M*T, 12])
+            for i, c in enumerate(chord.reshape([M*T, Dim])):
+                id = np.nonzero(c)[0][0]
+                res[i] = chord2sign[id]
+            return res.reshape(M, T, 12)
+        return f
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     assert(melody_matrix.shape[0] == chord_matrix.shape[0])

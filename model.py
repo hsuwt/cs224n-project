@@ -40,12 +40,6 @@ def build(alg, input, nodes, drp):
         elif 'LSTM' in alg:
             M1 = LSTM(nodes, return_sequences=return_sequences)(input)
             M2 = LSTM(nodes, return_sequences=return_sequences)(input)
-            if 'attention' in alg:
-                import numpy as np
-		vec1 = np.zeros((100))
-		vec2 = np.zeros((100))
-                M1 = AttentionLSTM(nodes, vec1, single_attention_param=True, return_sequences=return_sequences)(M1)
-                M2 = AttentionLSTM(nodes, vec2, single_attention_param=True, return_sequences=return_sequences)(M2)
         elif 'GRU' in alg:
             M1 = GRU(nodes, return_sequences=return_sequences)(input)
             M2 = GRU(nodes, return_sequences=return_sequences)(input)
@@ -67,7 +61,8 @@ def build_model(alg, nodes1, nodes2, drp):
         M = build(alg, input, nodes1, drp)
         output = TimeDistributed(Dense(1 , activation='sigmoid'))(M)
     model = Model(input=input, output=output)
-    model.compile(optimizer=RMSprop(), loss='binary_crossentropy', metrics=['accuracy'])
+    loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
+    model.compile(optimizer=RMSprop(), loss=loss)
     return model
 
 def record(model, rec):

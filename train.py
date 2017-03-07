@@ -17,6 +17,8 @@ if __name__ == "__main__":
     globals().update(vars(args))
 
     alg = parse_algorithm(args.algorithm)
+    if 'LM' in alg:
+        chord2signature = onehot2notes_translator() if 'one-hot' in alg else top3notes
 
     # M = training melody
     # m = testing melody
@@ -54,13 +56,13 @@ if __name__ == "__main__":
 
         # testing
         pred = np.array(model.predict(x_test))
+        xdim = alg.get('one-hot-dim', 12)
+        pred = pred.reshape((nb_test, 128, xdim))
         if 'LM' in alg:
-            pred = pred.reshape((nb_test, 128, 12))
-            errCntAvg = 0
-            top3 = top3notes(pred)
-            errCntAvg = np.average(np.abs(y - top3)) * 12
+            notes = chord2signature(pred)
+            errCntAvg = np.average(np.abs(y - notes)) * 12
             with open('pred_LM.csv', 'w') as f:
-                np.savetxt(f, top3.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
+                np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
             print(errCntAvg)
 
         elif 'pair' in alg:
