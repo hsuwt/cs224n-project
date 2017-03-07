@@ -67,13 +67,15 @@ def build_model(alg, nodes1, nodes2, drp):
         input = gen_input('melody')
         M = build(alg, input, nodes1, drp)
         XDim = alg['one-hot-dim'] if 'one-hot' in alg else 12
-        output = TimeDistributed(Dense(XDim, activation='sigmoid'))(M)
+        activation = 'softmax' if 'one-hot' in alg else 'sigmoid'
+        output = TimeDistributed(Dense(XDim, activation=activation))(M)
     elif 'pair' in alg:
         input = gen_input('pair')
         M = build(alg, input, nodes1, drp)
         output = TimeDistributed(Dense(1 , activation='sigmoid'))(M)
     model = Model(input=input, output=output)
-    model.compile(optimizer=RMSprop(), loss='binary_crossentropy', metrics=['accuracy'])
+    loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
+    model.compile(optimizer=RMSprop(), loss=loss)
     return model
 
 def record(model, rec):

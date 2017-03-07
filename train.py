@@ -17,12 +17,16 @@ if __name__ == "__main__":
     globals().update(vars(args))
 
     alg = parse_algorithm(args.algorithm)
+    if 'LM' in alg:
+        chord2signature = onehot2notes_translator() if 'one-hot' in alg else top3notes
 
     # M = training melody
     # m = testing melody
     # C = training chord progression
     # c = testing chord progression
     M, m, C, c = load_data(nb_test)
+    x, y = get_XY(alg, m, c) # NOTE: after this the alg will have "one-hot-dim"
+
     nb_train = M.shape[0]
     model = build_model(alg, nodes1, nodes2, dropout_rate)
     history = [['epoch'], ['loss'],['val_loss'],['acc'],['val_acc']]
@@ -34,7 +38,6 @@ if __name__ == "__main__":
     # Y = training ground truth
     # y = validation ground truth
     # x_test = testing features (to evaluate unique_idx & norms)
-    x, y = get_XY(alg, m, c)
     x_test = get_test(alg, m, C)
     
     es = EarlyStopping(monitor='val_loss', patience=2)
@@ -54,13 +57,13 @@ if __name__ == "__main__":
 
         # testing
         pred = np.array(model.predict(x_test))
+        xdim = alg.get('one-hot-dim', 12)
+        pred = pred.reshape((nb_test, 128, xdim))
         if 'LM' in alg:
-            pred = pred.reshape((nb_test, 128, 12))
-            errCntAvg = 0
-            top3 = top3notes(pred)
-            errCntAvg = np.average(np.abs(y - top3)) * 12
+            notes = chord2signature(pred)
+            errCntAvg = np.average(np.abs(y - notes)) * 12
             with open('pred_LM.csv', 'w') as f:
-                np.savetxt(f, top3.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
+                np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
             print(errCntAvg)
 
         elif 'pair' in alg:
