@@ -55,7 +55,7 @@ def build(alg, input, nodes, drp):
         M2 = Dropout(drp)(M2)
         if 'B' in alg:
             M1 = merge([M1, M2], mode='concat')
-        if 'attention' in alg:
+        if 'Attention' in alg:
             M1 = AttLayer()(M1)
         return M1
 

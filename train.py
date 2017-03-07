@@ -5,7 +5,7 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='BGRU_pair_L1_rand_attention')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='BGRU pair L1 rand')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
@@ -17,6 +17,7 @@ if __name__ == "__main__":
     globals().update(vars(args))
 
     alg = parse_algorithm(args.algorithm)
+
     if 'LM' in alg:
         chord2signature = onehot2notes_translator() if 'one-hot' in alg else top3notes
 
