@@ -4,6 +4,12 @@ import csv
 import numpy as np
 # import pretty_midi
 
+def parse_algorithm(alg_str):
+    alg = alg_str.strip().split()
+    if 'one-hot' in alg:
+        alg['one-hot-dim'] = 0 # to be filled in
+    return alg
+
 def rotate(chroma, semitone):
     if semitone == 0: return chroma
     return np.concatenate((chroma[-semitone:], chroma[:chroma.shape[0]-semitone]), axis=0)
@@ -198,6 +204,7 @@ def get_XY(alg, M, C):
                 for i, x in enumerate(C.reshape([C.shape[0] * 128, 12])):
                     newC[i][sign2chord.get(str(x), N)] = 1
                 C = newC.reshape([C.shape[0], 128, N+1])
+                alg['one-hot-dim'] = N+1
         return M, C
 
     n = M.shape[0]
