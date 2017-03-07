@@ -395,20 +395,19 @@ def onehot2notes_translator():
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
     :return: f: the translator function
     """
-    with open('csv/chord-1hot-signatures-rev.pickle', 'rb') as pfile:
-        chord2sign = pkl.load(pfile)
-        def f(chord):
-            """
-            :param chord: 1-hot representation of chords in (M, T, XDIM)
-            :return: chord signature in (M, T, 12)
-            """
-            M, T, Dim = chord.shape
-            res = np.empty([M*T, 12])
-            for i, c in enumerate(chord.reshape([M*T, Dim])):
-                id = np.nonzero(c)[0][0]
-                res[i] = chord2sign[id]
-            return res.reshape(M, T, 12)
-        return f
+    chord2sign = np.load('csv/chord-1hot-signatures-rev.npy')
+    def f(chord):
+        """
+        :param chord: 1-hot representation of chords in (M, T, XDIM)
+        :return: chord signature in (M, T, 12)
+        """
+        M, T, Dim = chord.shape
+        res = np.empty([M*T, 12])
+        for i, c in enumerate(chord.reshape([M*T, Dim])):
+            id = np.nonzero(c)[0][0]
+            res[i, :] = chord2sign[id]
+        return res.reshape(M, T, 12)
+    return f
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     assert(melody_matrix.shape[0] == chord_matrix.shape[0])
