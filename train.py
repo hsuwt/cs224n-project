@@ -9,7 +9,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=20)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
@@ -72,7 +72,8 @@ if __name__ == "__main__":
             notes = chord2signature(pred)
             assert notes.shape == (nb_test, 128, 12), 'notes.shape={}'.format(notes.shape)
             errCntAvg = np.average(np.abs(y - notes)) * 12
-            with open('pred_LM.csv', 'w') as f:
+            filename = 'pred_LM_one-hot.csv' if 'one-hot' in alg else 'pred_LM.csv'
+            with open(filename, 'w') as f:
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
             print(errCntAvg)
 
