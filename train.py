@@ -5,7 +5,7 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='Bidirectional GRU pair L1 rand')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='Bidirectional GRU LM L1 rand')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
@@ -28,11 +28,12 @@ if __name__ == "__main__":
     # m = testing melody
     # C = training chord progression
     # c = testing chord progression
-    M, m, C, c = load_data(nb_test)
+    M, m, C, c, SW, sw = load_data(nb_test)
     x, y = get_XY(alg, m, c)  # NOTE: after this the alg will have "one-hot-dim"
 
     nb_train = M.shape[0]
-    model = build_model(alg, nodes1, nodes2, dropout_rate)
+    seq_len = M.shape[1]
+    model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
     history = [['epoch'], ['loss'], ['val_loss'], ['acc'], ['val_acc']]
     # history will record the loss & acc of every epoch
     # since it's too time-consuming to compute the unique_idx and norms,
@@ -52,7 +53,7 @@ if __name__ == "__main__":
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
+            hist = model.fit(X, Y, sample_weight=SW, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y, sw))
             # hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y),
             # callbacks=[es])
 
@@ -65,26 +66,26 @@ if __name__ == "__main__":
         pred = np.array(model.predict(x_test))
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
-            pred = pred.reshape((nb_test, 128, xdim))
+            pred = pred.reshape((nb_test, seq_len, xdim))
 
             # FIXME: What dim should y have
             if 'one-hot' in alg:
                 y = chord2signature(y)  # use notes representation for y
             notes = chord2signature(pred)
-            assert notes.shape == (nb_test, 128, 12), 'notes.shape={}'.format(notes.shape)
+            assert notes.shape == (nb_test, seq_len, 12), 'notes.shape={}'.format(notes.shape)
             errCntAvg = np.average(np.abs(y - notes)) * xdim
-            with open('pred_LM.csv', 'w') as f:
-                np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
+            with open('pred_LM_var.csv', 'w') as f:
+                np.savetxt(f, notes.reshape((nb_test*seq_len, 12)), delimiter=',', fmt="%d")
             print(errCntAvg)
 
         elif 'pair' in alg:
-            pred = pred.reshape((nb_test, nb_train, 128))
+            pred = pred.reshape((nb_test, nb_train, seq_len))
             idx = np.argmax(np.sum(pred, 2), axis=1)
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             errCntAvg = np.average(np.abs(c_hat - c)) * 12
             with open('pred_pair.csv', 'w') as f:
-                np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
+                np.savetxt(f, c_hat.astype(int).reshape((nb_test*seq_len, 12)), delimiter=',')
             print(errCntAvg)
 
             # FIXME: after we fixed writing to history we can uncomment this part
