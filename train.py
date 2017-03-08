@@ -88,13 +88,13 @@ if __name__ == "__main__":
             print(errCntAvg)
 
             # FIXME: after we fixed writing to history we can uncomment this part
-            trn_loss = history[1][-1]
-            val_loss = history[2][-1]
-            trn_acc  = history[3][-1]
-            val_acc  = history[4][-1]
+            # trn_loss = history[1][-1]
+            # val_loss = history[2][-1]
+            # trn_acc  = history[3][-1]
+            # val_acc  = history[4][-1]
             # print "trn_loss=%.3f, trn_acc=%.3f" % (trn_loss, trn_acc)
             # print "val_loss=%.3f, val_acc=%.3f" % (val_loss, val_acc)
 
             # record & save model
-            record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
+            # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
             #save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
