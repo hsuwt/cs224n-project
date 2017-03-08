@@ -1,4 +1,7 @@
 from keras.engine.topology import Layer
+from keras import initializations
+from keras import backend as K
+
 class AttLayer(Layer):
     def __init__(self,**kwargs):
         self.init = initializations.get('normal')

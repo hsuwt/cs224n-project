@@ -21,10 +21,14 @@ def build_repr(s):
     N = len(cs)
     repr_set = {}
     reverse_set = []
+
+    def str2list(x):
+        return list(map(int, x.replace('.', ' ')[1:-1].split()))
+
     for i, x in enumerate(s):
         repr_set[x] = i
-        reverse_set.append(x)
-    return repr_set, reverse_set
+        reverse_set.append(str2list(x))
+    return repr_set, np.array(reverse_set)
 
 if __name__ == '__main__':
     c = load_data()
@@ -33,5 +37,4 @@ if __name__ == '__main__':
     r, rev = build_repr(cs)
     with open('csv/chord-1hot-signatures.pickle', 'wb') as pfile:
         pkl.dump(r, pfile)
-    with open('csv/chord-1hot-signatures-rev.pickle', 'wb') as pfile:
-        pkl.dump(rev, pfile)
+    np.save('csv/chord-1hot-signature-rev.csv', rev)
