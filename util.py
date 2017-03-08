@@ -2,7 +2,7 @@ import os
 import sys
 import csv
 import numpy as np
-#import pretty_midi
+import pretty_midi
 import pickle as pkl
 
 
@@ -213,21 +213,28 @@ def get_XY(alg, M, C):
     C_neg = C[idx]
     Ones = np.ones((n, 128, 1))
     Zeros = np.zeros((n, 128, 1))
-    if 'L1' in alg or 'L2' in alg: # use L1 or L2 of two sources of chord as labels
+    if 'L1' in alg or 'L2' or 'F1' in alg: # use L1 or L2 of two sources of chord as labels
+        np.seterr(divide='ignore', invalid='ignore') # turn off warning of division by zero
         L1 = np.sum(abs(C - C_neg), 2)
         L1 = L1.reshape((n, 128, 1))
         L2 = np.sqrt(L1)
+        p = np.sum(np.logical_and(C, C_neg), 2)/np.sum(C_neg,2)
+        r = np.sum(np.logical_and(C, C_neg), 2)/np.sum(C,2)
+        F1 = 2*p*r/(p+r)
+        F1 = np.nan_to_num(F1.reshape((n, 128, 1)))
         if 'rand' in alg:
             X = np.concatenate((M, C_neg), 2)
-            Y = L1 if 'L1' in alg else L2
+            Y = L1 if 'L1' in alg else L2 if 'L2' in alg else F1
         else:
             MC_neg = np.concatenate((M, C_neg), 2)
             MC = np.concatenate((M, C), 2)
             X = np.concatenate((MC, MC_neg), 0)
-            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg else np.concatenate((Zeros, L2), 0)
+            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg else np.concatenate((Zeros, L2), 0) if 'L2' in alg else np.concatenate((Ones, F1), 0)
         if 'L2' in alg:
             max_err = np.sqrt(12.0)
-        Y = 1 - Y / 12.0
+            
+        if 'L1' in alg or 'L2' in alg:
+            Y = 1 - Y / 12.0
     else: # use 1 as positive labels and 0 as negative labels
         assert False
         MC   = np.concatenate((M,  C), 2)
