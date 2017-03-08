@@ -9,7 +9,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=50)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
@@ -30,6 +30,15 @@ if __name__ == "__main__":
     # c = testing chord progression
     M, m, C, c = load_data(nb_test)
     x, y = get_XY(alg, m, c)  # NOTE: after this the alg will have "one-hot-dim"
+    if 'one-hot' in alg:
+        y = chord2signature(y)  # use notes representation for y
+
+    # X = training features
+    # x = validation features (to evaluate val_loss & val_acc)
+    # Y = training ground truth
+    # y = validation ground truth
+    # x_test = testing features (to evaluate unique_idx & norms)
+    x_test = get_test(alg, m, C)
 
     nb_train = M.shape[0]
     model = build_model(alg, nodes1, nodes2, dropout_rate)
@@ -38,13 +47,7 @@ if __name__ == "__main__":
     # since it's too time-consuming to compute the unique_idx and norms,
     # record and save models after nb_epoch_pred epochs
 
-    # X = training features
-    # x = validation features (to evaluate val_loss & val_acc)
-    # Y = training ground truth
-    # y = validation ground truth
-    # x_test = testing features (to evaluate unique_idx & norms)
-    x_test = get_test(alg, m, C)
-    
+
     es = EarlyStopping(monitor='val_loss', patience=2)
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
@@ -52,9 +55,8 @@ if __name__ == "__main__":
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
-            # hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y),
-            # callbacks=[es])
+            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
+            # hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, callbacks=[es])
 
         # FIXME: write history
         # history = write_history(history, hist, nb_epoch_pred * (i+1))
@@ -67,12 +69,9 @@ if __name__ == "__main__":
             xdim = alg.get('one-hot-dim', 12)
             pred = pred.reshape((nb_test, 128, xdim))
 
-            # FIXME: What dim should y have
-            if 'one-hot' in alg:
-                y = chord2signature(y)  # use notes representation for y
             notes = chord2signature(pred)
             assert notes.shape == (nb_test, 128, 12), 'notes.shape={}'.format(notes.shape)
-            errCntAvg = np.average(np.abs(y - notes)) * xdim
+            errCntAvg = np.average(np.abs(y - notes)) * 12
             with open('pred_LM.csv', 'w') as f:
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
             print(errCntAvg)
