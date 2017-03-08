@@ -211,8 +211,8 @@ def get_XY(alg, M, C):
     n = M.shape[0]
     idx = np.random.randint(n, size=n)
     C_neg = C[idx]
-    Ones = np.ones((n, 128))
-    Zeros = np.zeros((n, 128))
+    Ones = np.ones((n, 128, 1))
+    Zeros = np.zeros((n, 128, 1))
     if 'L1' in alg or 'L2' in alg: # use L1 or L2 of two sources of chord as labels
         L1 = np.sum(abs(C - C_neg), 2)
         L1 = L1.reshape((n, 128, 1))
