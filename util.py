@@ -2,7 +2,7 @@ import os
 import sys
 import csv
 import numpy as np
-import pretty_midi
+#import pretty_midi
 import pickle as pkl
 
 
