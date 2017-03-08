@@ -55,7 +55,6 @@ if __name__ == "__main__":
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
-            print(Y)
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
             # hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, callbacks=[es])
 
