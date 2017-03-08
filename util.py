@@ -229,6 +229,7 @@ def get_XY(alg, M, C):
             max_err = np.sqrt(12.0)
         Y = 1 - Y / 12.0
     else: # use 1 as positive labels and 0 as negative labels
+        assert False
         MC   = np.concatenate((M,  C), 2)
         MC_neg  = np.concatenate((M, C_neg), 2)
         X = np.concatenate((MC, MC_neg), 0)

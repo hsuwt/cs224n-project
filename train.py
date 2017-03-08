@@ -5,7 +5,7 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='Bidirectional GRU pair L1 rand')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1 rand')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
@@ -55,6 +55,7 @@ if __name__ == "__main__":
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
+            print(Y)
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
             # hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, callbacks=[es])
 
@@ -68,7 +69,6 @@ if __name__ == "__main__":
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
             pred = pred.reshape((nb_test, 128, xdim))
-
             notes = chord2signature(pred)
             assert notes.shape == (nb_test, 128, 12), 'notes.shape={}'.format(notes.shape)
             errCntAvg = np.average(np.abs(y - notes)) * 12
@@ -83,7 +83,8 @@ if __name__ == "__main__":
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             errCntAvg = np.average(np.abs(c_hat - c)) * 12
-            with open('pred_pair.csv', 'w') as f:
+            filename = 'pred_pair_rand.csv' if 'rand' in alg else 'pred_pair.csv'
+            with open(filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
             print(errCntAvg)
 
