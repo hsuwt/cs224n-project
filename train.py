@@ -47,7 +47,6 @@ if __name__ == "__main__":
     # since it's too time-consuming to compute the unique_idx and norms,
     # record and save models after nb_epoch_pred epochs
 
-
     es = EarlyStopping(monitor='val_loss', patience=2)
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
