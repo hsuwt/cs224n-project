@@ -95,7 +95,7 @@ if __name__ == "__main__":
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             # L1 error
-            if 'L1' in alg:
+            if 'L1' in alg or 'L1diff' in alg:
                 errCntAvg = np.average(np.abs(c_hat - c)) * 12
             # F1 error
             elif 'F1' in alg:
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             filename = 'pred_pair_rand.csv' if 'rand' in alg else 'pred_pair.csv'
             with open(filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
-            print(errCntAvg)
+        print(errCntAvg)
         
         print "training loss", hist.history['loss'][0]
         print "eval loss", hist.history['val_loss'][0]
