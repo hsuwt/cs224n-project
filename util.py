@@ -32,7 +32,7 @@ def union(chroma1, chroma2):
             ret[i] = 1
     return ret
 
-chroma_LUT = np.array([
+chroma2chord_LUT = np.array([
     [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
     [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
     [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1],
@@ -41,8 +41,8 @@ chroma_LUT = np.array([
 ])
 
 
-def chroma(root, chordType):
-    return rotate(chroma_LUT[chordType].copy(), root)
+def closestChord(root, chordType):
+    return rotate(chroma2chord_LUT[chordType].copy(), root)
 
 
 def chroma2chord_v2(_chroma):
@@ -117,9 +117,9 @@ _qualifier = {
 }
 
 
-def printChord(chroma):
-    r, t = chroma2chord_v2(chroma)
-    S = _rootNote[s] + _qualifier[t] if t != 6 else 'N'
+def printChord(_chroma):
+    r, t = chroma2chord_v2(_chroma)
+    S = _rootNote[r] + _qualifier[t] if t != 6 else 'N'
     print '%s\t' % S
 
 
