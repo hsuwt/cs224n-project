@@ -204,7 +204,6 @@ def load_data(nb_test):
     C = C[nb_test:]
     return M, m, C, c
 
-
 def get_XY(alg, M, C):
     if 'LM' in alg:
         if 'one-hot' in alg:
@@ -217,14 +216,16 @@ def get_XY(alg, M, C):
                 C = newC.reshape([C.shape[0], 128, N])
         return M, C
 
+    assert 'pair' in alg
     n = M.shape[0]
     idx = np.random.randint(n, size=n)
     C_neg = C[idx]
     Ones = np.ones((n, 128, 1))
     Zeros = np.zeros((n, 128, 1))
-    if 'L1' in alg or 'L2' in alg or 'F1' in alg: # use L1 or L2 of two sources of chord as labels
+    if 'L1' in alg or 'L2' in alg or 'F1' in alg or 'L1diff' in alg: # use L1 or L2 of two sources of chord as labels
         np.seterr(divide='ignore', invalid='ignore') # turn off warning of division by zero
-        L1 = np.sum(abs(C - C_neg), 2)
+        L1diff = (C - C_neg) / 2 + 0.5
+        L1 = np.sum(L1diff, 2)
         L1 = L1.reshape((n, 128, 1))
         L2 = np.sqrt(L1)
         p = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C_neg, 2)
@@ -233,16 +234,15 @@ def get_XY(alg, M, C):
         F1 = np.nan_to_num(F1.reshape((n, 128, 1)))
         if 'rand' in alg:
             X = np.concatenate((M, C_neg), 2)
-            Y = L1 if 'L1' in alg else L2 if 'L2' in alg else F1
+            Y = L1 if 'L1' in alg else L2 if 'L2' in alg else F1 if 'F1' in alg else L1diff
         else:
             MC_neg = np.concatenate((M, C_neg), 2)
             MC = np.concatenate((M, C), 2)
             X = np.concatenate((MC, MC_neg), 0)
-            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg else np.concatenate((Zeros, L2), 0) \
-                if 'L2' in alg else np.concatenate((Ones, F1), 0)
-        if 'L2' in alg:
-            max_err = np.sqrt(12.0)
-            
+            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg \
+            else np.concatenate((Zeros, L2), 0) if 'L2' in alg \
+            else np.concatenate((Ones, F1), 0) if 'F1' in alg \
+            else np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
         if 'L1' in alg or 'L2' in alg:
             Y = 1 - Y / 12.0
     else:  # use 1 as positive labels and 0 as negative labels
@@ -420,8 +420,8 @@ def onehot2notes_translator():
         M, T, Dim = chord.shape
         res = np.empty([M*T, 12])
         for i, c in enumerate(chord.reshape([M*T, Dim])):
-            id = np.nonzero(c)[0][0]
-            res[i, :] = chord2sign[id]
+            idx = c.argmax()
+            res[i] = chord2sign[idx]
         return res.reshape(M, T, 12)
     return f
 
