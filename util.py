@@ -213,7 +213,7 @@ def get_XY(alg, M, C):
     C_neg = C[idx]
     Ones = np.ones((n, 128, 1))
     Zeros = np.zeros((n, 128, 1))
-    if 'L1' in alg or 'L2' or 'F1' in alg: # use L1 or L2 of two sources of chord as labels
+    if 'L1' in alg or 'L2' in alg or 'F1' in alg: # use L1 or L2 of two sources of chord as labels
         np.seterr(divide='ignore', invalid='ignore') # turn off warning of division by zero
         L1 = np.sum(abs(C - C_neg), 2)
         L1 = L1.reshape((n, 128, 1))
