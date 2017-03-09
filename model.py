@@ -69,7 +69,7 @@ def build_model(alg, nodes1, nodes2, drp):
         input = gen_input('pair')
         M = build(alg, input, nodes1, drp)
         YDim = 12 if 'L1diff' in alg else 1
-        output = TimeDistributed(Dense(YDim , activation='sigmoid'))(M) if 'L1diff' in alg
+        output = TimeDistributed(Dense(YDim , activation='sigmoid'))(M)
     else:
         print "err!!!!!"
     model = Model(input=input, output=output)
