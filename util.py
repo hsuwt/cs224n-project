@@ -224,7 +224,7 @@ def get_XY(alg, M, C):
     Zeros = np.zeros((n, 128, 1))
     if 'L1' in alg or 'L2' in alg or 'F1' in alg or 'L1diff' in alg: # use L1 or L2 of two sources of chord as labels
         np.seterr(divide='ignore', invalid='ignore') # turn off warning of division by zero
-        L1diff = np.abs(C - C_neg)
+        L1diff = (C - C_neg) / 2 + 0.5
         L1 = np.sum(L1diff, 2)
         L1 = L1.reshape((n, 128, 1))
         L2 = np.sqrt(L1)
@@ -242,7 +242,7 @@ def get_XY(alg, M, C):
             Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg \
             else np.concatenate((Zeros, L2), 0) if 'L2' in alg \
             else np.concatenate((Ones, F1), 0) if 'F1' in alg \
-            else np.concatenate((np.tile(Zeros, 12), L1diff), 0)
+            else np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
         if 'L1' in alg or 'L2' in alg:
             Y = 1 - Y / 12.0
     else:  # use 1 as positive labels and 0 as negative labels
