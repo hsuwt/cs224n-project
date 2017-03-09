@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     def _get_filename(_alg):
         major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
-        minor = 'one-hot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else ''
+        minor = 'one-hot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in alg else ''
         fn = 'pred_' + major
         if minor:
             fn += '_' + minor
@@ -66,7 +66,7 @@ if __name__ == "__main__":
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
             x, y = get_XY(alg, m, c)
-            
+
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
 
         # FIXME: write history
