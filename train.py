@@ -8,13 +8,8 @@ if __name__ == "__main__":
     parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1diff')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
-<<<<<<< HEAD
-    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=400)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=40)
-=======
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=40)
     parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
->>>>>>> a1b2da8ee0f625d674a064d3b6ac3b255f19093a
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
