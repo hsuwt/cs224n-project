@@ -10,6 +10,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=30)
     parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=2)
+
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
@@ -83,7 +84,6 @@ if __name__ == "__main__":
             errCntAvg = np.average(np.abs(y2 - notes)) * 12
             with open(filename, 'w') as f:
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
-            print(errCntAvg)
 
         elif 'pair' in alg:
             if 'L1diff' in alg:
@@ -119,6 +119,7 @@ if __name__ == "__main__":
         # val_acc  = history[4][-1]
         # print "trn_loss=%.3f, trn_acc=%.3f" % (trn_loss, trn_acc)
         # print "val_loss=%.3f, val_acc=%.3f" % (val_loss, val_acc)
+
 
         # record & save model
         # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
