@@ -62,13 +62,14 @@ def build_model(alg, nodes1, nodes2, drp):
     if 'LM' in alg:
         input = gen_input('melody')
         M = build(alg, input, nodes1, drp)
-        XDim = alg['one-hot-dim'] if 'one-hot' in alg else 12
+        ydim = alg['one-hot-dim'] if 'one-hot' in alg else 12
         activation = 'softmax' if 'one-hot' in alg else 'sigmoid'
-        output = TimeDistributed(Dense(XDim, activation=activation))(M)
+        output = TimeDistributed(Dense(ydim, activation=activation))(M)
     elif 'pair' in alg:
         input = gen_input('pair')
         M = build(alg, input, nodes1, drp)
-        output = TimeDistributed(Dense(1 , activation='sigmoid'))(M)
+        YDim = 12 if 'L1diff' in alg else 1
+        output = TimeDistributed(Dense(YDim , activation='sigmoid'))(M)
     else:
         print "err!!!!!"
     model = Model(input=input, output=output)
