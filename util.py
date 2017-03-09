@@ -245,8 +245,6 @@ def get_XY(alg, M, C):
             else np.concatenate((np.tile(Zeros, 12), L1diff), 0)
         if 'L1' in alg or 'L2' in alg:
             Y = 1 - Y / 12.0
-        if 'L1diff' in alg:
-            Y = 1 - Y
     else:  # use 1 as positive labels and 0 as negative labels
         assert False
         MC = np.concatenate((M, C), 2)

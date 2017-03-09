@@ -5,11 +5,11 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1 rand')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1diff')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=40)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=10)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
@@ -31,8 +31,7 @@ if __name__ == "__main__":
     M, m, C, c = load_data(nb_test)
     x, y = get_XY(alg, m, c)
     if 'one-hot' in alg:
-        alg['one-hot-dim'] = y.shape[2] 
-
+        alg['one-hot-dim'] = y.shape[2]
 
     # X = training features
     # x = validation features (to evaluate val_loss & val_acc)
@@ -80,8 +79,12 @@ if __name__ == "__main__":
             print(errCntAvg)
 
         elif 'pair' in alg:
-            pred = pred.reshape((nb_test, nb_train, 128))
-            idx = np.argmax(np.sum(pred, 2), axis=1)
+            if 'L1diff' in alg:
+                pred = pred.reshape((nb_test, nb_train, 128 * 12))
+                idx = np.argmin(np.sum(pred, axis=2), axis=1)
+            else:
+                pred = pred.reshape((nb_test, nb_train, 128))
+                idx = np.argmax(np.sum(pred, axis=2), axis=1)
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             errCntAvg = np.average(np.abs(c_hat - c)) * 12
