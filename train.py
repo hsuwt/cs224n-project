@@ -5,11 +5,11 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1diff')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1 rand')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=40)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=10)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
@@ -47,6 +47,17 @@ if __name__ == "__main__":
     # since it's too time-consuming to compute the unique_idx and norms,
     # record and save models after nb_epoch_pred epochs
 
+    def _get_filename(_alg):
+        major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
+        minor = 'one-hot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else ''
+        fn = 'pred_' + major
+        if minor:
+            fn += '_' + minor
+        fn += '.csv'
+        return fn
+
+    filename = _get_filename(alg)
+    errCntAvg = 0.0
 
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
@@ -61,22 +72,18 @@ if __name__ == "__main__":
         # FIXME: write history
         # history = write_history(history, hist, nb_epoch_pred * (i+1))
         # with open('history/' + alg + '_' + str(nodes1) + '_' + str(nodes2) + '.csv', 'w') as csvfile:
-            # csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
+        # csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
 
         # testing
         pred = np.array(model.predict(x_test))
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
             pred = pred.reshape((nb_test, 128, xdim))
-            if 'one-hot' in alg:
-                y_12 = chord2signature(y)  # use notes representation for y            
+            y2 = chord2signature(y) if 'one-hot' in alg else y  # use notes representation for y
             notes = chord2signature(pred)
-            assert notes.shape == (nb_test, 128, 12), 'notes.shape={}'.format(notes.shape)
-            errCntAvg = np.average(np.abs(y_12 - notes)) * 12
-            filename = 'pred_LM_one-hot.csv' if 'one-hot' in alg else 'pred_LM.csv'
+            errCntAvg = np.average(np.abs(y2 - notes)) * 12
             with open(filename, 'w') as f:
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
-            print(errCntAvg)
 
         elif 'pair' in alg:
             if 'L1diff' in alg:
@@ -88,19 +95,18 @@ if __name__ == "__main__":
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             errCntAvg = np.average(np.abs(c_hat - c)) * 12
-            filename = 'pred_pair_rand.csv' if 'rand' in alg else 'pred_pair.csv'
             with open(filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
-            print(errCntAvg)
+        print errCntAvg
 
-            # FIXME: after we fixed writing to history we can uncomment this part
-            # trn_loss = history[1][-1]
-            # val_loss = history[2][-1]
-            # trn_acc  = history[3][-1]
-            # val_acc  = history[4][-1]
-            # print "trn_loss=%.3f, trn_acc=%.3f" % (trn_loss, trn_acc)
-            # print "val_loss=%.3f, val_acc=%.3f" % (val_loss, val_acc)
+        # FIXME: after we fixed writing to history we can uncomment this part
+        # trn_loss = history[1][-1]
+        # val_loss = history[2][-1]
+        # trn_acc  = history[3][-1]
+        # val_acc  = history[4][-1]
+        # print "trn_loss=%.3f, trn_acc=%.3f" % (trn_loss, trn_acc)
+        # print "val_loss=%.3f, val_acc=%.3f" % (val_loss, val_acc)
 
-            # record & save model
-            # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
-            # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+        # record & save model
+        # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
+        # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
