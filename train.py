@@ -8,7 +8,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1 rand')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
-    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
+    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=40)
     parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
@@ -29,9 +29,10 @@ if __name__ == "__main__":
     # C = training chord progression
     # c = testing chord progression
     M, m, C, c = load_data(nb_test)
-    x, y = get_XY(alg, m, c)  # NOTE: after this the alg will have "one-hot-dim"
+    x, y = get_XY(alg, m, c)
     if 'one-hot' in alg:
-        y = chord2signature(y)  # use notes representation for y
+        alg['one-hot-dim'] = y.shape[2] 
+
 
     # X = training features
     # x = validation features (to evaluate val_loss & val_acc)
@@ -47,15 +48,16 @@ if __name__ == "__main__":
     # since it's too time-consuming to compute the unique_idx and norms,
     # record and save models after nb_epoch_pred epochs
 
-    es = EarlyStopping(monitor='val_loss', patience=2)
+
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
             epoch = nb_epoch_pred*i+j+1
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
+            x, y = get_XY(alg, m, c)
+            
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
-            # hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, callbacks=[es])
 
         # FIXME: write history
         # history = write_history(history, hist, nb_epoch_pred * (i+1))
@@ -67,9 +69,11 @@ if __name__ == "__main__":
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
             pred = pred.reshape((nb_test, 128, xdim))
+            if 'one-hot' in alg:
+                y_12 = chord2signature(y)  # use notes representation for y            
             notes = chord2signature(pred)
             assert notes.shape == (nb_test, 128, 12), 'notes.shape={}'.format(notes.shape)
-            errCntAvg = np.average(np.abs(y - notes)) * 12
+            errCntAvg = np.average(np.abs(y_12 - notes)) * 12
             filename = 'pred_LM_one-hot.csv' if 'one-hot' in alg else 'pred_LM.csv'
             with open(filename, 'w') as f:
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")

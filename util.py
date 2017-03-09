@@ -214,7 +214,6 @@ def get_XY(alg, M, C):
                 for i, x in enumerate(C.reshape([C.shape[0] * 128, 12])):
                     newC[i][sign2chord[str(x)]] = 1
                 C = newC.reshape([C.shape[0], 128, N])
-                alg['one-hot-dim'] = N
         return M, C
 
     assert 'pair' in alg
