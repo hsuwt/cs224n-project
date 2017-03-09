@@ -8,8 +8,8 @@ if __name__ == "__main__":
     parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1 rand')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
-    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=40)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
+    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=30)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=2)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
@@ -57,7 +57,7 @@ if __name__ == "__main__":
             X, Y = get_XY(alg, M, C)
             x, y = get_XY(alg, m, c)
             
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
+            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data = (x,y))
 
         # FIXME: write history
         # history = write_history(history, hist, nb_epoch_pred * (i+1))
@@ -78,18 +78,31 @@ if __name__ == "__main__":
             with open(filename, 'w') as f:
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
             print(errCntAvg)
+            print "training loss", hist.history['loss'][0]
+            print "eval loss", hist.history['val_loss'][0]            
 
         elif 'pair' in alg:
             pred = pred.reshape((nb_test, nb_train, 128))
             idx = np.argmax(np.sum(pred, 2), axis=1)
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
-            errCntAvg = np.average(np.abs(c_hat - c)) * 12
+            # L1 error
+            if 'L1' in alg:
+                errCntAvg = np.average(np.abs(c_hat - c)) * 12
+            # F1 error
+            elif 'F1' in alg:
+                np.seterr(divide='ignore', invalid='ignore') # turn off warning of division by zero
+                p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
+                r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2) 
+                errCntAvg = np.average(np.nan_to_num(2*p*r/(p+r)))
+            
+            
             filename = 'pred_pair_rand.csv' if 'rand' in alg else 'pred_pair.csv'
             with open(filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
             print(errCntAvg)
-
+            print "training loss", hist.history['loss'][0]
+            print "eval loss", hist.history['val_loss'][0]
             # FIXME: after we fixed writing to history we can uncomment this part
             # trn_loss = history[1][-1]
             # val_loss = history[2][-1]
