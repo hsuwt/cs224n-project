@@ -420,8 +420,8 @@ def onehot2notes_translator():
         M, T, Dim = chord.shape
         res = np.empty([M*T, 12])
         for i, c in enumerate(chord.reshape([M*T, Dim])):
-            id = np.nonzero(c)[0][0]
-            res[i, :] = chord2sign[id]
+            idx = c.argmax()
+            res[i] = chord2sign[idx]
         return res.reshape(M, T, 12)
     return f
 

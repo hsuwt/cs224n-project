@@ -1,6 +1,5 @@
 from util import *
 from model import *
-import time
 import argparse
 
 if __name__ == "__main__":
@@ -33,7 +32,6 @@ if __name__ == "__main__":
     if 'one-hot' in alg:
         alg['one-hot-dim'] = y.shape[2] 
 
-
     # X = training features
     # x = validation features (to evaluate val_loss & val_acc)
     # Y = training ground truth
@@ -48,6 +46,17 @@ if __name__ == "__main__":
     # since it's too time-consuming to compute the unique_idx and norms,
     # record and save models after nb_epoch_pred epochs
 
+    def _get_filename(_alg):
+        major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
+        minor = 'one-hot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else ''
+        fn = 'pred_' + major
+        if minor:
+            fn += '_' + minor
+        fn += '.csv'
+        return fn
+
+    filename = _get_filename(alg)
+    errCntAvg = 0.0
 
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
@@ -56,28 +65,23 @@ if __name__ == "__main__":
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
             x, y = get_XY(alg, m, c)
-            
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
 
         # FIXME: write history
         # history = write_history(history, hist, nb_epoch_pred * (i+1))
         # with open('history/' + alg + '_' + str(nodes1) + '_' + str(nodes2) + '.csv', 'w') as csvfile:
-            # csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
+        # csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
 
         # testing
         pred = np.array(model.predict(x_test))
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
             pred = pred.reshape((nb_test, 128, xdim))
-            if 'one-hot' in alg:
-                y_12 = chord2signature(y)  # use notes representation for y            
+            y2 = chord2signature(y) if 'one-hot' in alg else y  # use notes representation for y
             notes = chord2signature(pred)
-            assert notes.shape == (nb_test, 128, 12), 'notes.shape={}'.format(notes.shape)
-            errCntAvg = np.average(np.abs(y_12 - notes)) * 12
-            filename = 'pred_LM_one-hot.csv' if 'one-hot' in alg else 'pred_LM.csv'
+            errCntAvg = np.average(np.abs(y2 - notes)) * 12
             with open(filename, 'w') as f:
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
-            print(errCntAvg)
 
         elif 'pair' in alg:
             pred = pred.reshape((nb_test, nb_train, 128))
@@ -85,19 +89,18 @@ if __name__ == "__main__":
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             errCntAvg = np.average(np.abs(c_hat - c)) * 12
-            filename = 'pred_pair_rand.csv' if 'rand' in alg else 'pred_pair.csv'
             with open(filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
-            print(errCntAvg)
+        print errCntAvg
 
-            # FIXME: after we fixed writing to history we can uncomment this part
-            # trn_loss = history[1][-1]
-            # val_loss = history[2][-1]
-            # trn_acc  = history[3][-1]
-            # val_acc  = history[4][-1]
-            # print "trn_loss=%.3f, trn_acc=%.3f" % (trn_loss, trn_acc)
-            # print "val_loss=%.3f, val_acc=%.3f" % (val_loss, val_acc)
+        # FIXME: after we fixed writing to history we can uncomment this part
+        # trn_loss = history[1][-1]
+        # val_loss = history[2][-1]
+        # trn_acc  = history[3][-1]
+        # val_acc  = history[4][-1]
+        # print "trn_loss=%.3f, trn_acc=%.3f" % (trn_loss, trn_acc)
+        # print "val_loss=%.3f, val_acc=%.3f" % (val_loss, val_acc)
 
-            # record & save model
-            # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
-            # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+        # record & save model
+        # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
+        # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
