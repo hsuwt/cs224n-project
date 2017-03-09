@@ -31,7 +31,7 @@ if __name__ == "__main__":
     M, m, C, c = load_data(nb_test)
     x, y = get_XY(alg, m, c)
     if 'one-hot' in alg:
-        alg['one-hot-dim'] = x.shape[2] 
+        alg['one-hot-dim'] = y.shape[2] 
 
 
     # X = training features
@@ -48,6 +48,7 @@ if __name__ == "__main__":
     # since it's too time-consuming to compute the unique_idx and norms,
     # record and save models after nb_epoch_pred epochs
 
+
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
             epoch = nb_epoch_pred*i+j+1
@@ -56,7 +57,7 @@ if __name__ == "__main__":
             X, Y = get_XY(alg, M, C)
             x, y = get_XY(alg, m, c)
             
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x,y))
+            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
 
         # FIXME: write history
         # history = write_history(history, hist, nb_epoch_pred * (i+1))
@@ -99,4 +100,4 @@ if __name__ == "__main__":
 
             # record & save model
             # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
-            #save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+            # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
