@@ -7,7 +7,7 @@ mel = np.genfromtxt('melody_test.csv', delimiter=',')
 
 chords_ground = np.genfromtxt('chord_test.csv', delimiter = ',')
 chords_LM = np.genfromtxt('pred_LM.csv', delimiter = ',')
-chords_pair = np.genfromtxt('pred_pair.csv', delimiter = ',')
+chords_pair = np.genfromtxt('pred/pred_pair_L1diff.csv', delimiter = ',')
 
 for i in range(10):
     song_ground = util.Matrices_to_MIDI(mel[128*i:128*(i+1)],chords_ground[128*i:128*(i+1)])
