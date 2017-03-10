@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     def _get_filename(_alg):
         major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
-        minor = 'one-hot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in alg else ''
+        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in alg else ''
         fn = 'pred_' + major
         if minor:
             fn += '_' + minor
@@ -66,7 +66,7 @@ if __name__ == "__main__":
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
-            x, y = get_XY(alg, m, c)            
+            x, y = get_XY(alg, m, c)
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data = (x,y))
 
         # FIXME: write history
@@ -101,15 +101,15 @@ if __name__ == "__main__":
             elif 'F1' in alg:
                 np.seterr(divide='ignore', invalid='ignore') # turn off warning of division by zero
                 p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
-                r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2) 
+                r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
                 errCntAvg = np.average(np.nan_to_num(2*p*r/(p+r)))
-            
-            
+
+
             filename = 'pred_pair_rand.csv' if 'rand' in alg else 'pred_pair.csv'
             with open(filename, 'w') as f:
-                np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
+                np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
         print(errCntAvg)
-        
+
         print "training loss", hist.history['loss'][0]
         print "eval loss", hist.history['val_loss'][0]
         # FIXME: after we fixed writing to history we can uncomment this part
