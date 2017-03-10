@@ -5,11 +5,11 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1diff')
-    parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='Bidirectional GRU pair L1diff')
+    parser.add_argument(dest='nodes1', nargs='?', type=int, default=256)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
-    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=30)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=2)
+    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=40)
 
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
@@ -51,14 +51,16 @@ if __name__ == "__main__":
     def _get_filename(_alg):
         major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
         minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else ''
-        fn = 'pred_' + major
+        rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
+        if 'Bidirectional' in _alg: rnn = 'B'+rnn
+
+        fn = 'pred_' + rnn + '_' + major
         if minor:
             fn += '_' + minor
         fn += '.csv'
         return fn
 
     filename = _get_filename(alg)
-    errCntAvg = 0.0
 
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
@@ -103,9 +105,6 @@ if __name__ == "__main__":
                 p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
                 r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
                 errCntAvg = np.average(np.nan_to_num(2*p*r/(p+r)))
-
-
-            filename = 'pred_pair_rand.csv' if 'rand' in alg else 'pred_pair.csv'
             with open(filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
         print(errCntAvg)
