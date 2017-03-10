@@ -374,12 +374,11 @@ def toMajKey(key, mode):
     return key, mode
 
 
-def write_history(history, hist, epoch):
+def write_history(history, hist, epoch, errCntAvg):
     history[0].append(epoch)
     history[1].append(round(hist.history['loss'][0], 2))
     history[2].append(round(hist.history['val_loss'][0], 2))
-    history[3].append(round(hist.history['acc'][0], 2))
-    history[4].append(round(hist.history['val_acc'][0], 2))
+    history[3].append(round(errCntAvg, 2))
     return history
 
 

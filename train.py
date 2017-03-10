@@ -2,6 +2,8 @@ from util import *
 from model import *
 import time
 import argparse
+import tensorflow as tf
+tf.python.control_flow_ops = tf
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
@@ -9,7 +11,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=256)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=40)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=20)
 
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
@@ -43,21 +45,21 @@ if __name__ == "__main__":
 
     nb_train = M.shape[0]
     model = build_model(alg, nodes1, nodes2, dropout_rate)
-    history = [['epoch'], ['loss'], ['val_loss'], ['acc'], ['val_acc']]
-    # history will record the loss & acc of every epoch
+    history = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg']]
+    # history will record the loss of every epoch
     # since it's too time-consuming to compute the unique_idx and norms,
     # record and save models after nb_epoch_pred epochs
 
     def _get_filename(_alg):
         major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
-        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else ''
+        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else 'L1'
         rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
         if 'Bidirectional' in _alg: rnn = 'B'+rnn
 
-        fn = 'pred_' + rnn + '_' + major
+        fn = rnn + '_' + major
         if minor:
             fn += '_' + minor
-        fn += '.csv'
+        fn += '_nodes' + str(nodes1) + '.csv'
         return fn
 
     filename = _get_filename(alg)
@@ -71,22 +73,16 @@ if __name__ == "__main__":
             x, y = get_XY(alg, m, c)
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data = (x,y))
 
-        # FIXME: write history
-        # history = write_history(history, hist, nb_epoch_pred * (i+1))
-        # with open('history/' + alg + '_' + str(nodes1) + '_' + str(nodes2) + '.csv', 'w') as csvfile:
-        # csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
-
         # testing
         pred = np.array(model.predict(x_test))
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
             pred = pred.reshape((nb_test, 128, xdim))
             y2 = chord2signature(y) if 'one-hot' in alg else y  # use notes representation for y
-            notes = chord2signature(pred)
-            errCntAvg = np.average(np.abs(y2 - notes)) * 12
-            with open(filename, 'w') as f:
-                np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
-
+            c_hat = chord2signature(pred)
+            errCntAvg = np.average(np.abs(y2 - c_hat)) * 12
+            with open('pred/' + filename, 'w') as f:
+                np.savetxt(f, c_hat.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
         elif 'pair' in alg:
             if 'L1diff' in alg:
                 pred = pred.reshape((nb_test, nb_train, 128 * 12))
@@ -95,7 +91,7 @@ if __name__ == "__main__":
                 pred = pred.reshape((nb_test, nb_train, 128))
                 idx = np.argmax(np.sum(pred, axis=2), axis=1)
             c_hat = C[idx]
-            bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+            #bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             # L1 error
             if 'L1' in alg or 'L1diff' in alg:
                 errCntAvg = np.average(np.abs(c_hat - c)) * 12
@@ -105,20 +101,13 @@ if __name__ == "__main__":
                 p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
                 r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
                 errCntAvg = np.average(np.nan_to_num(2*p*r/(p+r)))
-            with open(filename, 'w') as f:
+            with open('pred/' + filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
-        print(errCntAvg)
 
-        print "training loss", hist.history['loss'][0]
-        print "eval loss", hist.history['val_loss'][0]
-        # FIXME: after we fixed writing to history we can uncomment this part
-        # trn_loss = history[1][-1]
-        # val_loss = history[2][-1]
-        # trn_acc  = history[3][-1]
-        # val_acc  = history[4][-1]
-        # print "trn_loss=%.3f, trn_acc=%.3f" % (trn_loss, trn_acc)
-        # print "val_loss=%.3f, val_acc=%.3f" % (val_loss, val_acc)
-
+        history = write_history(history, hist, nb_epoch_pred * (i+1)+1, errCntAvg)
+        with open('history/' + filename, 'w') as csvfile:
+            csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
+        print "epoch:", history[0][-1], "train_loss:", history[1][-1], "test_loss:", history[2][-1], "errCntAvg:", history[3][-1]
 
         # record & save model
         # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
