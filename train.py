@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     def _get_filename(_alg):
         major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
-        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in alg else ''
+        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else ''
         fn = 'pred_' + major
         if minor:
             fn += '_' + minor
