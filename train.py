@@ -3,6 +3,7 @@ from model import *
 import time
 import argparse
 import tensorflow as tf
+from genMIDI
 tf.python.control_flow_ops = tf
 
 if __name__ == "__main__":
@@ -104,7 +105,7 @@ if __name__ == "__main__":
             with open('pred/' + filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
 
-        history = write_history(history, hist, nb_epoch_pred * (i+1)+1, errCntAvg)
+        history = write_history(history, hist, nb_epoch_pred * (i+1), errCntAvg)
         with open('history/' + filename, 'w') as csvfile:
             csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
         print "epoch:", history[0][-1], "train_loss:", history[1][-1], "test_loss:", history[2][-1], "errCntAvg:", history[3][-1]
