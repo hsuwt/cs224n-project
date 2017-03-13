@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # m = testing melody
     # C = training chord progression
     # c = testing chord progression
-    M, m, C, c = load_data(nb_test)
+    M, m, C, c, SW, sw = load_data(nb_test)
     x, y = get_XY(alg, m, c)
     if 'one-hot' in alg:
         alg['one-hot-dim'] = y.shape[2]
@@ -45,7 +45,8 @@ if __name__ == "__main__":
     x_test = get_test(alg, m, C)
 
     nb_train = M.shape[0]
-    model = build_model(alg, nodes1, nodes2, dropout_rate)
+    seq_len = M.shape[1]
+    model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
     history = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg']]
     # history will record the loss of every epoch
     # since it's too time-consuming to compute the unique_idx and norms,
@@ -72,13 +73,13 @@ if __name__ == "__main__":
             sys.stdout.flush()
             X, Y = get_XY(alg, M, C)
             x, y = get_XY(alg, m, c)
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data = (x,y))
+            hist = model.fit(X, Y, sample_weight=SW, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y, sw))
 
         # testing
         pred = np.array(model.predict(x_test))
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
-            pred = pred.reshape((nb_test, 128, xdim))
+            pred = pred.reshape((nb_test, seq_len, xdim))
             y2 = chord2signature(y) if 'one-hot' in alg else y  # use notes representation for y
             c_hat = chord2signature(pred)
             errCntAvg = np.average(np.abs(y2 - c_hat)) * 12

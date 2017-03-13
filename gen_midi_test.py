@@ -14,6 +14,7 @@ for i in range(10):
     song_ground = util.Matrices_to_MIDI(mel[128*i:128*(i+1)],chords_ground[128*i:128*(i+1)])
     song_ground.write(midi_output_path+str(i)+'_ground.mid')
     for file in files:
-		chords_pred = np.genfromtxt('pred/' + file, delimiter = ',')
-		song_pred = util.Matrices_to_MIDI(mel[128*i:128*(i+1)],chords_pred[128*i:128*(i+1)])
-		song_pred.write(midi_output_path+str(i)+'_'+file[:-4]+'.mid')
+	chords_pred = np.genfromtxt('pred/' + file, delimiter = ',')
+	song_pred = util.Matrices_to_MIDI(mel[128*i:128*(i+1)],chords_pred[128*i:128*(i+1)])
+	song_pred.write(midi_output_path+str(i)+'_'+file[:-4]+'.mid')
+

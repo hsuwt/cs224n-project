@@ -15,18 +15,18 @@ modelpath = 'model2/'
 def load_model(alg):
     model = model_from_json(open(modelpath + alg + '.json').read())
     model.load_weights(modelpath + alg + '.h5')
-    model.compile(optimizer=RMSprop(), loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=RMSprop(), loss='binary_crossentropy', metrics=['accuracy'], sample_weight_mode="temporal")
     return model
 
 def save_model(model, alg):
     open(modelpath + alg + '.json', 'w').write(model.to_json())
     model.save_weights(modelpath + alg + '.h5', overwrite=True)
 
-def gen_input(feat):
+def gen_input(feat, seq_len):
     dim = 12
     if feat == 'pair':
         dim = 12 * 2
-    return Input(shape=(128, dim))
+    return Input(shape=(seq_len, dim))
 
 def build(alg, input, nodes, drp):
     return_sequences = True
@@ -58,15 +58,15 @@ def build(alg, input, nodes, drp):
         M1 = AttLayer()(M1)
     return M1
 
-def build_model(alg, nodes1, nodes2, drp):
+def build_model(alg, nodes1, nodes2, drp, seq_len):
     if 'LM' in alg:
-        input = gen_input('melody')
+        input = gen_input('melody', seq_len)
         M = build(alg, input, nodes1, drp)
         ydim = alg['one-hot-dim'] if 'one-hot' in alg else 12
         activation = 'softmax' if 'one-hot' in alg else 'sigmoid'
         output = TimeDistributed(Dense(ydim, activation=activation))(M)
     elif 'pair' in alg:
-        input = gen_input('pair')
+        input = gen_input('pair', seq_len)
         M = build(alg, input, nodes1, drp)
         YDim = 12 if 'L1diff' in alg else 1
         output = TimeDistributed(Dense(YDim , activation='sigmoid'))(M)
@@ -74,7 +74,7 @@ def build_model(alg, nodes1, nodes2, drp):
         print "err!!!!!"
     model = Model(input=input, output=output)
     loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
-    model.compile(optimizer=RMSprop(), loss=loss)
+    model.compile(optimizer=RMSprop(), loss=loss, sample_weight_mode="temporal")
     return model
 
 def record(model, rec):

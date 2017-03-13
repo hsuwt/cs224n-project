@@ -190,19 +190,29 @@ def load_data(nb_test):
     # Data in melody.csv and root.csv are represented as [0,11].
     # Thus, we first span it to boolean matrix
     M_dense = np.genfromtxt('csv/melody.csv', delimiter=',')
+    assert (M_dense.shape[1]*12 == C.shape[1])
     M = np.zeros((M_dense.shape[0], M_dense.shape[1]*12))
-
+    sample_weight = np.zeros(M_dense.shape)
+    
     for i in range(M_dense.shape[0]):
         for j in range(M_dense.shape[1]):
-            notes = int(M_dense[i][j])
-            M[i][M_dense.shape[1]*notes+j] = 1
-    M = np.swapaxes(M.reshape((M.shape[0], 12, 128)), 1, 2)
-    C = np.swapaxes(C.reshape((C.shape[0], 12, 128)), 1, 2)
-    m = M[:nb_test]
-    c = C[:nb_test]
-    M = M[nb_test:]
-    C = C[nb_test:]
-    return M, m, C, c
+            if not np.isnan(M_dense[i][j]):
+                notes = int(M_dense[i][j])
+                M[i][M_dense.shape[1]*notes+j] = 1
+                sample_weight[i][j] = 1
+                
+    C = np.nan_to_num(C)         
+    M = np.swapaxes(M.reshape((M_dense.shape[0],12,M_dense.shape[1])), 1, 2)
+    C = np.swapaxes(C.reshape((C.shape[0],12,-1)), 1, 2)
+    
+    
+    m = M[-nb_test:]
+    c = C[-nb_test:]
+    sw = sample_weight[-nb_test:]
+    M = M[:-nb_test]
+    C = C[:-nb_test]
+    SW = sample_weight[:-nb_test]
+    return M, m, C, c, SW, sw
 
 def get_XY(alg, M, C):
     if 'LM' in alg:
