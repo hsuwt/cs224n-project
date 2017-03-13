@@ -205,6 +205,8 @@ def load_data(nb_test):
     M = np.swapaxes(M.reshape((M_dense.shape[0],12,M_dense.shape[1])), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0],12,-1)), 1, 2)
     
+<<<<<<< HEAD
+=======
     
     m = M[-nb_test:]
     c = C[-nb_test:]
@@ -224,59 +226,48 @@ def get_XY(alg, M, C):
                 for i, x in enumerate(C.reshape([C.shape[0] * 128, 12])):
                     newC[i][sign2chord[str(x)]] = 1
                 C = newC.reshape([C.shape[0], 128, N])
+                alg['one-hot-dim'] = N
         return M, C
 
-    assert 'pair' in alg
     n = M.shape[0]
     idx = np.random.randint(n, size=n)
     C_neg = C[idx]
-    Ones = np.ones((n, 128, 1))
-    Zeros = np.zeros((n, 128, 1))
-    if 'L1' in alg or 'L2' in alg or 'F1' in alg or 'L1diff' in alg: # use L1 or L2 of two sources of chord as labels
-        np.seterr(divide='ignore', invalid='ignore') # turn off warning of division by zero
-        L1diff = (C - C_neg) / 2 + 0.5
-        L1 = np.sum(L1diff, 2)
+    Ones = np.ones((n, 128))
+    Zeros = np.zeros((n, 128))
+    if 'L1' in alg or 'L2' in alg: # use L1 or L2 of two sources of chord as labels
+        L1 = np.sum(abs(C - C_neg), 2)
         L1 = L1.reshape((n, 128, 1))
         L2 = np.sqrt(L1)
-        p = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C_neg, 2)
-        r = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C, 2)
-        F1 = 2*p*r/(p+r)
-        F1 = np.nan_to_num(F1.reshape((n, 128, 1)))
         if 'rand' in alg:
             X = np.concatenate((M, C_neg), 2)
-            Y = L1 if 'L1' in alg else L2 if 'L2' in alg else F1 if 'F1' in alg else L1diff
+            Y = L1 if 'L1' in alg else L2
         else:
             MC_neg = np.concatenate((M, C_neg), 2)
             MC = np.concatenate((M, C), 2)
             X = np.concatenate((MC, MC_neg), 0)
-            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg \
-            else np.concatenate((Zeros, L2), 0) if 'L2' in alg \
-            else np.concatenate((Ones, F1), 0) if 'F1' in alg \
-            else np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
-        if 'L1' in alg or 'L2' in alg:
-            Y = 1 - Y / 12.0
-    else:  # use 1 as positive labels and 0 as negative labels
-        assert False
-        MC = np.concatenate((M, C), 2)
-        MC_neg = np.concatenate((M, C_neg), 2)
+            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg else np.concatenate((Zeros, L2), 0)
+        if 'L2' in alg:
+            max_err = np.sqrt(12.0)
+        Y = 1 - Y / 12.0
+    else: # use 1 as positive labels and 0 as negative labels
+        MC   = np.concatenate((M,  C), 2)
+        MC_neg  = np.concatenate((M, C_neg), 2)
         X = np.concatenate((MC, MC_neg), 0)
         Y = np.concatenate((Ones, Zeros), 0)
     return X, Y
 
-
 def get_test(alg, m, C):
     # x_te are the final testing features to match m to C
-    m_rep, C_rep = rep(m, C)
     if 'pair' in alg:
+        m_rep, C_rep = rep(m, C)
         return np.concatenate((m_rep, C_rep), 2)
     elif 'LM' in alg:
-        return m
+        return m;
     else:
         print('Error in get_test')
 
-
 def print_result(pred, y, Y, alg, printCP, bestN):
-    print '\nAlg: %s' % alg
+    print('\nAlg: %s' %(alg))
     nb_test = pred.shape[0]
     if 'L2' in alg:
         pred, bestNIdx = toCandidate(pred, Y, bestN, 'L2')
@@ -285,12 +276,10 @@ def print_result(pred, y, Y, alg, printCP, bestN):
         pred, bestNIdx = toCandidate(pred, Y, bestN, 'L1')
         norm = np.sum(abs(pred - y)) / 128.0 / nb_test
     numUniqIdx = len(np.unique(bestNIdx))
-    if printCP:
-        printChordProgression(y, pred)
-    print 'num of unique idx  = %d/%d' % (numUniqIdx, nb_test)
-    print 'norm after mapping = %.3f' % norm
+    if printCP: printChordProgression(y, pred)
+    print('num of unique idx  = %d/%d' %(numUniqIdx, nb_test))
+    print('norm after mapping = %.3f' %(norm))
     return bestNIdx, numUniqIdx, norm
-
 
 def rep(m, C):
     nb_test = m.shape[0]
@@ -302,99 +291,109 @@ def rep(m, C):
     m_rep = np.reshape(m_rep, (nb_test * nb_train, 128, 12))
     return m_rep, C_rep
 
-_note2int_dict = {
-    'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4,
-    'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9,
-    'A#': 10, 'Bb': 10, 'B': 11,
-}
-
-
 def note2int(note):
-    try:
-        return _note2int_dict[note]
-    except KeyError:
+    if note == 'C' : return 0
+    if note == 'C#': return 1
+    if note == 'Db': return 1
+    if note == 'D' : return 2
+    if note == 'D#': return 3
+    if note == 'Eb': return 3
+    if note == 'E' : return 4
+    if note == 'F' : return 5
+    if note == 'F#': return 6
+    if note == 'Gb': return 6
+    if note == 'G' : return 7
+    if note == 'G#': return 8
+    if note == 'Ab': return 8
+    if note == 'A' : return 9
+    if note == 'A#': return 10
+    if note == 'Bb': return 10
+    if note == 'B' : return 11
+    else:
         print 'no match in note2int: ', note
         return 0
 
-_mode2int_dict = {
-    'Major': 0, 'Minor': 1, 'Dorian': 2, 'Phrygian': 3, 'Lydian': 4, 'Mixolydian': 5, 'Locryan': 6
-}
-_int2mode_dict = {
-    0: 'Major', 1: 'Minor', 2: 'Dorian', 3: 'Phrygian', 4: 'Lydian', 5: 'Mixolydian', 6: 'Locryan'
-}
-
-
 def mode2int(mode):
-    try:
-        return _mode2int_dict[mode.title()]
-    except KeyError:
+    mode = mode.title()
+    if mode == 'Major'     : return 0
+    if mode == 'Minor'     : return 1
+    if mode == 'Dorian'    : return 2
+    if mode == 'Phrygian'  : return 3
+    if mode == 'Lydian'    : return 4
+    if mode == 'Mixolydian': return 5
+    if mode == 'Locryan'   : return 6
+    else:
         print 'no match in mode2int: ', mode
         return 0
 
-
 def int2note(i):
-    try:
-        return _rootNote[i]
-    except KeyError:
+    if i == 0 : return 'C'
+    if i == 1 : return 'C#'
+    if i == 2 : return 'D'
+    if i == 3 : return 'D#'
+    if i == 4 : return 'E'
+    if i == 5 : return 'F'
+    if i == 6 : return 'F#'
+    if i == 7 : return 'G'
+    if i == 8 : return 'G#'
+    if i == 9 : return 'A'
+    if i == 10: return 'A#'
+    if i == 11: return 'B'
+    else:
         print 'no match in int2note: ', i
         return 'C'
 
-
 def int2mode(i):
-    try:
-        return _int2mode_dict[i]
-    except KeyError:
+    if i == 0: return 'Major'
+    if i == 1: return 'Minor'
+    if i == 2: return 'Dorian'
+    if i == 3: return 'Phrygian'
+    if i == 4: return 'Lydian'
+    if i == 5: return 'Mixolydian'
+    if i == 6: return 'Locryan'
+    else:
         print 'no match in int2mode: ', i
         return 'Major'
 
-_int2type = {
-    0: 'Non-chord',
-    1: 'Maj',
-    2: 'Min',
-    3: 'Maj7',
-    4: 'Dominant7',
-    5: 'Min7',
-    6: 'omplex',  # complex chord, but not recognized
-    7: 'power',  # power chord, but not recognized
-}
-
-
 def int2type(i):
-    try:
-        return _int2mode_dict[i]
-    except KeyError:
+    if i == 0: return 'Non-chord'
+    if i == 1: return 'Maj'
+    if i == 2: return 'Min'
+    if i == 3: return 'Maj7'
+    if i == 4: return 'Dominant7'
+    if i == 5: return 'Min7'
+    if i == 6: return 'omplex' #complex chord, but not recognized
+    if i == 7: return 'power' #power chord, but not recognized
+    else:
         print 'no match in int2type: ', i
         return 'Non-chord'
-
-
 def toMajKey(key, mode):
-    if mode == 1:  # Minor to Major
+    if mode == 1: # Minor to Major
         key = (key + 3) % 12
-    elif mode == 2:  # Dorian to Major
+    elif mode == 2: # Dorian to Major
         key = (key + 10) % 12
-    elif mode == 3:  # Phrygian to Major
+    elif mode == 3: # Phrygian to Major
         key = (key + 8) % 12
-    elif mode == 4:  # Lydian to Major
+    elif mode == 4: # Lydian to Major
         key = (key + 7) % 12
-    elif mode == 5:  # Mixolydian to Major
+    elif mode == 5: # Mixolydian to Major
         key = (key + 5) % 12
-    elif mode == 6:  # Locrian to Major
+    elif mode == 6: # Locrian to Major
         key = (key + 1) % 12
     mode = 0
     return key, mode
 
-
-def write_history(history, hist, epoch, errCntAvg):
+def write_history(history, hist, epoch):
     history[0].append(epoch)
     history[1].append(round(hist.history['loss'][0], 2))
     history[2].append(round(hist.history['val_loss'][0], 2))
-    history[3].append(round(errCntAvg, 2))
+    history[3].append(round(hist.history['acc'][0], 2))
+    history[4].append(round(hist.history['val_acc'][0], 2))
     return history
 
-
 def Melody_Matrix_to_Section_Composed(melody_matrix):
-    section = int(np.ceil(melody_matrix.shape[0] / 16.0))
-    section_composed = np.zeros((section, 13), dtype=np.int)
+    section = int(np.ceil(melody_matrix.shape[0]/16.0))
+    section_composed = np.zeros((section,13), dtype=np.int)
     for m in xrange(128):
         mimax = np.amax(melody_matrix[m])
         mi = np.argmax(melody_matrix[m])
@@ -406,13 +405,11 @@ def Melody_Matrix_to_Section_Composed(melody_matrix):
                 section_composed[m/16][mm+1] += 1
     return section_composed
 
-
 def top3notes(chord):
     idx = np.argsort(chord)
     idx[idx < 9] = 0
     idx[idx >= 12-3] = 1
     return idx
-
 
 def onehot2notes_translator():
     """
@@ -420,7 +417,6 @@ def onehot2notes_translator():
     :return: f: the translator function
     """
     chord2sign = np.load('csv/chord-1hot-signatures-rev.npy')
-
     def f(chord):
         """
         :param chord: 1-hot representation of chords in (M, T, XDIM)
@@ -429,27 +425,26 @@ def onehot2notes_translator():
         M, T, Dim = chord.shape
         res = np.empty([M*T, 12])
         for i, c in enumerate(chord.reshape([M*T, Dim])):
-            idx = c.argmax()
-            res[i] = chord2sign[idx]
+            id = np.nonzero(c)[0][0]
+            res[i, :] = chord2sign[id]
         return res.reshape(M, T, 12)
     return f
 
-
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
-    assert(melody_matrix.shape[0] == chord_matrix.shape[0])
-    assert(melody_matrix.shape[1] == 12 and chord_matrix.shape[1] == 12)
-
-    defaultMelOct = 5  # default melody octave
+    #assert(melody_matrix.shape[0] == chord_matrix.shape[0])
+    assert(melody_matrix.shape[1] == 12 and chord_matrix.shape[1] ==12)
+       
+    defaultMelOct = 5 # default melody octave
     defaultChrdOct = 3
     BPM = 160
     duration = 15.0/BPM
-    m_start, c_start = 0, 0
+    m_start, c_start = 0,0
     length = melody_matrix.shape[0]
     song = pretty_midi.PrettyMIDI()
-    agp_program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano')  # use for chords
-    bap_program = pretty_midi.instrument_name_to_program('Bright Acoustic Piano')  # use for melody
-    melody = pretty_midi.Instrument(program=agp_program)
-    chords = pretty_midi.Instrument(program=bap_program)
+    agp_program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano') # use for chords
+    bap_program = pretty_midi.instrument_name_to_program('Bright Acoustic Piano') # use for melody
+    melody = pretty_midi.Instrument(program= agp_program)
+    chords = pretty_midi.Instrument(program= bap_program)
 
     for i in range(length):
         # Synthesizing melody
