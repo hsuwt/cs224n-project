@@ -14,9 +14,9 @@ if __name__ == "__main__":
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=20)
     parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
 
-    parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
-    parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
-    parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
+    parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.2)
+    parser.add_argument(dest='batch_size', nargs='?', type=int, default=500)
+    parser.add_argument(dest='nb_test', nargs='?', type=int, default=5000)
     args = parser.parse_args()
 
     alg = parse_algorithm(args.algorithm)
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     # c = testing chord progression
     M, m, C, c, SW, sw = load_data(nb_test)
     x, y = get_XY(alg, m, c)
+    X, Y = get_XY(alg, M, C)
     if 'one-hot' in alg:
         alg['one-hot-dim'] = y.shape[2]
 
@@ -71,8 +72,9 @@ if __name__ == "__main__":
             epoch = nb_epoch_pred*i+j+1
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
-            X, Y = get_XY(alg, M, C)
-            x, y = get_XY(alg, m, c)
+            if 'pair' in alg: #shuffle negative samples
+                X, Y = get_XY(alg, M, C)
+                x, y = get_XY(alg, m, c)
             hist = model.fit(X, Y, sample_weight=SW, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y, sw))
 
         # testing
@@ -80,6 +82,15 @@ if __name__ == "__main__":
         if 'LM' in alg:
             xdim = alg.get('one-hot-dim', 12)
             pred = pred.reshape((nb_test, seq_len, xdim))
+            if seq_len%16 != 0:
+                tail = pred[:][:, -seq_len%16:]
+                tail = np.average(tail, axis=1).reshape((nb_test, 1, xdim))
+                tail = np.tile(tail, (1, seq_len%16, 1))
+            head = pred[:][:, :seq_len/16*16].reshape((nb_test, 16, seq_len/16, xdim))
+            head = np.average(head, axis=1)
+            head = np.tile(head, (1, 16, 1))
+            if seq_len%16 != 0:
+                pred = np.concatenate((head, tail), axis=1)
             y2 = chord2signature(y) if 'one-hot' in alg else y  # use notes representation for y
             c_hat = chord2signature(pred)
             errCntAvg = np.average(np.abs(y2 - c_hat)) * 12

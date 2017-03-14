@@ -186,25 +186,30 @@ def toCandidateBestN(CP, allCP, bestN):
 
 
 def load_data(nb_test):
-    nb_train = sum([len(files) for r, d, files in os.walk("midilabel/melody")])
+    nb_train = sum([len(files) for r, d, files in os.walk("../dataset/melody")])
     max_length = 1000 # Can be modified later
     C = np.zeros((nb_train, max_length, 12))
     M = np.zeros((nb_train, max_length, 12))
     sample_weight = np.zeros((nb_train, max_length))
     train_idx = 0
-    for root,_,files in os.walk("midilabel/melody"):
+    for root,_,files in os.walk("../dataset/melody"):
         for m_file_name in files:
+            print train_idx
             m_file_name_path = os.path.join(root, m_file_name)
             c_file_name_path = m_file_name_path.replace("/melody/", "/chord/", 1)
-            m_file_matrix = np.genfromtxt(m_file_name_path, delimiter=',')[:,:max_length]
-            c_file_matrix = np.genfromtxt(c_file_name_path, delimiter=',')[:,:max_length]
-            seq_len = m_file_matrix.shape[1]
-            tmp_m, temp_c = np.zeros(12,max_length), np.zeros(12,max_length)
+            m_file_matrix = np.genfromtxt(m_file_name_path, delimiter=',')
+            c_file_matrix = np.genfromtxt(c_file_name_path, delimiter=',')
+            if len(m_file_matrix) == 0: continue
+            if len(c_file_matrix) == 0: continue
+            m_file_matrix = m_file_matrix[:,:max_length]
+            c_file_matrix = c_file_matrix[:,:max_length]
+            seq_len = min(m_file_matrix.shape[1], c_file_matrix.shape[1])
+            tmp_m, tmp_c = np.zeros((12,seq_len)), np.zeros((12,seq_len))
             for i in range(128/12):
-                tmp_m = np.logical_or(tmp_m, m_file_matrix[i*12:(i+1)*12,:] )
-                tmp_c = np.logical_or(tmp_c, c_file_matrix[i*12:(i+1)*12,:] )
-            SW[train_idx, : seq_len] = np.ones((1,seq_len))
-            M[train_idx], C[train_ind] = np.swapaxes(tmp_m, 0,1), np.swapaxes(tmp_c,0,1)
+                tmp_m = np.logical_or(tmp_m, m_file_matrix[i*12:(i+1)*12,:seq_len] )
+                tmp_c = np.logical_or(tmp_c, c_file_matrix[i*12:(i+1)*12,:seq_len] )
+            sample_weight[train_idx,:seq_len] = np.ones((1,seq_len))
+            M[train_idx,:seq_len], C[train_idx,:seq_len] = np.swapaxes(tmp_m, 0,1), np.swapaxes(tmp_c,0,1)
             train_idx +=1
     #C = np.genfromtxt('csv/chord.csv', delimiter=',')
     ## Data in melody.csv and root.csv are represented as [0,11].
@@ -213,18 +218,18 @@ def load_data(nb_test):
     #assert (M_dense.shape[1]*12 == C.shape[1])
     #M = np.zeros((M_dense.shape[0], M_dense.shape[1]*12))
     #sample_weight = np.zeros(M_dense.shape)
-    
+
     #for i in range(M_dense.shape[0]):
         #for j in range(M_dense.shape[1]):
             #if not np.isnan(M_dense[i][j]):
                 #notes = int(M_dense[i][j])
                 #M[i][M_dense.shape[1]*notes+j] = 1
                 #sample_weight[i][j] = 1
-                
-    #C = np.nan_to_num(C)         
+
+    #C = np.nan_to_num(C)
     #M = np.swapaxes(M.reshape((M_dense.shape[0],12,M_dense.shape[1])), 1, 2)
     #C = np.swapaxes(C.reshape((C.shape[0],12,-1)), 1, 2)
-    
+
     m = M[-nb_test:]
     c = C[-nb_test:]
     sw = sample_weight[-nb_test:]
@@ -449,7 +454,7 @@ def onehot2notes_translator():
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     #assert(melody_matrix.shape[0] == chord_matrix.shape[0])
     assert(melody_matrix.shape[1] == 12 and chord_matrix.shape[1] ==12)
-       
+
     defaultMelOct = 5 # default melody octave
     defaultChrdOct = 3
     BPM = 160
