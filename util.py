@@ -205,8 +205,6 @@ def load_data(nb_test):
     M = np.swapaxes(M.reshape((M_dense.shape[0],12,M_dense.shape[1])), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0],12,-1)), 1, 2)
     
-<<<<<<< HEAD
-=======
     
     m = M[-nb_test:]
     c = C[-nb_test:]
@@ -383,12 +381,11 @@ def toMajKey(key, mode):
     mode = 0
     return key, mode
 
-def write_history(history, hist, epoch):
+def write_history(history, hist, epoch, errCntAvg):
     history[0].append(epoch)
     history[1].append(round(hist.history['loss'][0], 2))
     history[2].append(round(hist.history['val_loss'][0], 2))
-    history[3].append(round(hist.history['acc'][0], 2))
-    history[4].append(round(hist.history['val_acc'][0], 2))
+    history[3].append(round(errCntAvg, 2))
     return history
 
 def Melody_Matrix_to_Section_Composed(melody_matrix):

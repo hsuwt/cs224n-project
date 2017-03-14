@@ -1,19 +1,18 @@
-<<<<<<< HEAD
 from util import *
 from model import *
 import time
 import argparse
 import tensorflow as tf
-from genMIDI
+#from genMIDI import *
 tf.python.control_flow_ops = tf
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='Bidirectional GRU pair L1diff')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=256)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
-    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=20)
+    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=20)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=1)
 
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
@@ -85,7 +84,7 @@ if __name__ == "__main__":
             c_hat = chord2signature(pred)
             errCntAvg = np.average(np.abs(y2 - c_hat)) * 12
             with open('pred/' + filename, 'w') as f:
-                np.savetxt(f, c_hat.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
+                np.savetxt(f, c_hat.reshape((nb_test*seq_len, 12)), delimiter=',', fmt="%d")
         elif 'pair' in alg:
             if 'L1diff' in alg:
                 pred = pred.reshape((nb_test, nb_train, 128 * 12))
