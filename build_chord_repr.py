@@ -14,21 +14,20 @@ def load_data():
     return C
 
 def get_uniq(c):
-    cs = set(str(x) for x in c)
+    cs = set(tuple(x) for x in c)
     return cs
 
 def build_repr(s):
-    N = len(cs)
-    repr_set = {}
+    repr_dict = {}
     reverse_set = []
 
-    def str2list(x):
-        return list(map(int, x.replace('.', ' ')[1:-1].split()))
+    # def str2list(x):
+    #     return list(map(int, x.replace('.', ' ')[1:-1].split()))
 
     for i, x in enumerate(s):
-        repr_set[x] = i
+        repr_dict[x] = i
         reverse_set.append(tuple(x))
-    return repr_set, np.array(reverse_set)
+    return repr_dict, np.array(reverse_set)
 
 if __name__ == '__main__':
     c = load_data()
@@ -37,4 +36,4 @@ if __name__ == '__main__':
     r, rev = build_repr(cs)
     with open('csv/chord-1hot-signatures.pickle', 'wb') as pfile:
         pkl.dump(r, pfile)
-    np.save('csv/chord-1hot-signature-rev.csv', rev)
+    np.save('csv/chord-1hot-signatures-rev', rev)
