@@ -14,27 +14,31 @@ def load_data():
     return C
 
 def get_uniq(c):
-    cs = set(str(x) for x in c)
-    return cs
+    bytes = np.packbits(c.astype(np.int), axis=1).astype(np.int64)
+    bytes = (bytes[:, 0] << 4) + (bytes[:, 1] >> 4)
+    uniq = np.unique(bytes)
+    return uniq
 
 def build_repr(s):
-    N = len(cs)
     repr_set = {}
     reverse_set = []
 
-    def str2list(x):
-        return list(map(int, x.replace('.', ' ')[1:-1].split()))
-
     for i, x in enumerate(s):
         repr_set[x] = i
-        reverse_set.append(str2list(x))
+        reverse_set.append(x)
     return repr_set, np.array(reverse_set)
+
+def savemap(map, path):
+    with open(path, 'wb') as pfile:
+        pkl.dump(map, pfile)
+
+def saveunmap(unmap, path):
+    np.save(path, unmap)
 
 if __name__ == '__main__':
     c = load_data()
     cs = get_uniq(c)
     print "Discovered %d different chord signatures, out of %d possibilities" % (len(cs), 2<<12)
-    r, rev = build_repr(cs)
-    with open('csv/chord-1hot-signatures.pickle', 'wb') as pfile:
-        pkl.dump(r, pfile)
-    np.save('csv/chord-1hot-signature-rev.csv', rev)
+    map, unmap = build_repr(cs)
+    savemap(map, 'csv/chord-1hot-signatures.pickle')
+    saveunmap(unmap, 'csv/chord-1hot-signatures-rev')
