@@ -19,6 +19,6 @@ for i in range(10):
     for file in files:
         C_pred = np.load('pred/' + file)
 	song_pred = util.Matrices_to_MIDI(M[i], C_pred[i])
-	song_pred.write(midi_output_path + str(i) + '_' + file[:-3] + '.mid')
+	song_pred.write(midi_output_path + str(i) + '_' + file[:-4] + '.mid')
 
 
