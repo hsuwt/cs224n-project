@@ -140,3 +140,4 @@ if __name__ == "__main__":
         # record & save model
         # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
         # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+
