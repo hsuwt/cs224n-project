@@ -8,7 +8,8 @@ def pred(melody, alg):
     m = np.reshape(melody, (1, 128, 12))
     n_train = M.shape[0]
     model = load_model(alg)
-    x, y = get_XY(alg, m, c)
+    ip = InputParser(alg)
+    x, y = ip.get_XY(m, c)
     x_te = get_test(alg, m, C)
     idx = np.argmax(np.array(model.predict(x_te))[:,0].reshape((n_test, n_train)), axis=1)
     pred = C[idx]
