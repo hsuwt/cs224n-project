@@ -266,17 +266,17 @@ def csv2npy():
         print C.shape
         print M.shape
         print sample_weight.shape
-        np.save('~/npy/chord_csv' + str(j) + '.npy', C.astype(int))
-        np.save('~/npy/melody_csv' + str(j) + '.npy', M.astype(int))
-        np.save('~/npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
+        np.save('../npy/chord_csv' + str(j) + '.npy', C.astype(int))
+        np.save('../npy/melody_csv' + str(j) + '.npy', M.astype(int))
+        np.save('../npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
         print("saving csv" + str(j) + ".npy")
 
 def load_data(alg, nb_test):
     max_length = 1024
     #C, M, SW = parse_data(alg, max_length)
-    C = np.load('~/npy/chord_csv1.npy')
-    M = np.load('~/npy/melody_csv1.npy')
-    SW = np.load('~/npy/sw_csv1.npy')
+    C = np.load('../npy/chord_csv1.npy')
+    M = np.load('../npy/melody_csv1.npy')
+    SW = np.load('../npy/sw_csv1.npy')
     m = M[-nb_test:]
     c = C[-nb_test:]
     sw = SW[-nb_test:]
@@ -300,13 +300,16 @@ class InputParser(object):
             raise TypeError('this is not a one-hot program')
 
     def get_XY(self, M, C):
-        if 'LM' in self.alg and 'one-hot' in self.alg:
-            newC = np.zeros([C.shape[0] * C.shape[1], self.size])
-            for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
-                newC[i][self.sign2chord[tuple(x)]] = 1
-            C = newC.reshape([C.shape[0], C.shape[1], self.size])
+        if 'LM' in self.alg:
+            if 'one-hot' in self.alg:
+                newC = np.zeros([C.shape[0] * C.shape[1], self.size])
+                for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
+                    if tuple(x) in self.sign2chord:
+                        newC[i][self.sign2chord[tuple(x)]] = 1
+                    else:
+                        newC[i][self.sign2chord[(1,0,0,0,1,0,0,1,0,0,0,0)]] = 1
+                C = newC.reshape([C.shape[0], C.shape[1], self.size])
             return M, C
-
         assert 'pair' in self.alg
         n = M.shape[0]
         idx = np.random.randint(n, size=n)
