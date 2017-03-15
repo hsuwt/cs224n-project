@@ -3,7 +3,7 @@ import sys
 import os
 import numpy as np
 import pretty_midi
-
+from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder
 
 def parse_algorithm(alg_str):
     alg = {x: None for x in alg_str.strip().split()}
@@ -252,9 +252,7 @@ def load_data(alg, nb_test):
 class InputParser(object):
     def __init__(self, alg):
         if 'LM' in alg and 'one-hot' in alg:
-            with open('csv/chord-1hot-signatures.pickle') as pfile:
-                self.sign2chord = pkl.load(pfile)
-                self.size = len(self.sign2chord)
+            self.transcoder = ChordNotes2OneHotTranscoder()
         self.alg = alg
 
     def get_XY(self, M, C):
@@ -262,16 +260,7 @@ class InputParser(object):
             """
             the dim of chord (C or Y) will change from 12 into {self.size}
             """
-            N = C.shape[0] * C.shape[1]
-            C2 = C.reshape([N, 12]).astype(np.int)
-            newC = np.zeros([N, self.size]).astype(np.int)
-            indexes = np.packbits(C2, axis=1).astype(np.int)
-            # packbits assumes numbers are in 8 bits. Instead our data uses 12 bits
-            # therefore it is necessary to do the bit operaation below:
-            indexes = (indexes[:, 0] << 4) + (indexes[:, 1] >> 4)
-            chord_indexes = [self.sign2chord[i] for i in indexes]
-            newC[np.arange(N), chord_indexes] = 1
-            C = newC.reshape([C.shape[0], C.shape[1], self.size])
+            C = self.transcoder.transcode(C)
             return M, C
 
         assert 'pair' in self.alg
@@ -463,25 +452,6 @@ def top3notes(chord):
     idx[idx < 9] = 0
     idx[idx >= 12-3] = 1
     return idx
-
-def onehot2notes_translator():
-    """
-    generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
-    :return: f: the translator function
-    """
-    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
-    def f(chord):
-        """
-        Translate from 1-hot array of dim {DIM} back to superimposed repr of dim=12
-        :param chord: 1-hot representation of chords in (M, T, Dim)
-        :return: chord signature in (M, T, 12)
-        """
-        M, T, Dim = chord.shape
-        C2 =  chord.reshape([M*T, Dim])
-        index = np.argmax(C2, axis=1)
-        newC = chordId2sign[index, :]
-        return newC.reshape(M, T, 12)
-    return f
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     #assert(melody_matrix.shape[0] == chord_matrix.shape[0])
