@@ -114,8 +114,8 @@ if __name__ == "__main__":
             c_hatAvg = chord2signature(predAvg)
             errCntAvg = np.average(np.abs(y2 - c_hat)) * 12
             errCntAvgAvg = np.average(np.abs(y2 - c_hatAvg)) * 12
-            np.save('pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, seq_len, 12)))
-            np.save('pred/' + filename + '.npy', c_hatAvg.astype(int).reshape((nb_test, seq_len, 12)))
+            np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, seq_len, 12)))
+            np.save('../pred/' + filename + '.npy', c_hatAvg.astype(int).reshape((nb_test, seq_len, 12)))
         elif 'pair' in alg:
             if 'L1diff' in alg:
                 pred = pred.reshape((nb_test, nb_train, 128 * 12))
@@ -134,7 +134,7 @@ if __name__ == "__main__":
                 p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
                 r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
                 errCntAvg = np.average(np.nan_to_num(2*p*r/(p+r)))
-            np.save('pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
+            np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
 
         history = write_history(history, hist, nb_epoch_pred * (i+1), errCntAvg)
         with open('history/' + filename + '.csv', 'w') as csvfile:
