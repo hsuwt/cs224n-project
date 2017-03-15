@@ -15,17 +15,17 @@ def load_data():
 
 def get_uniq(c):
     bytes = np.packbits(c.astype(np.int), axis=1).astype(np.int64)
-    bytes = (bytes[:, 0] << 4) + (bytes[:, 1] >> 4)
-    uniq = np.unique(bytes)
-    return uniq
+    integer = (bytes[:, 0] << 4) + (bytes[:, 1] >> 4)
+    uniqs = {integer: chord for integer, chord in zip(integer, c)}
+    return uniqs
 
-def build_repr(s):
+def build_repr(uniqs):
     repr_set = {}
     reverse_set = []
 
-    for i, x in enumerate(s):
-        repr_set[x] = i
-        reverse_set.append(x)
+    for i, (cid, c) in enumerate(uniqs.items()):
+        repr_set[cid] = i
+        reverse_set.append(c)
     return repr_set, np.array(reverse_set)
 
 def savemap(map, path):

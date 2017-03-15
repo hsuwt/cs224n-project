@@ -469,24 +469,18 @@ def onehot2notes_translator():
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
     :return: f: the translator function
     """
+    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
     def f(chord):
         """
-        :param chord: 1-hot representation of chords in (M, T, 4096)
+        Translate from 1-hot array of dim {DIM} back to superimposed repr of dim=12
+        :param chord: 1-hot representation of chords in (M, T, Dim)
         :return: chord signature in (M, T, 12)
         """
         M, T, Dim = chord.shape
-        newC =  chord.reshape([M*T, Dim])
-        index = np.nonzero(newC)[1]
-        # because unpackbits assumes byte type
-        index_bytes = np.matrix(np.empty([len(index), 2])).astype(np.ubyte)
-        index_bytes[:, 0], index_bytes[:, 1] = index << 4, index % 4096
-        # Each number is translated into 8 bits. But the second number only represent the last four bits
-        unp = np.unpackbits(index_bytes, axis=1)
-        res = np.concatenate([unp[:, :8], unp[:, -4:]], axis=1)
-        for i, c in enumerate(chord.reshape([M*T, Dim])):
-            id = np.nonzero(c)[0][0]
-            res[i, :] = chord2sign[id]
-        return res.reshape(M, T, 12)
+        C2 =  chord.reshape([M*T, Dim])
+        index = np.argmax(C2, axis=1)
+        newC = chordId2sign[index, :]
+        return newC.reshape(M, T, 12)
     return f
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
