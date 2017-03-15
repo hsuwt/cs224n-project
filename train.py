@@ -33,8 +33,9 @@ if __name__ == "__main__":
     # C = training chord progression
     # c = testing chord progression
     M, m, C, c, SW, sw = load_data(alg, nb_test)
-    x, y = get_XY(alg, m, c)
-    X, Y = get_XY(alg, M, C)
+    ip = InputParser(alg)
+    x, y = ip.get_XY(m, c)
+    X, Y = ip.get_XY(M, C)
     if 'one-hot' in alg:
         alg['one-hot-dim'] = y.shape[2]
 
@@ -73,8 +74,8 @@ if __name__ == "__main__":
             sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
             sys.stdout.flush()
             if 'pair' in alg: #shuffle negative samples
-                X, Y = get_XY(alg, M, C)
-                x, y = get_XY(alg, m, c)
+                X, Y = ip.get_XY(M, C)
+                x, y = ip.get_XY(m, c)
             hist = model.fit(X, Y, sample_weight=SW, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y, sw))
 
         # testing

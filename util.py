@@ -247,54 +247,61 @@ def load_data(alg, nb_test):
     SW = sample_weight[:-nb_test]
     return M, m, C, c, SW, sw
 
-def get_XY(alg, M, C):
-    if 'LM' in alg:
-        if 'one-hot' in alg:
+class InputParser(object):
+    def __init__(self, alg):
+        if 'LM' in alg and 'one-hot' in alg:
             with open('csv/chord-1hot-signatures.pickle', 'rb') as pfile:
-                sign2chord = pkl.load(pfile)
-                N = len(sign2chord)
-                newC = np.zeros([C.shape[0] * C.shape[1], N])
-                for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
-                    newC[i][sign2chord[str(x)]] = 1
-                C = newC.reshape([C.shape[0], C.shape[1], N])
-                alg['one-hot-dim'] = N
-        return M, C
+                self.sign2chord = pkl.load(pfile)
+                self.size = len(self.sign2chord)
+        self.alg = alg
 
-    assert 'pair' in alg
-    n = M.shape[0]
-    idx = np.random.randint(n, size=n)
-    C_neg = C[idx]
-    Ones = np.ones((n, 128, 1))
-    Zeros = np.zeros((n, 128, 1))
-    if 'L1' in alg or 'L2' in alg or 'L1diff' in alg: # use L1 or L2 of two sources of chord as labels
-        np.seterr(divide='ignore', invalid='ignore')
-        L1diff = (C_neg - C) / 2 + 0.5
-        L1 = np.sum(abs(C - C_neg), 2)
-        L1 = L1.reshape((n, 128, 1))
-        L2 = np.sqrt(L1)
-        p = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C_neg, 2)
-        r = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C, 2)
-        F1 = 2*p*r/(p+r)
-        F1 = np.nan_to_num(F1.reshape((n, 128, 1)))
-        if 'rand' in alg:
-            X = np.concatenate((M, C_neg), 2)
-            Y = L1 if 'L1' in alg else L2 if 'L2' in alg else F1 if 'F1' in alg else L1diff
-        else:
-            MC_neg = np.concatenate((M, C_neg), 2)
-            MC = np.concatenate((M, C), 2)
-            X = np.concatenate((MC, MC_neg), 0)
-            Y = np.concatenate((Zeros, L1), 0) if 'L1' in alg \
-            else np.concatenate((Zeros, L2), 0) if 'L2' in alg \
-            else np.concatenate((Ones, F1), 0) if 'F1' in alg \
-            else np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
-        Y = 1 - Y / 12.0
-    else: # use 1 as positive labels and 0 as negative labels
-        assert False
-        MC   = np.concatenate((M,  C), 2)
-        MC_neg  = np.concatenate((M, C_neg), 2)
-        X = np.concatenate((MC, MC_neg), 0)
-        Y = np.concatenate((Ones, Zeros), 0)
-    return X, Y
+    def get_one_hot_dim(self):
+        try:
+            return self.size
+        except:
+            raise TypeError('this is not a one-hot program')
+
+    def get_XY(self, M, C):
+        if 'LM' in self.alg and 'one-hot' in self.alg:
+            newC = np.zeros([C.shape[0] * C.shape[1], self.size])
+            for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
+                newC[i][self.sign2chord[str(x)]] = 1
+            C = newC.reshape([C.shape[0], C.shape[1], self.size])
+            return M, C
+
+        assert 'pair' in self.alg
+        n = M.shape[0]
+        idx = np.random.randint(n, size=n)
+        C_neg = C[idx]
+        Ones = np.ones((n, 128, 1))
+        Zeros = np.zeros((n, 128, 1))
+        if 'L1' in self.alg or 'L2' in self.alg or 'L1diff' in self.alg:
+            # use L1 or L2 of two sources of chord as labels
+            np.seterr(divide='ignore', invalid='ignore')
+            L1diff = (C_neg - C) / 2 + 0.5
+            L1 = np.sum(abs(C - C_neg), 2)
+            L1 = L1.reshape((n, 128, 1))
+            L2 = np.sqrt(L1)
+            p = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C_neg, 2)
+            r = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C, 2)
+            F1 = 2*p*r/(p+r)
+            F1 = np.nan_to_num(F1.reshape((n, 128, 1)))
+            if 'rand' in self.alg:
+                X = np.concatenate((M, C_neg), 2)
+                Y = L1 if 'L1' in self.alg \
+                    else L2 if 'L2' in self.alg \
+                    else F1 if 'F1' in self.alg \
+                    else L1diff
+            else:
+                MC_neg = np.concatenate((M, C_neg), 2)
+                MC = np.concatenate((M, C), 2)
+                X = np.concatenate((MC, MC_neg), 0)
+                Y = np.concatenate((Zeros, L1), 0) if 'L1' in self.alg \
+                    else np.concatenate((Zeros, L2), 0) if 'L2' in self.alg \
+                    else np.concatenate((Ones, F1), 0) if 'F1' in self.alg \
+                    else np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
+            Y = 1 - Y / 12.0
+        return X, Y
 
 def get_test(alg, m, C):
     # x_te are the final testing features to match m to C
@@ -407,6 +414,8 @@ def int2type(i):
     else:
         print 'no match in int2type: ', i
         return 'Non-chord'
+
+
 def toMajKey(key, mode):
     if mode == 1: # Minor to Major
         key = (key + 3) % 12

@@ -16,7 +16,8 @@ if __name__ == "__main__":
     M, m, C, c = load_data(nb_test)
     nb_train = M.shape[0]
     model = load_model(alg)
-    x, y = get_XY(alg, m, c)
+    ip = InputParser(alg)
+    x, y = ip.get_XY(m, c)
     x_te = get_test(alg, m, C)
 
     # make prediction
