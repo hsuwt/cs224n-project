@@ -47,11 +47,12 @@ if __name__ == "__main__":
     if 'pair' in alg: # pair model can load data first since they're small, only load 1st npy file
         M, C, SW = load_train_data(1)    
         x_test = get_test(alg, m_test, C)
+        nb_train = M.shape[0]
     else:
         x_test = m_test
 
 
-    nb_train = M.shape[0]
+    
     seq_len = m_test.shape[1]
     model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
     history = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg']]
@@ -85,7 +86,7 @@ if __name__ == "__main__":
         else: # in LM we load all 5 npy files
             for i in range(1,6):
                 M, C, SW = load_train_data(i)            
-                epoch = nb_epoch_pred*i+j+1
+                epoch = nb_epoch_pred*i+1
                 sys.stdout.write("Alg=%s, epoch=%d to %d\r" % (alg, epoch, epoch+nb_epoch_pred))
                 sys.stdout.flush()   
                 X, Y = ip.get_XY(M, C)

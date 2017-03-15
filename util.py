@@ -285,9 +285,9 @@ def load_train_data(npy_num):
             C = np.load('../npy/chord_csv'+str(i)+'.npy')
             M = np.load('../npy/melody_csv'+str(i)+'.npy')
             SW = np.load('../npy/sw_csv'+str(i)+'.npy')                                   
-        C = np.concatenate(C, np.load('../npy/chord_csv'+str(i)+'.npy'), axis=0)
-        M = np.concatenate(M, np.load('../npy/melody_csv'+str(i)+'.npy'), axis=0)
-        SW = np.concatenate(SW, np.load('../npy/sw_csv'+str(i)+'.npy'), axis =0)
+        C = np.concatenate((C, np.load('../npy/chord_csv'+str(i)+'.npy')), axis=0)
+        M = np.concatenate((M, np.load('../npy/melody_csv'+str(i)+'.npy')), axis=0)
+        SW = np.concatenate((SW, np.load('../npy/sw_csv'+str(i)+'.npy')), axis =0)
     #m = M[-nb_test:]
     #c = C[-nb_test:]
     #sw = SW[-nb_test:]
@@ -314,7 +314,10 @@ class InputParser(object):
         if 'LM' in self.alg and 'one-hot' in self.alg:
             newC = np.zeros([C.shape[0] * C.shape[1], self.size])
             for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
-                newC[i][self.sign2chord[tuple(x)]] = 1
+                if tuple(x) in self.sign2chord:
+                    newC[i][self.sign2chord[tuple(x)]] = 1
+                else:
+                    newC[i][self.sign2chord[(0,0,0,0,0,0,0,0,0,0,0,0)]] = 1
             C = newC.reshape([C.shape[0], C.shape[1], self.size])
             return M, C
 
