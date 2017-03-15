@@ -8,15 +8,15 @@ tf.python.control_flow_ops = tf
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM L1')
-    parser.add_argument(dest='nodes1', nargs='?', type=int, default=256)
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM one-hot')
+    parser.add_argument(dest='nodes1', nargs='?', type=int, default=512)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=5)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=10)
 
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.2)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=500)
-    parser.add_argument(dest='nb_test', nargs='?', type=int, default=1000)
+    parser.add_argument(dest='nb_test', nargs='?', type=int, default=5000)
     args = parser.parse_args()
 
     alg = parse_algorithm(args.algorithm)
@@ -32,10 +32,8 @@ if __name__ == "__main__":
     # m = testing melody
     # C = training chord progression
     # c = testing chord progression
-    M, m, C, c, SW, sw = load_data(alg, nb_test)
+
     ip = InputParser(alg)
-    x, y = ip.get_XY(m, c)
-    X, Y = ip.get_XY(M, C)
     if 'one-hot' in alg:
         alg['one-hot-dim'] = y.shape[2]
 
@@ -44,10 +42,18 @@ if __name__ == "__main__":
     # Y = training ground truth
     # y = validation ground truth
     # x_test = testing features (to evaluate unique_idx & norms)
-    x_test = get_test(alg, m, C)
+    if 'pair' in alg: # pair model can load data first since they're small, only load 1st npy file
+        nb_test = 100
+        M, m, C, c, SW, sw_val = load_pair_data(alg, nb_test)
+        x_test = get_test(alg, m, C)
+        nb_train = M.shape[0]
+        seq_len = 128
+    else:
+        m_val, m_test, c_val, c_test, sw_val, _ = load_testval_data()
+        x, y = ip.get_XY(m_val, c_val)
+        x_test = m_test
+        seq_len = m_test.shape[1]
 
-    nb_train = M.shape[0]
-    seq_len = M.shape[1]
     model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
     history = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg']]
     # history will record the loss of every epoch
@@ -68,20 +74,25 @@ if __name__ == "__main__":
 
     filename = _get_filename(alg)
 
-
     for i in range(nb_epoch/nb_epoch_pred):
-        for j in range(nb_epoch_pred):
-            epoch = nb_epoch_pred*i+j+1
-            sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
-            sys.stdout.flush()
-            if 'pair' in alg: #shuffle negative samples
+        if 'pair' in alg: #shuffle negative samples
+            for j in range(nb_epoch_pred):
+                epoch = nb_epoch_pred*i+j+1
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (alg, epoch))
+                sys.stdout.flush()
                 X, Y = ip.get_XY(M, C)
                 x, y = ip.get_XY(m, c)
-                SW = np.ones((X.shape[0], X.shape[1]))
-                sw = np.ones((x.shape[0], x.shape[1]))
-            hist = model.fit(X, Y, sample_weight=SW, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y, sw))
+                hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
+        else: # in LM we load all 5 npy files
+            for i in range(1,6):
+                M, C, SW = load_train_data(i)
+                epoch = nb_epoch_pred*(i-1)
+                sys.stdout.write("Alg=%s, epoch=%d to %d\r" % (alg, epoch, epoch+nb_epoch_pred))
+                sys.stdout.flush()
+                X, Y = ip.get_XY(M, C)
+                hist = model.fit(X, Y, sample_weight=SW, batch_size=batch_size, nb_epoch=nb_epoch_pred, verbose=0, validation_data=(x, y, sw_val))
 
-        assert False
+
         # testing
         pred = np.array(model.predict(x_test))
         if 'LM' in alg:
@@ -133,3 +144,4 @@ if __name__ == "__main__":
         # record & save model
         # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
         # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+

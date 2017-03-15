@@ -263,27 +263,36 @@ def csv2npy():
         C = C[:train_idx]
         M = M[:train_idx]
         sample_weight = sample_weight[:train_idx]
-        #np.save('../npy/chord_csv' + str(j) + '.npy', C.astype(int))
-        #np.save('../npy/melody_csv' + str(j) + '.npy', M.astype(int))
-        #np.save('../npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
-        #print("saving csv" + str(j) + ".npy")
+        print C.shape
+        print M.shape
+        print sample_weight.shape
+        np.save('~/npy/chord_csv' + str(j) + '.npy', C.astype(int))
+        np.save('~/npy/melody_csv' + str(j) + '.npy', M.astype(int))
+        np.save('~/npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
+        print("saving csv" + str(j) + ".npy")
 
-def load_data(alg, nb_test):
-    if 'pair' in alg:
-        max_length = 128
-        C, M, SW = parse_data(alg, max_length)
-    else:
-        max_length = 1024
-        C = np.load('../npy/chord_csv1.npy')
-        M = np.load('../npy/melody_csv1.npy')
-        SW = np.load('../npy/sw_csv1.npy')
-    m = M[-nb_test:]
+
+def load_pair_data(alg, nb_test):
+    C, M, SW = parse_data(alg, 128)
     c = C[-nb_test:]
-    sw = SW[-nb_test:]
-    M = M[:-nb_test]
     C = C[:-nb_test]
+    m = M[-nb_test:]
+    M = M[:-nb_test]
+    sw = SW[-nb_test:]
     SW = SW[:-nb_test]
     return M, m, C, c, SW, sw
+
+def load_testval_data():
+    m_tmp = np.array_split(np.load('../npy/melody_csv6.npy'),2, axis=0)
+    c_tmp = np.array_split(np.load('../npy/chord_csv6.npy'),2,axis=0)
+    sw_tmp = np.array_split(np.load('../npy/sw_csv6.npy'),2,axis=0)
+    return m_tmp[0], m_tmp[1], c_tmp[0], c_tmp[1], sw_tmp[0], sw_tmp[1]
+
+def load_train_data(i):
+    C = np.load('../npy/chord_csv'+str(i)+'.npy')
+    M = np.load('../npy/melody_csv'+str(i)+'.npy')
+    SW = np.load('../npy/sw_csv'+str(i)+'.npy')
+    return M, C, SW
 
 class InputParser(object):
     def __init__(self, alg):
@@ -307,9 +316,10 @@ class InputParser(object):
                     if tuple(x) in self.sign2chord:
                         newC[i][self.sign2chord[tuple(x)]] = 1
                     else:
-                        newC[i][self.sign2chord[(1,0,0,0,1,0,0,1,0,0,0,0)]] = 1
+                        newC[i][self.sign2chord[(0,0,0,0,0,0,0,0,0,0,0,0)]] = 1
                 C = newC.reshape([C.shape[0], C.shape[1], self.size])
             return M, C
+
         assert 'pair' in self.alg
         n = M.shape[0]
         idx = np.random.randint(n, size=n)
