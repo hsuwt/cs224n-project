@@ -27,7 +27,7 @@ def build_repr(s):
 
     for i, x in enumerate(s):
         repr_set[x] = i
-        reverse_set.append(str2list(x))
+        reverse_set.append(tuple(x))
     return repr_set, np.array(reverse_set)
 
 if __name__ == '__main__':
