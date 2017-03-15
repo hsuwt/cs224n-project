@@ -265,7 +265,7 @@ class InputParser(object):
         if 'LM' in self.alg and 'one-hot' in self.alg:
             newC = np.zeros([C.shape[0] * C.shape[1], self.size])
             for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
-                newC[i][self.sign2chord[str(x)]] = 1
+                newC[i][self.sign2chord[tuple(x)]] = 1
             C = newC.reshape([C.shape[0], C.shape[1], self.size])
             return M, C
 
