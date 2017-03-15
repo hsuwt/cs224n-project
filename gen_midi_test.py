@@ -3,9 +3,8 @@ import numpy as np
 
 from os import listdir
 from os.path import isfile, join
-mypath = 'pred/'
+mypath = '../pred/'
 files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-
 midi_output_path = 'midi_out/'
 M = np.load('../npy/melody_csv1.npy')
 C = np.load('../npy/chord_csv1.npy')
