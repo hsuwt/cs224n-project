@@ -9,7 +9,7 @@ tf.python.control_flow_ops = tf
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
     parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM')
-    parser.add_argument(dest='nodes1', nargs='?', type=int, default=128)
+    parser.add_argument(dest='nodes1', nargs='?', type=int, default=256)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
     parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=5)
