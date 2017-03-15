@@ -263,20 +263,20 @@ def csv2npy():
         C = C[:train_idx]
         M = M[:train_idx]
         sample_weight = sample_weight[:train_idx]
-        print C.shape
-        print M.shape
-        print sample_weight.shape
-        np.save('../npy/chord_csv' + str(j) + '.npy', C.astype(int))
-        np.save('../npy/melody_csv' + str(j) + '.npy', M.astype(int))
-        np.save('../npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
-        print("saving csv" + str(j) + ".npy")
+        #np.save('../npy/chord_csv' + str(j) + '.npy', C.astype(int))
+        #np.save('../npy/melody_csv' + str(j) + '.npy', M.astype(int))
+        #np.save('../npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
+        #print("saving csv" + str(j) + ".npy")
 
 def load_data(alg, nb_test):
-    max_length = 1024
-    #C, M, SW = parse_data(alg, max_length)
-    C = np.load('../npy/chord_csv1.npy')
-    M = np.load('../npy/melody_csv1.npy')
-    SW = np.load('../npy/sw_csv1.npy')
+    if 'pair' in alg:
+        max_length = 128
+        C, M, SW = parse_data(alg, max_length)
+    else:
+        max_length = 1024
+        C = np.load('../npy/chord_csv1.npy')
+        M = np.load('../npy/melody_csv1.npy')
+        SW = np.load('../npy/sw_csv1.npy')
     m = M[-nb_test:]
     c = C[-nb_test:]
     sw = SW[-nb_test:]

@@ -8,7 +8,7 @@ tf.python.control_flow_ops = tf
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM')
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM L1')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=256)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
@@ -63,10 +63,11 @@ if __name__ == "__main__":
         fn = rnn + '_' + major
         if minor:
             fn += '_' + minor
-        fn += '_nodes' + str(nodes1) + '.csv'
+        fn += '_nodes' + str(nodes1)
         return fn
 
     filename = _get_filename(alg)
+
 
     for i in range(nb_epoch/nb_epoch_pred):
         for j in range(nb_epoch_pred):
@@ -76,8 +77,11 @@ if __name__ == "__main__":
             if 'pair' in alg: #shuffle negative samples
                 X, Y = ip.get_XY(M, C)
                 x, y = ip.get_XY(m, c)
+                SW = np.ones((X.shape[0], X.shape[1]))
+                sw = np.ones((x.shape[0], x.shape[1]))
             hist = model.fit(X, Y, sample_weight=SW, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y, sw))
 
+        assert False
         # testing
         pred = np.array(model.predict(x_test))
         if 'LM' in alg:
@@ -91,12 +95,16 @@ if __name__ == "__main__":
             head = np.average(head, axis=1)
             head = np.tile(head, (1, 16, 1))
             if seq_len%16 != 0:
-                pred = np.concatenate((head, tail), axis=1)
+                predAvg = np.concatenate((head, tail), axis=1)
+            else:
+                predAvg = head
             y2 = chord2signature(y) if 'one-hot' in alg else y  # use notes representation for y
             c_hat = chord2signature(pred)
+            c_hatAvg = chord2signature(predAvg)
             errCntAvg = np.average(np.abs(y2 - c_hat)) * 12
-            with open('pred/' + filename, 'w') as f:
-                np.savetxt(f, c_hat.reshape((nb_test*seq_len, 12)), delimiter=',', fmt="%d")
+            errCntAvgAvg = np.average(np.abs(y2 - c_hatAvg)) * 12
+            np.save('pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, seq_len, 12)))
+            np.save('pred/' + filename + '.npy', c_hatAvg.astype(int).reshape((nb_test, seq_len, 12)))
         elif 'pair' in alg:
             if 'L1diff' in alg:
                 pred = pred.reshape((nb_test, nb_train, 128 * 12))
@@ -115,11 +123,10 @@ if __name__ == "__main__":
                 p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
                 r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
                 errCntAvg = np.average(np.nan_to_num(2*p*r/(p+r)))
-            with open('pred/' + filename, 'w') as f:
-                np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
+            np.save('pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
 
         history = write_history(history, hist, nb_epoch_pred * (i+1), errCntAvg)
-        with open('history/' + filename, 'w') as csvfile:
+        with open('history/' + filename + '.csv', 'w') as csvfile:
             csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history)))
         print "epoch:", history[0][-1], "train_loss:", history[1][-1], "test_loss:", history[2][-1], "errCntAvg:", history[3][-1]
 

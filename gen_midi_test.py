@@ -7,15 +7,18 @@ mypath = 'pred/'
 files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
 midi_output_path = 'midi_out/'
-mel = np.genfromtxt('melody_test.csv', delimiter=',')
-chords_ground = np.genfromtxt('chord_test.csv', delimiter = ',')
+M = np.load('../npy/melody_csv1.npy')
+C = np.load('../npy/chord_csv1.npy')
+nSong = 1000
+M = M[-nSong:]
+C = C[-nSong:]
 
 for i in range(10):
-    song_ground = util.Matrices_to_MIDI(mel[128*i:128*(i+1)],chords_ground[128*i:128*(i+1)])
-    song_ground.write(midi_output_path+str(i)+'_ground.mid')
+    song_ground = util.Matrices_to_MIDI(M[i], C[i])
+    song_ground.write(midi_output_path + str(i) + '_ground.mid')
     for file in files:
-	chords_pred = np.genfromtxt('pred/' + file, delimiter = ',')
-	song_pred = util.Matrices_to_MIDI(mel[128*i:128*(i+1)],chords_pred[128*i:128*(i+1)])
-	song_pred.write(midi_output_path+str(i)+'_'+file[:-4]+'.mid')
+        C_pred = np.load('pred/' + file)
+	song_pred = util.Matrices_to_MIDI(M[i], C_pred[i])
+	song_pred.write(midi_output_path + str(i) + '_' + file[:-3] + '.mid')
 
 
