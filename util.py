@@ -236,6 +236,7 @@ def parse_data(alg, max_length):
         return C, M, sample_weight
     else: assert False
 
+
 def load_data(alg, nb_test):
     max_length = 1024
     C, M, sample_weight = parse_data(alg, max_length)
@@ -247,26 +248,21 @@ def load_data(alg, nb_test):
     SW = sample_weight[:-nb_test]
     return M, m, C, c, SW, sw
 
+
 class InputParser(object):
     def __init__(self, alg):
-        if 'LM' in alg and 'one-hot' in alg:
-            with open('csv/chord-1hot-signatures.pickle', 'rb') as pfile:
-                self.sign2chord = pkl.load(pfile)
-                self.size = len(self.sign2chord)
         self.alg = alg
-
-    def get_one_hot_dim(self):
-        try:
-            return self.size
-        except:
-            raise TypeError('this is not a one-hot program')
 
     def get_XY(self, M, C):
         if 'LM' in self.alg and 'one-hot' in self.alg:
-            newC = np.zeros([C.shape[0] * C.shape[1], self.size])
-            for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
-                newC[i][self.sign2chord[str(x)]] = 1
-            C = newC.reshape([C.shape[0], C.shape[1], self.size])
+            N = C.shape[0] * C.shape[1]
+            newC = C.reshape([N, 4096]).astype(np.int)
+            indexes = np.packbits(newC, axis=1).astype(np.int)
+            # packbits assumes numbers are in 8 bits. Instead our data uses 12 bits
+            # therefore it is necessary to do the bit operaation below:
+            indexes = (indexes[:, 0] << 4) + (indexes[:, 1] >> 4)
+            newC[np.arange(N), indexes] = 1
+            C = newC.reshape([C.shape[0], C.shape[1], 2**12])
             return M, C
 
         assert 'pair' in self.alg
@@ -464,14 +460,20 @@ def onehot2notes_translator():
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
     :return: f: the translator function
     """
-    chord2sign = np.load('csv/chord-1hot-signatures-rev.npy')
     def f(chord):
         """
-        :param chord: 1-hot representation of chords in (M, T, XDIM)
+        :param chord: 1-hot representation of chords in (M, T, 4096)
         :return: chord signature in (M, T, 12)
         """
         M, T, Dim = chord.shape
-        res = np.empty([M*T, 12])
+        newC =  chord.reshape([M*T, Dim])
+        index = np.nonzero(newC)[1]
+        # because unpackbits assumes byte type
+        index_bytes = np.matrix(np.empty([len(index), 2])).astype(np.ubyte)
+        index_bytes[:, 0], index_bytes[:, 1] = index << 4, index % 4096
+        # Each number is translated into 8 bits. But the second number only represent the last four bits
+        unp = np.unpackbits(index_bytes, axis=1)
+        res = np.concatenate([unp[:, :8], unp[:, -4:]], axis=1)
         for i, c in enumerate(chord.reshape([M*T, Dim])):
             id = np.nonzero(c)[0][0]
             res[i, :] = chord2sign[id]
