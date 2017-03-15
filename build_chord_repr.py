@@ -12,6 +12,7 @@ The two mapping cancel each other
 import numpy as np
 import pickle as pkl
 
+
 class ChordNotes2OneHotTranscoder(object):
     def __init__(self):
         with open('csv/chord-1hot-signatures.pickle') as pfile:
@@ -31,12 +32,14 @@ class ChordNotes2OneHotTranscoder(object):
         newC = newC.reshape([C.shape[0], C.shape[1], self.size])
         return newC
 
+
 def get_onehot2chordnotes_transcoder():
     """
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
     :return: f: the translator function
     """
     chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
+
     def f(chord):
         """
         Translate from 1-hot array of dim {DIM} back to superimposed repr of dim=12
@@ -44,7 +47,7 @@ def get_onehot2chordnotes_transcoder():
         :return: chord signature in (M, T, 12)
         """
         M, T, Dim = chord.shape
-        C2 =  chord.reshape([M*T, Dim])
+        C2 = chord.reshape([M*T, Dim])
         index = np.argmax(C2, axis=1)
         newC = chordId2sign[index, :]
         return newC.reshape(M, T, 12)
@@ -53,15 +56,13 @@ def get_onehot2chordnotes_transcoder():
 
 def load_data():
     """
-
-    :param alg: algorithm. Not used
-    :param nb_test: size of test set, should be less than the total number of data entry
-    :return:
+    :return: chord data
     """
-    C = np.genfromtxt('csv/chord.csv', delimiter=',') # Mx(T*12)
-    C = np.swapaxes(C.reshape((C.shape[0],12,128)), 1, 2) # MxTx12
-    C = C.reshape((C.shape[0]*128, 12)) # (MT)x12
+    C = np.genfromtxt('csv/chord.csv', delimiter=',')  # Mx(T*12)
+    C = np.swapaxes(C.reshape((C.shape[0],12,128)), 1, 2)  # MxTx12
+    C = C.reshape((C.shape[0]*128, 12))  # (MT)x12
     return C
+
 
 def get_uniq(c):
     bytes = np.packbits(c.astype(np.int), axis=1).astype(np.int64)
@@ -69,26 +70,30 @@ def get_uniq(c):
     uniqs = {integer: chord for integer, chord in zip(integer, c)}
     return uniqs
 
+
 def build_repr(uniqs):
     repr_set = {}
     reverse_set = []
 
-    for i, (cid, c) in enumerate(uniqs.items()):
+    for i, (cid, chord) in enumerate(uniqs.items()):
         repr_set[cid] = i
-        reverse_set.append(c)
+        reverse_set.append(chord)
     return repr_set, np.array(reverse_set)
 
-def savemap(map, path):
+
+def savemap(amap, path):
     with open(path, 'wb') as pfile:
-        pkl.dump(map, pfile)
+        pkl.dump(amap, pfile)
+
 
 def saveunmap(unmap, path):
     np.save(path, unmap)
 
+
 if __name__ == '__main__':
     c = load_data()
     cs = get_uniq(c)
-    print "Discovered %d different chord signatures, out of %d possibilities" % (len(cs), 2<<12)
-    map, unmap = build_repr(cs)
-    savemap(map, 'csv/chord-1hot-signatures.pickle')
+    print "Discovered %d different chord signatures, out of %d possibilities" % (len(cs), 2 << 12)
+    amap, unmap = build_repr(cs)
+    savemap(amap, 'csv/chord-1hot-signatures.pickle')
     saveunmap(unmap, 'csv/chord-1hot-signatures-rev')
