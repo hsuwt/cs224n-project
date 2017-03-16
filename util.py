@@ -185,7 +185,6 @@ def toCandidateBestN(CP, allCP, bestN):
     return bestIdx
 
 
-
 def parse_data(alg, max_length):
     if 'pair' in alg:
         C = np.genfromtxt('csv/chord.csv', delimiter=',')
@@ -202,17 +201,16 @@ def parse_data(alg, max_length):
                     M[i][M_dense.shape[1]*notes+j] = 1
                     sample_weight[i][j] = 1
         C = np.nan_to_num(C)
-        M = np.swapaxes(M.reshape((M_dense.shape[0],12,M_dense.shape[1])), 1, 2)
-        C = np.swapaxes(C.reshape((C.shape[0],12,-1)), 1, 2)
+        M = np.swapaxes(M.reshape((M_dense.shape[0], 12, M_dense.shape[1])), 1, 2)
+        C = np.swapaxes(C.reshape((C.shape[0], 12, -1)), 1, 2)
         return C, M, np.ones((C.shape[0], C.shape[1]))
-    #elif 'LM' in alg:
-    elif True:
+    else:
         nb_train = sum([len(files) for r, d, files in os.walk("../dataset/melody")])
         C = np.zeros((nb_train, max_length, 12))
         M = np.zeros((nb_train, max_length, 12))
         sample_weight = np.zeros((nb_train, max_length))
         train_idx = 0
-        for root,_,files in os.walk("../dataset/melody"):
+        for root, _, files in os.walk("../dataset/melody"):
             for m_file_name in files:
                 m_file_name_path = os.path.join(root, m_file_name)
                 c_file_name_path = m_file_name_path.replace("/melody/", "/chord/", 1)
@@ -233,7 +231,7 @@ def parse_data(alg, max_length):
         M = M[:train_idx]
         sample_weight = sample_weight[:train_idx]
         return C, M, sample_weight
-    else: assert False
+
 
 def csv2npy():
     max_length = 1024
@@ -316,7 +314,7 @@ class InputParser(object):
                     if tuple(x) in self.sign2chord:
                         newC[i][self.sign2chord[tuple(x)]] = 1
                     else:
-                        newC[i][self.sign2chord[(0,0,0,0,0,0,0,0,0,0,0,0)]] = 1
+                        newC[i][self.sign2chord[[0] * 12]] = 1
                 C = newC.reshape([C.shape[0], C.shape[1], self.size])
             return M, C
 
@@ -374,7 +372,8 @@ def print_result(pred, y, Y, alg, printCP, bestN):
         pred, bestNIdx = toCandidate(pred, Y, bestN, 'L1')
         norm = np.sum(abs(pred - y)) / 128.0 / nb_test
     numUniqIdx = len(np.unique(bestNIdx))
-    if printCP: printChordProgression(y, pred)
+    if printCP:
+        printChordProgression(y, pred)
     print('num of unique idx  = %d/%d' %(numUniqIdx, nb_test))
     print('norm after mapping = %.3f' %(norm))
     return bestNIdx, numUniqIdx, norm
