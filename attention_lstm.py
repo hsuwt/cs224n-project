@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from seq2seq import SimpleSeq2Seq, Seq2Seq, AttentionSeq2Seq
+
 from keras import backend as K
 from keras.engine import InputSpec
 from keras.layers import LSTM, activations, Wrapper

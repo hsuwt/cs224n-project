@@ -1,6 +1,6 @@
 import os
 import csv
-from attention_lstm import AttentionLSTM, AttentionLSTMWrapper
+from attention_lstm import *
 from AttLayer import AttLayer
 from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
@@ -30,17 +30,6 @@ def gen_input(feat, seq_len):
 
 def build(alg, input, nodes, drp):
     return_sequences = True
-    # if 'attention' in alg:
-        # f_rnn = LSTM(nodes, return_sequences=return_sequences)
-        # b_rnn = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)
-        # M1 = f_rnn(input)
-        # M2 = b_rnn(input)
-        # M1 = Dropout(drp)(M1)
-        # M2 = Dropout(drp)(M2)
-        # maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
-        # maxpool.supports_masking = True
-        # pool = merge([maxpool(M1), maxpool(M2)], mode='concat', concat_axis=-1)
-        # return AttentionLSTM(nodes, pool, single_attention_param=True)
     if 'RNN' in alg:
         M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
         M2 = SimpleRNN(nodes, return_sequences=return_sequences, go_backwards=True)(input)
@@ -59,6 +48,12 @@ def build(alg, input, nodes, drp):
     return M1
 
 def build_model(alg, nodes1, nodes2, drp, seq_len):
+    if 'attention' in alg:  # FIXME: do something about this
+        model = SimpleSeq2Seq(input_dim=12, hidden_dim=nodes1, output_length=128, output_dim=12)
+        loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
+        model.compile(optimizer=RMSprop(), loss=loss, sample_weight_mode="temporal")
+        return model
+
     if 'LM' in alg:
         input = gen_input('melody', seq_len)
         M = build(alg, input, nodes1, drp)
@@ -72,6 +67,7 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
         output = TimeDistributed(Dense(YDim , activation='sigmoid'))(M)
     else:
         print "err!!!!!"
+
     model = Model(input=input, output=output)
     loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
     model.compile(optimizer=RMSprop(), loss=loss, sample_weight_mode="temporal")
