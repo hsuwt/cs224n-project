@@ -22,6 +22,19 @@ class TrainingStrategy(object):
         raise NotImplementedError('override this!')
 
 
+    def get_filename(_alg):
+        major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else 'attention' if 'attention' in _alg else ''
+        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else 'L1'
+        rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
+        if 'Bidirectional' in _alg: rnn = 'B' + rnn
+
+        fn = rnn + '_' + major
+        if minor:
+            fn += '_' + minor
+        fn += '_nodes' + str(nodes1)
+        return fn
+
+
 class PairTrainingStrategy(TrainingStrategy):
     pass
     # alg = self.alg
@@ -207,19 +220,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # since it's too time-consuming to compute the unique_idx and norms,
         # record and save models after nb_epoch_pred epochs
 
-        def _get_filename(_alg):
-            major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
-            minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else 'L1'
-            rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
-            if 'Bidirectional' in _alg: rnn = 'B' + rnn
-
-            fn = rnn + '_' + major
-            if minor:
-                fn += '_' + minor
-            fn += '_nodes' + str(nodes1)
-            return fn
-
-        filename = _get_filename(self.alg)
+        filename = self.get_filename(self.alg)
 
         for i in range(nb_epoch):
             # print epoch

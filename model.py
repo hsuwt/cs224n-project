@@ -43,15 +43,14 @@ def build(alg, input, nodes, drp):
     M2 = Dropout(drp)(M2)
     if 'Bidirectional' in alg:
         M1 = merge([M1, M2], mode='concat')
-    if 'Attention' in alg:
-        M1 = AttLayer()(M1)
     return M1
 
 def build_model(alg, nodes1, nodes2, drp, seq_len):
     if 'attention' in alg:  # FIXME: do something about this
-        model = SimpleSeq2Seq(input_dim=12, hidden_dim=nodes1, output_length=128, output_dim=12)
+        # Input dimension
+        model = AttentionSeq2Seq(output_length=128, output_dim=12, input_dim=12)
         loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
-        model.compile(optimizer=RMSprop(), loss=loss, sample_weight_mode="temporal")
+        model.compile(optimizer='rmsprop', loss=loss, sample_weight_mode="temporal")
         return model
 
     if 'LM' in alg:
