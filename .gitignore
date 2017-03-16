@@ -2,3 +2,4 @@
 *.pyc
 midilabel/
 npy/
+.DS_Store
