@@ -26,7 +26,7 @@ if __name__ == "__main__":
     batch_size = args.batch_size
 
     if 'LM' in alg:
-        chord2signature = onehot2notes_translator() if 'one-hot' in alg else top3notes
+        chord2signature = get_onehot2chordnotes_transcoder() if 'one-hot' in alg else top3notes
 
     # M = training melody
     # m = testing melody

@@ -3,7 +3,7 @@ import sys
 import os
 import numpy as np
 import pretty_midi
-
+from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder
 
 def parse_algorithm(alg_str):
     alg = {x: None for x in alg_str.strip().split()}
@@ -280,42 +280,19 @@ def load_pair_data(alg, nb_test):
     SW = SW[:-nb_test]
     return M, m, C, c, SW, sw
 
-def load_testval_data():
-    m_tmp = np.array_split(np.load('../npy/melody_csv6.npy'),2, axis=0)
-    c_tmp = np.array_split(np.load('../npy/chord_csv6.npy'),2,axis=0)
-    sw_tmp = np.array_split(np.load('../npy/sw_csv6.npy'),2,axis=0)
-    return m_tmp[0], m_tmp[1], c_tmp[0], c_tmp[1], sw_tmp[0], sw_tmp[1]
-
-def load_train_data(i):
-    C = np.load('../npy/chord_csv'+str(i)+'.npy')
-    M = np.load('../npy/melody_csv'+str(i)+'.npy')
-    SW = np.load('../npy/sw_csv'+str(i)+'.npy')
-    return M, C, SW
 
 class InputParser(object):
     def __init__(self, alg):
         if 'LM' in alg and 'one-hot' in alg:
-            with open('csv/chord-1hot-signatures.pickle', 'rb') as pfile:
-                self.sign2chord = pkl.load(pfile)
-                self.size = len(self.sign2chord)
+            self.transcoder = ChordNotes2OneHotTranscoder()
         self.alg = alg
 
-    def get_one_hot_dim(self):
-        try:
-            return self.size
-        except:
-            raise TypeError('this is not a one-hot program')
-
     def get_XY(self, M, C):
-        if 'LM' in self.alg:
-            if 'one-hot' in self.alg:
-                newC = np.zeros([C.shape[0] * C.shape[1], self.size])
-                for i, x in enumerate(C.reshape([C.shape[0] * C.shape[1], 12])):
-                    if tuple(x) in self.sign2chord:
-                        newC[i][self.sign2chord[tuple(x)]] = 1
-                    else:
-                        newC[i][self.sign2chord[[0] * 12]] = 1
-                C = newC.reshape([C.shape[0], C.shape[1], self.size])
+        if 'LM' in self.alg and 'one-hot' in self.alg:
+            """
+            the dim of chord (C or Y) will change from 12 into {self.size}
+            """
+            C = self.transcoder.transcode(C)
             return M, C
 
         assert 'pair' in self.alg
@@ -508,25 +485,6 @@ def top3notes(chord):
     idx[idx < 9] = 0
     idx[idx >= 12-3] = 1
     return idx
-
-def onehot2notes_translator():
-    """
-    generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
-    :return: f: the translator function
-    """
-    chord2sign = np.load('csv/chord-1hot-signatures-rev.npy')
-    def f(chord):
-        """
-        :param chord: 1-hot representation of chords in (M, T, XDIM)
-        :return: chord signature in (M, T, 12)
-        """
-        M, T, Dim = chord.shape
-        res = np.empty([M*T, 12])
-        for i, c in enumerate(chord.reshape([M*T, Dim])):
-            id = np.nonzero(c)[0][0]
-            res[i, :] = chord2sign[id]
-        return res.reshape(M, T, 12)
-    return f
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     #assert(melody_matrix.shape[0] == chord_matrix.shape[0])
