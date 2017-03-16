@@ -252,7 +252,8 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             history.write_history(hist, nb_epoch_pred * (i + 1), errCntAvg)
             with open('history/' + filename + '.csv', 'w') as csvfile:
                 csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
-            print "epoch:", history.state[0][-1], "train_loss:", history[1][-1], "test_loss:", history.state[2][-1], "errCntAvg:", \
+            print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
+                "test_loss:", history.state[2][-1], "errCntAvg:", \
             history.state[3][-1]
 
             # record & save model
