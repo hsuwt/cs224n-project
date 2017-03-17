@@ -52,8 +52,9 @@ class PairTrainingStrategy(TrainingStrategy):
         self.X, self.Y = self.ip.get_XY(M, C)
         self.x, self.y = self.ip.get_XY(m, c)
         self.x_test = get_test(alg, m, C)
+        self.c, self.C = c, C
         self.seq_len = 128
-        nb_train = M.shape[0]     
+        self.nb_train = M.shape[0]     
         
     def train(self, model):
         nodes1 = self.alg['nodes1']
@@ -62,10 +63,13 @@ class PairTrainingStrategy(TrainingStrategy):
         nb_epoch_pred = self.alg['nb_epoch_pred']
         batch_size = self.alg['batch_size']
         seq_len = self.seq_len
-
+        
+        alg = self.alg
         X, Y = self.X, self.Y
         x, y = self.x, self.y
         x_test = self.x_test
+        c, C = self.c, self.C
+        nb_train, nb_test = self.nb_train, self.nb_test
         SW, sw_val = self.SW, self.sw_val
         # loaded data
 
@@ -86,32 +90,33 @@ class PairTrainingStrategy(TrainingStrategy):
                              validation_data=(x, y))
 
             # testing
-        if 'L1diff' in alg:
-            pred = pred.reshape((nb_test, nb_train, 128 * 12))
-            idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
-        else:
-            pred = pred.reshape((nb_test, nb_train, 128))
-            idx = np.argmax(np.sum(pred, axis=2), axis=1)
-        c_hat = C[idx]
-        # bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
-        # L1 error
-        if 'L1' in alg or 'L1diff' in alg:
-            errCntAvg = np.average(np.abs(c_hat - c)) * 12
-            # F1 error
-        elif 'F1' in alg:
-            np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
-            p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
-            r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
-            errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
-        np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
-
-        # record something
-        history.write_history(hist, nb_epoch_pred * (i + 1), errCntAvg)
-        with open('history/' + filename + '.csv', 'w') as csvfile:
-            csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
-        print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
-            "test_loss:", history.state[2][-1], "errCntAvg:", \
-        history.state[3][-1]
+            pred = np.array(model.predict(x_test))
+            if 'L1diff' in alg:
+                pred = pred.reshape((nb_test, nb_train, 128 * 12))
+                idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
+            else:
+                pred = pred.reshape((nb_test, nb_train, 128))
+                idx = np.argmax(np.sum(pred, axis=2), axis=1)
+            c_hat = C[idx]
+            # bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+            # L1 error
+            if 'L1' in alg or 'L1diff' in alg:
+                errCntAvg = np.average(np.abs(c_hat - c)) * 12
+                # F1 error
+            elif 'F1' in alg:
+                np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
+                p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
+                r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
+                errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
+            np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
+    
+            # record something
+            history.write_history(hist, nb_epoch_pred * (i + 1), errCntAvg)
+            with open('history/' + filename + '.csv', 'w') as csvfile:
+                csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
+            print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
+                "test_loss:", history.state[2][-1], "errCntAvg:", \
+            history.state[3][-1]
 
 
 class LanguageModelTrainingStrategy(TrainingStrategy):
