@@ -192,7 +192,7 @@ def parse_data(alg, max_length):
     M_dense = np.genfromtxt('csv/melody.csv', delimiter=',')
     assert (M_dense.shape[1]*12 == C.shape[1])
     M = np.zeros((M_dense.shape[0], M_dense.shape[1]*12))
-    sample_weight = np.zeros(M_dense.shape)
+    sample_weight = np.zeros(M_dense.shape) # Use this if using variable length
     for i in range(M_dense.shape[0]):
         for j in range(M_dense.shape[1]):
             if not np.isnan(M_dense[i][j]):
@@ -202,7 +202,13 @@ def parse_data(alg, max_length):
     C = np.nan_to_num(C)
     M = np.swapaxes(M.reshape((M_dense.shape[0], 12, M_dense.shape[1])), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0], 12, -1)), 1, 2)
-    return C, M, np.ones((C.shape[0], C.shape[1]))
+    
+    sample_weight = np.ones((C.shape[0], C.shape[1]))
+    if 'sample-biased' in alg: 
+        for p in range(1,8):
+            sample_weight[:,::2**p] +=1
+        sample_weight/= 8.0
+    return C, M, sample_weight
 
 def parse_big_data(alg, max_length):
     nb_train = sum([len(files) for r, d, files in os.walk("../dataset/melody")])

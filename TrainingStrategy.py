@@ -31,6 +31,8 @@ class TrainingStrategy(object):
         fn = rnn + '_' + major
         if minor:
             fn += '_' + minor
+        if 'sample-biased' in _alg:
+            fn += '_' + 'sb'
         fn += '_nodes' + str(_alg["nodes1"])
         return fn
 
