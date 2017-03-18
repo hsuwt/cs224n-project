@@ -38,7 +38,6 @@ if __name__ == "__main__":
 
     if 'one-hot' in alg:
         alg['one-hot-dim'] = ts.ydim
-
     for i in range(11):
         alg['mtl_ratio'] = 0.1 * i
         model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)

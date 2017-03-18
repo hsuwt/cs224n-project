@@ -1,16 +1,16 @@
-import pickle as pkl
 import sys
 import os
 import numpy as np
 import pretty_midi
-from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder
+from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder,get_onehot2chordnotes_transcoder
+import csv
+
 
 def parse_algorithm(alg_str):
     alg = {x: None for x in alg_str.strip().split()}
     if 'one-hot' in alg:
         alg['one-hot-dim'] = 0  # to be filled in
     return alg
-
 
 def rotate(Chroma, semitone):
     if semitone == 0:
@@ -186,6 +186,22 @@ def toCandidateBestN(CP, allCP, bestN):
 
 
 def parse_data(alg, max_length):
+    with open('csv/npy-exists.config') as keyvaluefile:
+        avaialable = [key[0] for key in csv.reader(keyvaluefile)]
+        if 'sample-biased' not in alg and 'normal' in avaialable:
+            print "I can load normal set of params from npy files"
+            M = np.load('csv/normal-melody.npy')
+            C = np.load('csv/normal-chord.npy')
+            SW = np.load('csv/normal-sampleweight.npy')
+            return M, C, SW
+
+        if 'sample-biased' in alg and 'sample-biased' in avaialable:
+            print "I can load sample-biased set of params from npy files"
+            M = np.load('csv/sample-biased-melody.npy')
+            C = np.load('csv/sample-biased-chord.npy')
+            SW = np.load('csv/sample-biased-sampleweight.npy')
+            return M, C, SW
+
     C = np.genfromtxt('csv/chord.csv', delimiter=',')
     # Data in melody.csv and root.csv are represented as [0,11].
     # Thus, we first span it to boolean matrix
@@ -202,12 +218,21 @@ def parse_data(alg, max_length):
     C = np.nan_to_num(C)
     M = np.swapaxes(M.reshape((M_dense.shape[0], 12, M_dense.shape[1])), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0], 12, -1)), 1, 2)
-    
+
     sample_weight = np.ones((C.shape[0], C.shape[1]))
-    if 'sample-biased' in alg: 
+    if 'sample-biased' in alg:
         for p in range(1,8):
             sample_weight[:,::2**p] +=1
         sample_weight/= 8.0
+
+    # store
+    with open('csv/npy-exists.config', 'w') as keyvaluefile:
+        avaialable = csv.writer(keyvaluefile)
+        key = 'sample-biased' if 'sample-biased' in alg else 'normal'
+        avaialable.writerow([key])
+        np.save('csv/' + key + '-chord', C)
+        np.save('csv/' + key + '-melody', M)
+        np.save('csv/' + key + '-sampleweight', sample_weight)
     return C, M, sample_weight
 
 def parse_big_data(alg, max_length):
