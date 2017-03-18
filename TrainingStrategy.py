@@ -36,7 +36,7 @@ class TrainingStrategy(object):
 
     def get_filename(self, _alg):
         major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else 'attention' if 'attention' in _alg else ''
-        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else 'L1'
+        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else ''
         rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
         if 'Bidirectional' in _alg: rnn = 'B' + rnn
 
@@ -138,8 +138,6 @@ class PairTrainingStrategy(TrainingStrategy):
 class LanguageModelTrainingStrategy(TrainingStrategy):
     def __init__(self, alg):
         self.alg = alg
-        self.isOnehot = 'one-hot' in alg
-
         alg = self.alg
         self.chord2signatureOnehot = get_onehot2chordnotes_transcoder() 
         self.chord2signatureChroma = top3notes
