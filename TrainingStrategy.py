@@ -202,13 +202,15 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, sample_weight={'one-hot': SW, 'chroma': SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
                              validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}, {'one-hot': sw_val, 'chroma': sw_val}))
             # testing
+            print nb_test
+
             predOnehot, predChroma = model.predict(x_test)
             predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, self.ydim))
             predChroma = np.array(predChroma).reshape((nb_test, seq_len, 12))
-            predOnehotAvg = predOnehot[:][:, :seq_len].reshape((nb_test, 16, seq_len / 16, self.ydim))
-            predChromaAvg = predChroma[:][:, :seq_len].reshape((nb_test, 16, seq_len / 16, 12))
-            predOnehotAvg = np.average(predOnehotAvg, axis=1)
-            predChromaAvg = np.average(predChromaAvg, axis=1)
+            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 16, 16, self.ydim))
+            predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 16, 16, 12))
+            predOnehotAvg = np.average(predOnehotAvg, axis=2)
+            predChromaAvg = np.average(predChromaAvg, axis=2)
             predOnehotAvg = np.tile(predOnehotAvg, (1, 16, 1))
             predChromaAvg = np.tile(predChromaAvg, (1, 16, 1))
             
