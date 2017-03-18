@@ -186,21 +186,21 @@ def toCandidateBestN(CP, allCP, bestN):
 
 
 def parse_data(alg, max_length):
-    # with open('csv/npy-exists.config') as keyvaluefile:
-    #     avaialable = [key[0] for key in csv.reader(keyvaluefile)]
-    #     if 'sample-biased' not in alg and 'normal' in avaialable:
-    #         print "I can load normal set of params from npy files"
-    #         M = np.load('csv/normal-melody.npy')
-    #         C = np.load('csv/normal-chord.npy')
-    #         SW = np.load('csv/normal-sampleweight.npy')
-    #         return M, C, SW
+    with open('csv/npy-exists.config') as keyvaluefile:
+        avaialable = [key[0] for key in csv.reader(keyvaluefile)]
+        if 'sample-biased' not in alg and 'normal' in avaialable:
+            print "I can load normal set of params from npy files"
+            M = np.load('csv/normal-melody.npy')
+            C = np.load('csv/normal-chord.npy')
+            SW = np.load('csv/normal-sampleweight.npy')
+            return C, M, SW
 
-    #     if 'sample-biased' in alg and 'sample-biased' in avaialable:
-    #         print "I can load sample-biased set of params from npy files"
-    #         M = np.load('csv/sample-biased-melody.npy')
-    #         C = np.load('csv/sample-biased-chord.npy')
-    #         SW = np.load('csv/sample-biased-sampleweight.npy')
-    #         return M, C, SW
+        if 'sample-biased' in alg and 'sample-biased' in avaialable:
+            print "I can load sample-biased set of params from npy files"
+            M = np.load('csv/sample-biased-melody.npy')
+            C = np.load('csv/sample-biased-chord.npy')
+            SW = np.load('csv/sample-biased-sampleweight.npy')
+            return C, M, SW
 
     C = np.genfromtxt('csv/chord.csv', delimiter=',')
     # Data in melody.csv and root.csv are represented as [0,11].
