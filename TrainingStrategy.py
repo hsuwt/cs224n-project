@@ -12,6 +12,13 @@ class HistoryWriter(object):
         state[1].append(round(hist.history['loss'][0], 2))
         state[2].append(round(hist.history['val_loss'][0], 2))
         state[3].append(round(errCntAvg, 2))
+    
+    def write_idx(self, uniqIdx, norm):
+        if ['uniqIdx'] not in self.state and ['norm'] not in self.state:
+            self.state.extend([['uniqIdx'], ['norm']])
+        state = self.state
+        state[4].append(uniqIdx)
+        state[5].append(norm)
 
 class TrainingStrategy(object):
     def __init__(self):
@@ -100,7 +107,7 @@ class PairTrainingStrategy(TrainingStrategy):
                 pred = pred.reshape((nb_test, nb_train, 128))
                 idx = np.argmax(np.sum(pred, axis=2), axis=1)
             c_hat = C[idx]
-            # bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+            bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             # L1 error
             if 'L1' in alg or 'L1diff' in alg:
                 errCntAvg = np.average(np.abs(c_hat - c)) * 12
@@ -114,6 +121,7 @@ class PairTrainingStrategy(TrainingStrategy):
     
             # record something
             history.write_history(hist, nb_epoch_pred * (i + 1), errCntAvg)
+            history.write_idx(uniqIdx, norm )
             with open('history/' + filename + '.csv', 'w') as csvfile:
                 csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
             print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
