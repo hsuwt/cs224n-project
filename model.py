@@ -1,6 +1,6 @@
 import os
 import csv
-from attention_lstm import *
+#from attention_lstm import *
 from AttLayer import AttLayer
 from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
@@ -58,7 +58,7 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
         ydim = alg['one-hot-dim'] if 'one-hot' in alg else 12
     elif 'pair' in alg:
         input = gen_input('pair', seq_len)
-    else: print "err!!!!!"    
+    else: print "err!!!!!"
     M = build(alg, input, nodes1, drp)
     outputOneHot = TimeDistributed(Dense(alg['one-hot-dim'], activation='softmax'), name='one-hot')(M)
     outputChroma = TimeDistributed(Dense(12, activation='sigmoid'), name='chroma')(M)
