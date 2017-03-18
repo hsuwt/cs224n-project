@@ -3,7 +3,7 @@ import sys
 import os
 import numpy as np
 import pretty_midi
-from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder
+from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder, onehot2weighteChords
 
 def parse_algorithm(alg_str):
     alg = {x: None for x in alg_str.strip().split()}
