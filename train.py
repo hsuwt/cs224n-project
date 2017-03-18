@@ -19,7 +19,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=250)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=100)
     parser.add_argument(dest='mtl_ratio', nargs='?', type=int, default=0)
-
+    args = parser.parse_args()
     alg = parse_algorithm(args.algorithm)
     alg.update(vars(args))
     nodes1, nodes2,  = args.nodes1, args.nodes2
