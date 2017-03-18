@@ -209,8 +209,10 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 16, 16, 12))
             predOnehotAvg = np.average(predOnehotAvg, axis=2)
             predChromaAvg = np.average(predChromaAvg, axis=2)
-            predOnehotAvg = np.tile(predOnehotAvg, (1, 16, 1))
-            predChromaAvg = np.tile(predChromaAvg, (1, 16, 1))
+            predOnehotAvg = np.repeat(predOnehotAvg, 16, axis=1)
+            predChromaAvg = np.repeat(predChromaAvg, 16, axis=1)
+            for j in range(15):
+                assert np.sum(predChromaAvg[0][0] - predChromaAvg[0][i+1]) == 0
             
             # signature here refers to theo output feature vector to be used for training
             yOnehot12      = self.chord2signatureOnehot(yOnehot)
