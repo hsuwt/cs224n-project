@@ -55,10 +55,8 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
         return model
     if 'LM' in alg:
         input = gen_input('melody', seq_len)
-        ydim = alg['one-hot-dim'] if 'one-hot' in alg else 12
     elif 'pair' in alg:
         input = gen_input('pair', seq_len)
-    else: print "err!!!!!"
     M = build(alg, input, nodes1, drp)
     outputOneHot = TimeDistributed(Dense(alg['one-hot-dim'], activation='softmax'), name='one-hot')(M)
     outputChroma = TimeDistributed(Dense(12, activation='sigmoid'), name='chroma')(M)

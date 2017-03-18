@@ -317,7 +317,7 @@ class InputParser(object):
     This replaces previous function GetXY
     """
     def __init__(self, alg):
-        if 'LM' in alg and 'one-hot' in alg:
+        if 'LM' in alg:
             self.transcoder = ChordNotes2OneHotTranscoder()
         self.alg = alg
 

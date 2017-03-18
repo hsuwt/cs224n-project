@@ -1,0 +1,2 @@
+epoch,train1,train12,val1,val12,err1,err12,err1Avg,err12Avg
+1,4.81,0.68,4.76,0.62,4.09,3.82,4.01,3.89

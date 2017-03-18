@@ -36,7 +36,7 @@ class TrainingStrategy(object):
 
     def get_filename(self, _alg):
         major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else 'attention' if 'attention' in _alg else ''
-        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else 'L1'
+        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else ''
         rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
         if 'Bidirectional' in _alg: rnn = 'B' + rnn
 
@@ -138,8 +138,6 @@ class PairTrainingStrategy(TrainingStrategy):
 class LanguageModelTrainingStrategy(TrainingStrategy):
     def __init__(self, alg):
         self.alg = alg
-        self.isOnehot = 'one-hot' in alg
-
         alg = self.alg
         self.chord2signatureOnehot = get_onehot2chordnotes_transcoder() 
         self.chord2signatureChroma = top3notes
@@ -202,13 +200,15 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, sample_weight={'one-hot': SW, 'chroma': SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
                              validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}, {'one-hot': sw_val, 'chroma': sw_val}))
             # testing
+            print nb_test
+
             predOnehot, predChroma = model.predict(x_test)
             predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, self.ydim))
             predChroma = np.array(predChroma).reshape((nb_test, seq_len, 12))
-            predOnehotAvg = predOnehot[:][:, :seq_len].reshape((nb_test, 16, seq_len / 16, self.ydim))
-            predChromaAvg = predChroma[:][:, :seq_len].reshape((nb_test, 16, seq_len / 16, 12))
-            predOnehotAvg = np.average(predOnehotAvg, axis=1)
-            predChromaAvg = np.average(predChromaAvg, axis=1)
+            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 16, 16, self.ydim))
+            predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 16, 16, 12))
+            predOnehotAvg = np.average(predOnehotAvg, axis=2)
+            predChromaAvg = np.average(predChromaAvg, axis=2)
             predOnehotAvg = np.tile(predOnehotAvg, (1, 16, 1))
             predChromaAvg = np.tile(predChromaAvg, (1, 16, 1))
             
