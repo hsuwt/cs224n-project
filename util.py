@@ -13,7 +13,6 @@ def parse_algorithm(alg_str):
         alg['one-hot-dim'] = 0  # to be filled in
     return alg
 
-
 def rotate(_chroma, semitone):
     if semitone == 0:
         return _chroma
@@ -220,9 +219,9 @@ def parse_data(alg, max_length):
     C = np.nan_to_num(C)
     M = np.swapaxes(M.reshape((M_dense.shape[0], 12, M_dense.shape[1])), 1, 2)
     C = np.swapaxes(C.reshape((C.shape[0], 12, -1)), 1, 2)
-    
+
     sample_weight = np.ones((C.shape[0], C.shape[1]))
-    if 'sample-biased' in alg: 
+    if 'sample-biased' in alg:
         for p in range(1,8):
             sample_weight[:,::2**p] +=1
         sample_weight/= 8.0
