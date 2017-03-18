@@ -64,7 +64,7 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
     outputChroma = TimeDistributed(Dense(12, activation='sigmoid'), name='chroma')(M)
     model = Model(input=input, output=[outputOneHot, outputChroma])
     model.compile(optimizer=Adam(), loss={'one-hot':'categorical_crossentropy', 'chroma':'binary_crossentropy'}, \
-        sample_weight_mode="temporal", loss_weights={'one-hot': alg['mtl_ratio'], 'chroma': 1 - alg['mtl_ratio']})
+        sample_weight_mode="temporal", loss_weights={'one-hot': alg['mtl_ratio'], 'chroma': 5*(1 - alg['mtl_ratio'])})
     return model
 
 def record(model, rec):
