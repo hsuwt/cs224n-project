@@ -6,7 +6,7 @@ from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
 from keras.layers import LSTM, GRU, SimpleRNN, TimeDistributed, Lambda
 from keras.models import Model, model_from_json
-from keras.optimizers import RMSprop, Adagrad
+from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping
 from keras import backend as K
 
@@ -46,30 +46,26 @@ def build(alg, input, nodes, drp):
     return M1
 
 def build_model(alg, nodes1, nodes2, drp, seq_len):
+    #FIXME #TODO add mtl_ratio as an argument
     if 'attention' in alg:  # FIXME: do something about this
         # Input dimension
         model = AttentionSeq2Seq(output_length=128, output_dim=12, input_dim=12)
         loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
-        model.compile(optimizer='rmsprop', loss=loss, sample_weight_mode="temporal")
+        model.compile(optimizer=Adam(), loss=loss, sample_weight_mode="temporal")
         return model
-
     if 'LM' in alg:
         input = gen_input('melody', seq_len)
-        M = build(alg, input, nodes1, drp)
         ydim = alg['one-hot-dim'] if 'one-hot' in alg else 12
-        activation = 'softmax' if 'one-hot' in alg else 'sigmoid'
-        output = TimeDistributed(Dense(ydim, activation=activation))(M)
     elif 'pair' in alg:
         input = gen_input('pair', seq_len)
-        M = build(alg, input, nodes1, drp)
-        YDim = 12 if 'L1diff' in alg else 1
-        output = TimeDistributed(Dense(YDim , activation='sigmoid'))(M)
-    else:
-        print "err!!!!!"
-
-    model = Model(input=input, output=output)
-    loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
-    model.compile(optimizer=RMSprop(), loss=loss, sample_weight_mode="temporal")
+    else: print "err!!!!!"    
+    M = build(alg, input, nodes1, drp)
+    print alg['one-hot-dim']
+    outputOneHot = TimeDistributed(Dense(alg['one-hot-dim'], activation='softmax'), name='one-hot')(M)
+    outputChroma = TimeDistributed(Dense(12, activation='sigmoid'), name='chroma')(M)
+    model = Model(input=input, output=[outputOneHot, outputChroma])
+    model.compile(optimizer=Adam(), loss={'one-hot':'categorical_crossentropy', 'chroma':'binary_crossentropy'}, \
+        sample_weight_mode="temporal", loss_weights={'one-hot': alg['mtl_ratio'], 'chroma': 1 - alg['mtl_ratio']})
     return model
 
 def record(model, rec):

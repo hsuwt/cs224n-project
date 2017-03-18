@@ -12,10 +12,10 @@ def parse_algorithm(alg_str):
     return alg
 
 
-def rotate(_chroma, semitone):
+def rotate(Chroma, semitone):
     if semitone == 0:
-        return _chroma
-    return np.concatenate((_chroma[-semitone:], _chroma[:_chroma.shape[0] - semitone]), axis=0)
+        return Chroma
+    return np.concatenate((Chroma[-semitone:], Chroma[:Chroma.shape[0] - semitone]), axis=0)
 
 
 def hamDis(chroma1, chroma2):
@@ -45,9 +45,9 @@ def closestChord(root, chordType):
     return rotate(chroma2chord_LUT[chordType].copy(), root)
 
 
-def chroma2chord_v2(_chroma):
+def chroma2chord_v2(Chroma):
     # v2 is way faster
-    notes = np.where(_chroma)[0]
+    notes = np.where(Chroma)[0]
     interval = np.diff(notes)
     if len(notes) == 3:
         if all(interval==np.array([4,3])): return [notes[0],1] #maj root position
@@ -117,8 +117,8 @@ _qualifier = {
 }
 
 
-def printChord(_chroma):
-    r, t = chroma2chord_v2(_chroma)
+def printChord(Chroma):
+    r, t = chroma2chord_v2(Chroma)
     S = _rootNote[r] + _qualifier[t] if t != 6 else 'N'
     print '%s\t' % S
 
@@ -298,13 +298,8 @@ class InputParser(object):
 
     def get_XY(self, M, C):
         if 'LM' in self.alg:
-            if 'one-hot' in self.alg:
-                """
-                the dim of chord (C or Y) will change from 12 into {self.size}
-                """
-                C = self.transcoder.transcode(C)
-            return M, C
-
+            COnehot = self.transcoder.transcode(C)
+            return M, C, COnehot
         assert 'pair' in self.alg
         n = M.shape[0]
         idx = np.random.randint(n, size=n)
@@ -473,7 +468,10 @@ def write_history(history, hist, epoch, errCntAvg):
     history[0].append(epoch)
     history[1].append(round(hist.history['loss'][0], 2))
     history[2].append(round(hist.history['val_loss'][0], 2))
-    history[3].append(round(errCntAvg, 2))
+    history[3].append(round(errCntAvg[0], 2))
+    history[4].append(round(errCntAvg[1], 2))
+    history[5].append(round(errCntAvg[2], 2))
+    history[6].append(round(errCntAvg[3], 2))
     return history
 
 def Melody_Matrix_to_Section_Composed(melody_matrix):
