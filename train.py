@@ -37,7 +37,7 @@ if __name__ == "__main__":
         raise ValueError('Please specify a valid training strategy!')
 
     alg['one-hot-dim'] = ts.ydim
-    for i in range(11):
+    for i in range(9, 11):
         alg['mtl_ratio'] = 0.1 * i
         model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
         ts.train(model)
