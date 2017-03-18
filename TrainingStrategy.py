@@ -46,6 +46,8 @@ class TrainingStrategy(object):
         if 'sample-biased' in _alg:
             fn += '_' + 'sb'
         fn += '_nodes' + str(_alg["nodes1"])
+        if 'mtl_ratio' in _alg:
+            fn += '_' + str(_alg['mtl_ratio'])
         return fn
 
 
