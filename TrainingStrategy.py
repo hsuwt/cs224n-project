@@ -2,7 +2,20 @@
 from util import *
 import csv
 
-class HistoryWriter(object):
+class HistoryWriterPair(object):
+    def __init__(self):
+        self.state = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg'],['uniqIdx'], ['norm']]
+        
+    def write_history(self, hist, epoch, errCntAvg, uniqIdx, norm):
+        state = self.state
+        state[0].append(epoch)
+        state[1].append(round(hist.history['loss'][0], 2))
+        state[2].append(round(hist.history['val_loss'][0], 2))
+        state[3].append(round(errCntAvg, 2))
+        state[4].append(uniqIdx)
+        state[5].append(norm)        
+
+class HistoryWriterLM(object):
     def __init__(self):
         self.state = [['epoch'], ['train1'], ['train12'], ['val1'], ['val12'], ['err1'], ['err12'], ['err1Avg'], ['err12Avg']]
 
@@ -18,12 +31,6 @@ class HistoryWriter(object):
         state[7].append(round(errCntAvg[2], 2))
         state[8].append(round(errCntAvg[3], 2))
 
-    def write_idx(self, uniqIdx, norm):
-            if ['uniqIdx'] not in self.state and ['norm'] not in self.state:
-                self.state.extend([['uniqIdx'], ['norm']])
-            state = self.state
-            state[4].append(uniqIdx)
-            state[5].append(norm)
 
 class TrainingStrategy(object):
     def __init__(self):
@@ -89,7 +96,7 @@ class PairTrainingStrategy(TrainingStrategy):
         # loaded data
 
         # model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
-        history = HistoryWriter()
+        history = HistoryWriterPair()
 
         # history will record the loss of every epoch
         # since it's too time-consuming to compute the unique_idx and norms,
@@ -126,8 +133,7 @@ class PairTrainingStrategy(TrainingStrategy):
             np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
 
             # record something
-            history.write_history(hist, i+1, errCntAvg)
-            history.write_idx(uniqIdx, norm )
+            history.write_history(hist, i+1, errCntAvg,uniqIdx, norm )
             with open('history/' + filename + '.csv', 'w') as csvfile:
                 csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
             print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
@@ -185,7 +191,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # loaded data
 
         # model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
-        history = HistoryWriter()
+        history = HistoryWriterLM()
 
         # history will record the loss of every epoch
         # since it's too time-consuming to compute the unique_idx and norms,
