@@ -22,15 +22,14 @@ class HistoryWriterLM(object):
     def write_history(self, hist, epoch, errCntAvg):
         state = self.state
         state[0].append(epoch)
-        state[1].append(round(hist.history['timedistributed_1_loss'][0], 2))
-        state[2].append(round(hist.history['timedistributed_2_loss'][0], 2))
-        state[3].append(round(hist.history['val_timedistributed_1_loss'][0], 2))
-        state[4].append(round(hist.history['val_timedistributed_2_loss'][0], 2))
+        state[1].append(round(hist.history['one-hot_loss'][0], 2))
+        state[2].append(round(hist.history['chroma_loss'][0], 2))
+        state[3].append(round(hist.history['val_one-hot_loss'][0], 2))
+        state[4].append(round(hist.history['val_chroma_loss'][0], 2))
         state[5].append(round(errCntAvg[0], 2))
         state[6].append(round(errCntAvg[1], 2))
         state[7].append(round(errCntAvg[2], 2))
         state[8].append(round(errCntAvg[3], 2))
-
 
 class TrainingStrategy(object):
     def __init__(self):
@@ -203,8 +202,8 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             # print epoch
             sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
             sys.stdout.flush()
-            hist = model.fit(X, [YOnehot, YChroma], sample_weight=[SW, SW], batch_size=batch_size, nb_epoch=1, verbose=0,
-                             validation_data=(x, [yOnehot, yChroma], [sw_val, sw_val]))
+            hist = model.fit(X, {'one-hot':YOnehot, 'chroma':YChroma}, sample_weight={'one-hot':SW, 'chroma':SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
+                             validation_data=(x, {'one-hot':yOnehot, 'chroma':yChroma}, {'one-hot':sw_val, 'chroma':sw_val}))
             # testing
             print nb_test
 

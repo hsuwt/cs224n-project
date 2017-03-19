@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=250)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=100)
-    parser.add_argument(dest='mtl_ratio', nargs='?', type=int, default=0)
+    parser.add_argument(dest='mtl_ratio', nargs='?', type=float, default=0.0)
     args = parser.parse_args()
     alg = parse_algorithm(args.algorithm)
     alg.update(vars(args))
