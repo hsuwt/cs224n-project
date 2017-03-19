@@ -58,11 +58,11 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
     elif 'pair' in alg:
         input = gen_input('pair', seq_len)
     M = build(alg, input, nodes1, drp)
-    outputOneHot = TimeDistributed(Dense(alg['one-hot-dim'], activation='softmax'), name='one-hot')(M)
-    outputChroma = TimeDistributed(Dense(12, activation='sigmoid'), name='chroma')(M)
+    outputOneHot = TimeDistributed(Dense(alg['one-hot-dim'], activation='softmax'))(M)
+    outputChroma = TimeDistributed(Dense(12, activation='sigmoid'))(M)
     model = Model(input=input, output=[outputOneHot, outputChroma])
-    model.compile(optimizer=Adam(), loss={'one-hot':'categorical_crossentropy', 'chroma':'binary_crossentropy'}, \
-        sample_weight_mode="temporal", loss_weights={'one-hot': alg['mtl_ratio'], 'chroma': 5*(1 - alg['mtl_ratio'])})
+    model.compile(optimizer=Adam(), loss=['categorical_crossentropy', 'binary_crossentropy'], \
+        sample_weight_mode="temporal", loss_weights=[alg['mtl_ratio'], 5*(1 - alg['mtl_ratio'])])
     return model
 
 def record(model, rec):

@@ -9,10 +9,10 @@ class HistoryWriter(object):
     def write_history(self, hist, epoch, errCntAvg):
         state = self.state
         state[0].append(epoch)
-        state[1].append(round(hist.history['one-hot_loss'][0], 2))
-        state[2].append(round(hist.history['chroma_loss'][0], 2))
-        state[3].append(round(hist.history['val_one-hot_loss'][0], 2))
-        state[4].append(round(hist.history['val_chroma_loss'][0], 2))
+        state[1].append(round(hist.history['timedistributed_1_loss'][0], 2))
+        state[2].append(round(hist.history['timedistributed_2_loss'][0], 2))
+        state[3].append(round(hist.history['val_timedistributed_1_loss'][0], 2))
+        state[4].append(round(hist.history['val_timedistributed_2_loss'][0], 2))
         state[5].append(round(errCntAvg[0], 2))
         state[6].append(round(errCntAvg[1], 2))
         state[7].append(round(errCntAvg[2], 2))
@@ -197,8 +197,8 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             # print epoch
             sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
             sys.stdout.flush()
-            hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, sample_weight={'one-hot': SW, 'chroma': SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
-                             validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}, {'one-hot': sw_val, 'chroma': sw_val}))
+            hist = model.fit(X, [YOnehot, YChroma], sample_weight=[SW, SW], batch_size=batch_size, nb_epoch=1, verbose=0,
+                             validation_data=(x, [yOnehot, yChroma], [sw_val, sw_val]))
             # testing
             print nb_test
 
@@ -213,15 +213,14 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             predChromaAvg = np.repeat(predChromaAvg, 8, axis=1)
 
             # signature here refers to theo output feature vector to be used for training
-            yOnehot12      = self.chord2signatureOnehot(yOnehot)
             c_hatOnehot    = self.chord2signatureOnehot(predOnehot)
             c_hatChroma    = self.chord2signatureChroma(predChroma)
             c_hatOnehotAvg = self.chord2signatureOnehot(predOnehotAvg)
             c_hatChromaAvg = self.chord2signatureChroma(predChromaAvg)
-            errCntAvgOnehot    = np.average(np.abs(yOnehot12 - c_hatOnehot)) * 12
-            errCntAvgChroma    = np.average(np.abs(yChroma   - c_hatChroma)) * 12
-            errCntAvgOnehotAvg = np.average(np.abs(yOnehot12 - c_hatOnehotAvg)) * 12
-            errCntAvgChromaAvg = np.average(np.abs(yChroma   - c_hatChromaAvg)) * 12
+            errCntAvgOnehot    = np.average(np.abs(yChroma - c_hatOnehot)) * 12
+            errCntAvgChroma    = np.average(np.abs(yChroma - c_hatChroma)) * 12
+            errCntAvgOnehotAvg = np.average(np.abs(yChroma - c_hatOnehotAvg)) * 12
+            errCntAvgChromaAvg = np.average(np.abs(yChroma - c_hatChromaAvg)) * 12
             np.save('../pred/' + filename + 'Onehot.npy', c_hatOnehot.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'Chroma.npy', c_hatChroma.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'OnehotAvg.npy', c_hatOnehotAvg.astype(int).reshape((nb_test, seq_len, 12)))
