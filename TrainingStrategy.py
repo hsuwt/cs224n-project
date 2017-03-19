@@ -140,7 +140,8 @@ class PairTrainingStrategy(TrainingStrategy):
                 p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
                 r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
                 errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
-            np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
+            np.save('../pred/' + filename + 'Chroma.npy', c_hatChroma.astype(int).reshape((nb_test, 128, 12)))
+            np.save('../pred/' + filename + 'Onehot.npy', c_hatOnehot.astype(int).reshape((nb_test, 128, 12)))
 
             # record something
             history.write_history(hist, i+1, errCntAvgChroma,uniqIdx, norm )
