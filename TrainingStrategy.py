@@ -112,9 +112,9 @@ class PairTrainingStrategy(TrainingStrategy):
                              validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}))
       
             predOnehot, predChroma = model.predict(x_test)
-            predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, self.ydim))
+            predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, 119))
             predChroma = np.array(predChroma).reshape((nb_test, seq_len, 12))
-            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 8, 8, self.ydim))
+            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 8, 8, 119))
             predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 8, 8, 12))
             predOnehotAvg = np.average(predOnehotAvg, axis=2)
             predChromaAvg = np.average(predChromaAvg, axis=2)
