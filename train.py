@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
     parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM')
     parser.add_argument(dest='mtl_ratio', nargs='?', type=float, default=0.0)
-    parser.add_argument(dest='nodes1', nargs='?', type=int, default=128)
+    parser.add_argument(dest='nodes1', nargs='?', type=int, default=1024)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=128)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
@@ -37,9 +37,9 @@ if __name__ == "__main__":
         raise ValueError('Please specify a valid training strategy!')
 
     if 'LM' in alg:
-        alg['one-hot-dim'] = ts.ydim        
+        alg['one-hot-dim'] = ts.ydim
         model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
         ts.train(model)
     else:
         model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
-        ts.train(model)        
+        ts.train(model)
