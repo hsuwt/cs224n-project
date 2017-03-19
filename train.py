@@ -11,9 +11,9 @@ from TrainingStrategy import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM')
     parser.add_argument(dest='mtl_ratio', nargs='?', type=float, default=0.0)
-    parser.add_argument(dest='nodes1', nargs='?', type=int, default=1024)
+    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1diff Bidirectional')
+    parser.add_argument(dest='nodes1', nargs='?', type=int, default=128)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=128)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     dropout_rate = args.dropout_rate
     batch_size = args.batch_size
     mtl_ratio = args.mtl_ratio
-
+    alg['one-hot-dim'] = 119
     # I am thinking it should be like this
     if 'pair' in alg:
         ts = PairTrainingStrategy(alg)
