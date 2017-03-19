@@ -45,5 +45,7 @@ if __name__ == "__main__":
             model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
             ts.train(model)
     else:
-        model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
-        ts.train(model)        
+        for i in range(11):
+            alg['mtl_ratio'] = 0.1 * i        
+            model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
+            ts.train(model)        
