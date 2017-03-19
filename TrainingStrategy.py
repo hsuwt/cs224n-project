@@ -4,16 +4,22 @@ import csv
 
 class HistoryWriterPair(object):
     def __init__(self):
-        self.state = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg'],['uniqIdx'], ['norm']]
+        self.state = [['epoch'], ['loss1'], ['loss12'],['val_loss1'], ['val_loss12'], ['errCntAvg1'], ['errCntAvg12'],['uniqIdx1'],['uniqIdx12'], ['norm1'], ['norm12']]
         
     def write_history(self, hist, epoch, errCntAvg, uniqIdx, norm):
         state = self.state
+        print hist.history
         state[0].append(epoch)
-        state[1].append(round(hist.history['loss'][0], 2))
-        state[2].append(round(hist.history['val_loss'][0], 2))
-        state[3].append(round(errCntAvg, 2))
-        state[4].append(uniqIdx)
-        state[5].append(norm)        
+        state[1].append(round(hist.history['one-hot_loss'][0], 2))
+        state[2].append(round(hist.history['chroma_loss'][0], 2))
+        state[3].append(round(hist.history['val_one-hot_loss'][0], 2))
+        state[4].append(round(hist.history['val_chroma_loss'][0], 2))
+        state[5].append(round(errCntAvg[0], 2))
+        state[6].append(round(errCntAvg[1], 2))
+        state[7].append(uniqIdx[0])
+        state[8].append(uniqIdx[1])
+        state[9].append(norm[0])    
+        state[10].append(norm[1]) 
 
 class HistoryWriterLM(object):
     def __init__(self):
@@ -144,12 +150,13 @@ class PairTrainingStrategy(TrainingStrategy):
             np.save('../pred/' + filename + 'Onehot.npy', c_hatOnehot.astype(int).reshape((nb_test, 128, 12)))
 
             # record something
-            history.write_history(hist, i+1, errCntAvgChroma,uniqIdx, norm )
+            history.write_history(hist, i+1, [errCntAvgOnehot, errCntAvgChroma],[uniqIdxOnehot, uniqIdxChroma] , \
+                                  [ normOnehot, normChroma] )
             with open('history/' + filename + '.csv', 'w') as csvfile:
                 csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
-            print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
-                "test_loss:", history.state[2][-1], "errCntAvg:", \
-            history.state[3][-1]
+            print "epoch:", history.state[0][-1], "train_loss1:", history.state[1][-1],"train_loss12:", history.state[2][-1], \
+                "test_loss1:", history.state[3][-1], "test_loss12:", history.state[4][-1], "errCntAvg1:", \
+            history.state[5][-1], "errCntAvg12:", history.state[6][-1]
 
 
 class LanguageModelTrainingStrategy(TrainingStrategy):
