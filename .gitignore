@@ -4,3 +4,5 @@ midilabel/
 npy/
 .DS_Store
 csv/npy-exists.config
+.ipynb_checkpoints
+history/*.png
