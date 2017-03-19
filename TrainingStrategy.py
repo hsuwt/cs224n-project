@@ -8,7 +8,6 @@ class HistoryWriterPair(object):
         
     def write_history(self, hist, epoch, errCntAvg, uniqIdx, norm):
         state = self.state
-        print hist.history
         state[0].append(epoch)
         state[1].append(round(hist.history['one-hot_loss'][0], 2))
         state[2].append(round(hist.history['chroma_loss'][0], 2))
