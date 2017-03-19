@@ -72,8 +72,8 @@ class PairTrainingStrategy(TrainingStrategy):
         M, m, C, c, SW, sw_val = load_data(alg, self.nb_test)
 
         self.SW, self.sw_val = SW, sw_val
-        self.X, self.Y = self.ip.get_XY(M, C)
-        self.x, self.y = self.ip.get_XY(m, c)
+        self.X, self.YChroma, self.YOnehot = self.ip.get_XY(M, C)
+        self.x, self.yChroma, self.yOnehot = self.ip.get_XY(m, c)
         self.x_test = get_test(alg, m, C)
         self.c, self.C = c, C
         self.seq_len = 128
@@ -87,8 +87,8 @@ class PairTrainingStrategy(TrainingStrategy):
         seq_len = self.seq_len
 
         alg = self.alg
-        X, Y = self.X, self.Y
-        x, y = self.x, self.y
+        X, YChroma, YOnehot = self.X, self.YChroma, self.YOnehot
+        x, yChroma, yOnehot = self.x, self.yChroma, self.yOnehot
         x_test = self.x_test
         c, C = self.c, self.C
         nb_train, nb_test = self.nb_train, self.nb_test
@@ -108,22 +108,42 @@ class PairTrainingStrategy(TrainingStrategy):
             # print epoch
             sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
             sys.stdout.flush()
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0,
-                             validation_data=(x, y))
+            hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, batch_size=batch_size, nb_epoch=1, verbose=0,
+                             validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}))
+      
+            predOnehot, predChroma = model.predict(x_test)
+            predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, self.ydim))
+            predChroma = np.array(predChroma).reshape((nb_test, seq_len, 12))
+            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 8, 8, self.ydim))
+            predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 8, 8, 12))
+            predOnehotAvg = np.average(predOnehotAvg, axis=2)
+            predChromaAvg = np.average(predChromaAvg, axis=2)
+            predOnehotAvg = np.repeat(predOnehotAvg, 8, axis=1)
+            predChromaAvg = np.repeat(predChromaAvg, 8, axis=1)
+
+
 
             # testing
-            pred = np.array(model.predict(x_test))
+            predOnehot, predChroma = model.predict(x_test)            
             if 'L1diff' in alg:
-                pred = pred.reshape((nb_test, nb_train, 128 * 12))
-                idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
+                predChroma = np.array(predChroma).reshape((nb_test, nb_train, 128 * 12))
+                predChroma = predChroma.reshape((nb_test, nb_train, 128 * 12))
+                idxChroma = np.argmin(np.sum(np.abs(predChroma - 0.5), axis=2), axis=1)
+                predOnehot = np.array(predOnehot).reshape((nb_test, nb_train, 128 * 119))
+                predOnehot = predOnehot.reshape((nb_test, nb_train, 128 * 119)) 
+                idxOnehot = np.argmin(np.sum(np.abs(predOnehot - 0.5), axis=2), axis=1)  
             else:
-                pred = pred.reshape((nb_test, nb_train, 128))
-                idx = np.argmax(np.sum(pred, axis=2), axis=1)
-            c_hat = C[idx]
-            bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+                raise ValueError("Mtl only takes L1diff")
+                #pred = pred.reshape((nb_test, nb_train, 128))
+                #idx = np.argmax(np.sum(pred, axis=2), axis=1)
+            c_hatChroma = C[idxChroma]
+            c_hatOnehot = C[idxOnehot]
+            bestNChroma, uniqIdxChroma, normChroma = print_result(c_hatChroma, c, C, alg, False, 1)
+            bestNOnehot, uniqIdxOnehot, normOnehot = print_result(c_hatOnehot, c, C, alg, False, 1)
             # L1 error
             if 'L1' in alg or 'L1diff' in alg:
-                errCntAvg = np.average(np.abs(c_hat - c)) * 12
+                errCntAvgChroma = np.average(np.abs(c_hatChroma - c)) * 12
+                errCntAvgOnehot = np.average(np.abs(c_hatOnehot - c)) * 12                
                 # F1 error
             elif 'F1' in alg:
                 np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
@@ -133,7 +153,7 @@ class PairTrainingStrategy(TrainingStrategy):
             np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
 
             # record something
-            history.write_history(hist, i+1, errCntAvg,uniqIdx, norm )
+            history.write_history(hist, i+1, errCntAvgChroma,uniqIdx, norm )
             with open('history/' + filename + '.csv', 'w') as csvfile:
                 csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
             print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
@@ -206,8 +226,6 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, sample_weight={'one-hot': SW, 'chroma': SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
                              validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}, {'one-hot': sw_val, 'chroma': sw_val}))
             # testing
-            print nb_test
-
             predOnehot, predChroma = model.predict(x_test)
             predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, self.ydim))
             predChroma = np.array(predChroma).reshape((nb_test, seq_len, 12))

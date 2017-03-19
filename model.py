@@ -66,9 +66,11 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
         input = gen_input('pair', seq_len)
         M = build(alg, input, nodes1, drp)
         YDim = 12 if 'L1diff' in alg else 1
-        output = TimeDistributed(Dense(YDim , activation='sigmoid'))(M)        
-        model = Model(input=input, output=output)
-        model.compile(optimizer=Adam(), loss='binary_crossentropy', sample_weight_mode="temporal")
+        outputOneHot = TimeDistributed(Dense(119, activation='softmax'), name='one-hot')(M)
+        outputChroma = TimeDistributed(Dense(YDim , activation='sigmoid'), name='chroma')(M)        
+        model = Model(input=input, output=[outputOneHot, outputChroma])
+        model.compile(optimizer=Adam(), loss={'one-hot':'categorical_crossentropy', 'chroma':'binary_crossentropy'}, \
+            sample_weight_mode="temporal", loss_weights={'one-hot': alg['mtl_ratio'], 'chroma': 5*(1 - alg['mtl_ratio'])})
         return model    
 
 def record(model, rec):
