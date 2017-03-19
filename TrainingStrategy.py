@@ -77,15 +77,15 @@ class PairTrainingStrategy(TrainingStrategy):
         self.x_test = get_test(alg, m, C)
         self.c, self.C = c, C
         self.seq_len = 128
-        self.nb_train = M.shape[0]     
-        
+        self.nb_train = M.shape[0]
+
     def train(self, model):
         nodes1 = self.alg['nodes1']
         nodes2 = self.alg['nodes2']
         nb_epoch = self.alg['nb_epoch']
         batch_size = self.alg['batch_size']
         seq_len = self.seq_len
-        
+
         alg = self.alg
         X, Y = self.X, self.Y
         x, y = self.x, self.y
@@ -131,7 +131,7 @@ class PairTrainingStrategy(TrainingStrategy):
                 r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
                 errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
             np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
-    
+
             # record something
             history.write_history(hist, i+1, errCntAvg,uniqIdx, norm )
             with open('history/' + filename + '.csv', 'w') as csvfile:
@@ -145,7 +145,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
     def __init__(self, alg):
         self.alg = alg
         alg = self.alg
-        self.chord2signatureOnehot = get_onehot2chordnotes_transcoder() 
+        self.chord2signatureOnehot = get_onehot2chordnotes_transcoder()
         self.chord2signatureChroma = top3notes
 
         ## Naming Guide:
@@ -211,13 +211,13 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             predOnehot, predChroma = model.predict(x_test)
             predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, self.ydim))
             predChroma = np.array(predChroma).reshape((nb_test, seq_len, 12))
-            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 16, 16, self.ydim))
-            predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 16, 16, 12))
+            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 8, 8, self.ydim))
+            predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 8, 8, 12))
             predOnehotAvg = np.average(predOnehotAvg, axis=2)
             predChromaAvg = np.average(predChromaAvg, axis=2)
-            predOnehotAvg = np.tile(predOnehotAvg, (1, 16, 1))
-            predChromaAvg = np.tile(predChromaAvg, (1, 16, 1))
-            
+            predOnehotAvg = np.repeat(predOnehotAvg, 8, axis=1)
+            predChromaAvg = np.repeat(predChromaAvg, 8, axis=1)
+
             # signature here refers to theo output feature vector to be used for training
             yOnehot12      = self.chord2signatureOnehot(yOnehot)
             c_hatOnehot    = self.chord2signatureOnehot(predOnehot)
@@ -246,7 +246,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
             # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
 
-        
+
     # alg = self.alg
     # if 'LM' in self.alg:
     #     chord2signature = onehot2notes_translator() if 'one-hot' in self.alg else top3notes
