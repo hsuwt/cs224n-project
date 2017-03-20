@@ -538,7 +538,7 @@ def chroma2Onehot(pred):
     maxes = maxes.reshape(pred.shape[0], pred.shape[1], 1)
     e = np.exp(pred - maxes)
     sm = e / (np.sum(e, axis=2).reshape(pred.shape[0], pred.shape[1], 1))
-    return sm
+    return np.nan_to_num(sm)
     
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
