@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import sys
 from util import *
 from model import *
