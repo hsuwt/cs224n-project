@@ -168,7 +168,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         alg = self.alg
         self.chord2signatureOnehot = get_onehot2chordnotes_transcoder()
         self.chord2signatureChroma = top3notes
-        self.chroma2WeightedOnehot = chroma2Onehot
+        self.chroma2WeightedOnehot = chroma2Onehot()
 
         ## Naming Guide:
         # M = training melody

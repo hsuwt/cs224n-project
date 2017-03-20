@@ -2,7 +2,7 @@ import sys
 import os
 import numpy as np
 import pretty_midi
-from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder,get_onehot2chordnotes_transcoder
+from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder, chroma2Onehot
 import csv
 
 
@@ -527,19 +527,6 @@ def top3notes(chord):
     idx[idx >= 12-3] = 1
     return idx
 
-
-def chroma2Onehot(pred):
-    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
-    chordId2sign = chordId2sign/np.reshape(np.sum(chordId2sign, axis=1), (119,1))
-    chordId2sign = np.nan_to_num(chordId2sign)
-    pred = np.dot(pred, chordId2sign.T)
-    
-    maxes = np.amax(pred, axis=2)
-    maxes = maxes.reshape(pred.shape[0], pred.shape[1], 1)
-    e = np.exp(pred - maxes)
-    sm = e / (np.sum(e, axis=2).reshape(pred.shape[0], pred.shape[1], 1))
-    return np.nan_to_num(sm)
-    
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     #assert(melody_matrix.shape[0] == chord_matrix.shape[0])

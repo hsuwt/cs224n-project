@@ -14,6 +14,9 @@ import pickle as pkl
 
 
 class ChordNotes2OneHotTranscoder(object):
+    """
+    assume input C is in either 1 or 0
+    """
     def __init__(self):
         with open('csv/chord-1hot-signatures.pickle') as pfile:
             self.sign2chord = pkl.load(pfile)
@@ -31,6 +34,22 @@ class ChordNotes2OneHotTranscoder(object):
         newC[np.arange(N), chord_indexes] = 1
         newC = newC.reshape([C.shape[0], C.shape[1], self.size])
         return newC
+
+
+def chroma2Onehot(pred):
+    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
+    chordId2sign = chordId2sign / np.reshape(np.sum(chordId2sign, axis=1), (119,1))
+    chordId2sign = np.nan_to_num(chordId2sign)
+    def f(pred):
+        pred = np.dot(pred, chordId2sign.T)
+
+        maxes = np.amax(pred, axis=2)
+        maxes = maxes.reshape(pred.shape[0], pred.shape[1], 1)
+
+        e = np.exp(pred - maxes)
+        sm = e / (np.sum(e, axis=2).reshape(pred.shape[0], pred.shape[1], 1))
+        return np.nan_to_num(sm)
+    return f
 
 
 def get_onehot2chordnotes_transcoder():
