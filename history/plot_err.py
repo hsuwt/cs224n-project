@@ -45,12 +45,12 @@ if __name__ == '__main__':
         output_filename = 'errplot-' + args.prefix + '.png'
 
     else:
-        key1, key12 = args.key + '1', args.key + '12'
-        assert key1 in errs, 'The key specified is not legal, choose from train, val, err'
-        plt.plot(xs, errs[key1], '.-', label=key1)
-        plt.plot(xs, errs[key12], '.-', label=key12)
+        keys = args.key.split()
+        assert all(key in errs for key in keys), 'The key specified is not legal'
+        for key in keys:
+            plt.plot(xs, errs[key], '.-', label=key)
         plt.legend(loc=1)
-        output_filename = 'errplot-' + args.prefix + '-' + args.key + '.png'
+        output_filename = 'errplot-' + args.prefix + '-' + '_'.join(keys) + '.png'
 
     plt.savefig(output_filename)
     print "Output written to %s" % output_filename
