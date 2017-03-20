@@ -3,13 +3,28 @@ from model import *
 import time
 import argparse
 
+class HistoryWriterPair(object):
+    def __init__(self):
+        self.state = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg'],['uniqIdx'], ['norm']]
+
+    def write_history(self, hist, epoch, errCntAvg, uniqIdx, norm):
+        state = self.state
+        state[0].append(epoch)
+        state[1].append(round(hist.history['loss'][0], 2))
+        state[2].append(round(hist.history['val_loss'][0], 2))
+        state[3].append(errCntAvg)
+        state[4].append(uniqIdx)
+        state[5].append(norm)
+
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
     parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU pair L1diff')
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=64)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=64)
-    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=200)
-    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=40)
+    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=100)
+    parser.add_argument(dest='nb_epoch_pred', nargs='?', type=int, default=5)
     parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=212)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=65)
@@ -86,6 +101,7 @@ if __name__ == "__main__":
                 np.savetxt(f, notes.reshape((nb_test*128, 12)), delimiter=',', fmt="%d")
 
         elif 'pair' in alg:
+            history = HistoryWriterPair()
             if 'L1diff' in alg:
                 pred = pred.reshape((nb_test, nb_train, 128 * 12))
                 idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
@@ -95,6 +111,9 @@ if __name__ == "__main__":
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             errCntAvg = np.average(np.abs(c_hat - c)) * 12
+            history.write_history(hist, i+1, errCntAvg,uniqIdx , norm ) 
+            with open('history/' + filename + '.csv', 'w') as csvfile:
+                            csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))            
             with open(filename, 'w') as f:
                 np.savetxt(f, c_hat.astype(int).reshape((nb_test*128, 12)), delimiter=',')
         print errCntAvg
