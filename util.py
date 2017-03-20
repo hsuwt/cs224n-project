@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import sys
 import os
 import numpy as np
@@ -348,7 +347,6 @@ class PairedInputParser(InputParser):
 
     def get_XY(self, M, C):
         COnehot = self.transcoder.transcode(C)
-        assert 'L1' in self.alg or 'L2' in self.alg or 'L1diff' in self.alg
         n = M.shape[0]
         idx = np.random.randint(n, size=n)
         C_neg, C_negOnehot = C[idx], COnehot[idx]
