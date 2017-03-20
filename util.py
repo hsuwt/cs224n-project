@@ -534,11 +534,10 @@ def chroma2Onehot(pred):
     chordId2sign = np.nan_to_num(chordId2sign)
     pred = np.dot(pred, chordId2sign.T)
     
-    maxes = numpy.amax(pred, axis=2)
+    maxes = np.amax(pred, axis=2)
     maxes = maxes.reshape(pred.shape[0], pred.shape[1], 1)
-    e = numpy.exp(w - maxes)
-    sm = e / numpy.sum(e, axis=2)    
-    sm.shape
+    e = np.exp(pred - maxes)
+    sm = e / (np.sum(e, axis=2).reshape(pred.shape[0], pred.shape[1], 1))
     return sm
     
 
