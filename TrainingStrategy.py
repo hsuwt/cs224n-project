@@ -47,7 +47,7 @@ class TrainingStrategy(object):
 
 
     def get_filename(self, _alg):
-        major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else 'attention' if 'attention' in _alg else ''
+        major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else ''
         minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else ''
         rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
         if 'Bidirectional' in _alg: rnn = 'B' + rnn
@@ -56,10 +56,12 @@ class TrainingStrategy(object):
         if minor:
             fn += '_' + minor
         if 'sample-biased' in _alg:
-            fn += '_' + 'sb'
+            fn += '_sb'
         fn += '_nodes' + str(_alg["nodes1"])
         if 'mtl_ratio' in _alg:
             fn += '_' + str(_alg['mtl_ratio'])
+        if 'seq2seq' in _alg:
+            fn += '_seq2seq'
         return fn
 
 
