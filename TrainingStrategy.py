@@ -37,7 +37,7 @@ class TrainingStrategy(object):
         pass
 
 
-    def train(self):
+    def train(self, model):
         raise NotImplementedError('override this!')
 
 
@@ -61,7 +61,7 @@ class TrainingStrategy(object):
 class PairTrainingStrategy(TrainingStrategy):
     def __init__(self, alg):
         self.alg = alg
-        self.ip = InputParser(alg)
+        self.ip = PairedInputParser(alg)
         ## Naming Guide
         # X = training features
         # x = validation features (to evaluate val_loss & val_acc)
@@ -153,7 +153,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # m = testing melody
         # C = training chord progression
         # c = testing chord progression
-        self.ip = InputParser(self.alg)
+        self.ip = LanguageModelInputParser()
 
 
         ## Naming Guide

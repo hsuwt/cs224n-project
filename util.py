@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import sys
 import os
 import numpy as np
@@ -316,59 +317,55 @@ class InputParser(object):
     """
     This replaces previous function GetXY
     """
-    def __init__(self, alg):
+    def __init__(self):
+        raise NotImplementedError('inherit me')
+
+    def get_XY(self, M, C):
+        raise NotImplementedError('override me!')
+
+
+class LanguageModelInputParser(InputParser):
+    """
+    This replaces previous function GetXY
+    """
+    def __init__(self):
         self.transcoder = ChordNotes2OneHotTranscoder()
-        self.alg = alg
+
 
     def get_XY(self, M, C):
         COnehot = self.transcoder.transcode(C)
-        if 'LM' in self.alg:
-            return M, C, COnehot
-        assert 'pair' in self.alg
+        return M, C, COnehot
+
+
+class PairedInputParser(InputParser):
+    """
+    This replaces previous function GetXY
+    """
+    def __init__(self, alg):
+        self.alg = alg
+
+
+    def get_XY(self, M, C):
+        assert 'L1' in self.alg or 'L2' in self.alg or 'L1diff' in self.alg
         n = M.shape[0]
         idx = np.random.randint(n, size=n)
         C_neg, C_negOnehot = C[idx], COnehot[idx]
         Ones = np.ones((n, 128, 1))
         Zeros = np.zeros((n, 128, 1))
-        if 'L1diff' in self.alg:
-            L1diff, L1diffOnehot = (C_neg - C) / 2 + 0.5, (C_negOnehot - COnehot)/2+0.5
-            if 'rand' in self.alg:
-                X = np.concatenate((M, C_neg), 2)
-                Y, YOnehot = L1diff, L1diffOnehot
-            else:
-                MC_neg = np.concatenate((M, C_neg), 2)
-                MC = np.concatenate((M, C), 2)
-                X = np.concatenate((MC, MC_neg), 0)
-                Y, YOnehot = np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0), \
-                    np.concatenate((np.tile(Zeros, 119) + 0.5, L1diffOnehot), 0)
-            Y, YOnehot = 1 - Y / 12.0, 1 - YOnehot/119
-            return X, Y, YOnehot          
-        
-        ### Deprecated, we are getting rid of L1 L2 and F1
-        elif 'L1' in self.alg or 'L2' in self.alg:
-            # use L1 or L2 of two sources of chord as labels
-            np.seterr(divide='ignore', invalid='ignore')
-            L1 = np.sum(abs(C - C_neg), 2)
-            L1 = L1.reshape((n, 128, 1))
-            L2 = np.sqrt(L1)
-            p = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C_neg, 2)
-            r = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C, 2)
-            F1 = 2*p*r/(p+r)
-            F1 = np.nan_to_num(F1.reshape((n, 128, 1)))
-            if 'rand' in self.alg:
-                X = np.concatenate((M, C_neg), 2)
-                Y = L1 if 'L1' in self.alg \
-                    else L2 if 'L2' in self.alg \
-                    else F1 
-            else:
-                MC_neg = np.concatenate((M, C_neg), 2)
-                MC = np.concatenate((M, C), 2)
-                X = np.concatenate((MC, MC_neg), 0)
-                Y = np.concatenate((Zeros, L1), 0) if 'L1' in self.alg \
-                    else np.concatenate((Zeros, L2), 0) if 'L2' in self.alg \
-                    else np.concatenate((Ones, F1), 0)
-            Y = 1 - Y / 12.0
-        return X, Y, _
+        assert 'L1diff' in self.alg
+
+        L1diff, L1diffOnehot = (C_neg - C) / 2 + 0.5, (C_negOnehot - COnehot)/2+0.5
+        if 'rand' in self.alg:
+            X = np.concatenate((M, C_neg), 2)
+            Y, YOnehot = L1diff, L1diffOnehot
+        else:
+            MC_neg = np.concatenate((M, C_neg), 2)
+            MC = np.concatenate((M, C), 2)
+            X = np.concatenate((MC, MC_neg), 0)
+            Y, YOnehot = np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0), \
+                np.concatenate((np.tile(Zeros, 119) + 0.5, L1diffOnehot), 0)
+        Y, YOnehot = 1 - Y / 12.0, 1 - YOnehot/119
+        return X, Y, YOnehot
 
 def get_test(alg, m, C):
     # x_te are the final testing features to match m to C
