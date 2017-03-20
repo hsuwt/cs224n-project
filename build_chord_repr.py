@@ -53,27 +53,6 @@ def get_onehot2chordnotes_transcoder():
         return newC.reshape(M, T, 12)
     return f
 
-
-def get_onehot2chordnotes_transcoder():
-    """
-    generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
-    :return: f: the translator function
-    """
-    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
-
-    def f(chord):
-        """
-        Translate from 1-hot array of dim {DIM} back to superimposed repr of dim=12
-        :param chord: 1-hot representation of chords in (M, T, Dim)
-        :return: chord signature in (M, T, 12)
-        """
-        M, T, Dim = chord.shape
-        C2 = chord.reshape([M*T, Dim])
-        index = np.argmax(C2, axis=1)
-        newC = chordId2sign[index, :]
-        return newC.reshape(M, T, 12)
-    return f
-
 def onehot2weighteChords():
     """
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature

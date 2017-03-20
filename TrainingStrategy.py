@@ -22,7 +22,7 @@ class HistoryWriterPair(object):
 
 class HistoryWriterLM(object):
     def __init__(self):
-        self.state = [['epoch'], ['train1'], ['train12'], ['val1'], ['val12'], ['err1'], ['err12'], ['err1Avg'], ['err12Avg']]
+        self.state = [['epoch'], ['train1'], ['train12'], ['val1'], ['val12'], ['err1'], ['err12'], ['errEn'], ['err1Avg'], ['err12Avg'], ['errEnAvg']]
 
     def write_history(self, hist, epoch, errCntAvg):
         state = self.state
@@ -35,6 +35,8 @@ class HistoryWriterLM(object):
         state[6].append(round(errCntAvg[1], 2))
         state[7].append(round(errCntAvg[2], 2))
         state[8].append(round(errCntAvg[3], 2))
+        state[9].append(round(errCntAvg[4], 2))
+        state[10].append(round(errCntAvg[5], 2))
 
 
 class TrainingStrategy(object):
@@ -166,6 +168,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         alg = self.alg
         self.chord2signatureOnehot = get_onehot2chordnotes_transcoder()
         self.chord2signatureChroma = top3notes
+        self.chroma2WeightedOnehot = chroma2Onehot
 
         ## Naming Guide:
         # M = training melody
@@ -238,17 +241,24 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             # signature here refers to theo output feature vector to be used for training
             c_hatOnehot    = self.chord2signatureOnehot(predOnehot)
             c_hatChroma    = self.chord2signatureChroma(predChroma)
+            c_hatEnsemble  = self.chord2signatureOnehot((predOnehot+ self.chroma2WeightedOnehot(predChroma))/2.0)
             c_hatOnehotAvg = self.chord2signatureOnehot(predOnehotAvg)
             c_hatChromaAvg = self.chord2signatureChroma(predChromaAvg)
+            c_hatEnsembleAvg = self.chord2signatureOnehot((predOnehotAvg+ self.chroma2WeightedOnehot(predChromaAvg))/2.0)
             errCntAvgOnehot    = np.average(np.abs(yChroma - c_hatOnehot)) * 12
             errCntAvgChroma    = np.average(np.abs(yChroma - c_hatChroma)) * 12
+            errCntAvgEnsemble  = np.average(np.abs(yChroma - c_hatEnsemble)) * 12
             errCntAvgOnehotAvg = np.average(np.abs(yChroma - c_hatOnehotAvg)) * 12
             errCntAvgChromaAvg = np.average(np.abs(yChroma - c_hatChromaAvg)) * 12
+            errCntAvgEnsembleAvg  = np.average(np.abs(yChroma - c_hatEnsembleAvg)) * 12
             np.save('../pred/' + filename + 'Onehot.npy', c_hatOnehot.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'Chroma.npy', c_hatChroma.astype(int).reshape((nb_test, seq_len, 12)))
+            np.save('../pred/' + filename + 'Ensemble.npy', c_hatEnsemble.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'OnehotAvg.npy', c_hatOnehotAvg.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'ChromaAvg.npy', c_hatChromaAvg.astype(int).reshape((nb_test, seq_len, 12)))
-            errCntAvg = [errCntAvgOnehot, errCntAvgChroma, errCntAvgOnehotAvg, errCntAvgChromaAvg]
+            np.save('../pred/' + filename + 'EnsembleAvg.npy', c_hatEnsembleAvg.astype(int).reshape((nb_test, seq_len, 12)))
+            errCntAvg = [errCntAvgOnehot, errCntAvgChroma, errCntAvgEnsemble, errCntAvgOnehotAvg, \
+                         errCntAvgChromaAvg, errCntAvgEnsembleAvg]
             # record something
             history.write_history(hist, i+1, errCntAvg)
             with open('history/' + filename + '.csv', 'w') as csvfile:
