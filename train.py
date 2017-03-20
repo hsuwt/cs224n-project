@@ -12,6 +12,8 @@ from TrainingStrategy import *
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
     parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM')
+    parser.add_argument(dest='mtl_ratio_b', nargs='?', type=int, default=0)
+    parser.add_argument(dest='mtl_ratio_e', nargs='?', type=int, default=3)    
     parser.add_argument(dest='nodes1', nargs='?', type=int, default=128)
     parser.add_argument(dest='nodes2', nargs='?', type=int, default=128)
     parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=100)
@@ -19,8 +21,6 @@ if __name__ == "__main__":
     parser.add_argument(dest='batch_size', nargs='?', type=int, default=250)
     parser.add_argument(dest='nb_test', nargs='?', type=int, default=100)
     parser.add_argument(dest='mtl_ratio', nargs='?', type=int, default=0)
-    parser.add_argument(dest='mtl_ratio_b', nargs='?', type=int, default=0)
-    parser.add_argument(dest='mtl_ratio_e', nargs='?', type=int, default=3)
     args = parser.parse_args()
     alg = parse_algorithm(args.algorithm)
     alg.update(vars(args))
