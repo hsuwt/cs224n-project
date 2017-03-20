@@ -54,11 +54,15 @@ if __name__ == '__main__':
         for hdr, line in lines.items():
             plt.plot(xs, line, '.-', label=hdr)
         plt.legend(loc=1)
-        plt.savefig('perrfplot-' + args.prefix + '.png')
+        filename = 'perrfplot-' + args.prefix + '.png'
+
     else:
         key1, key12 = args.key + '1', args.key + '12'
         assert key1 in lines, 'The key specified is not legal, choose from train, val, err'
         plt.plot(xs, lines[key1], '.-', label=key1)
         plt.plot(xs, lines[key12], '.-', label=key12)
         plt.legend(loc=1)
-        plt.savefig('perrfplot-' + args.prefix + '-' + args.key + '.png')
+        filename = 'perrfplot-' + args.prefix + '-' + args.key + '.png'
+
+    plt.savefig(filename)
+    print "Output written to %s" % filename

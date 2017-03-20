@@ -354,7 +354,7 @@ class PairedInputParser(InputParser):
         Zeros = np.zeros((n, 128, 1))
         assert 'L1diff' in self.alg
 
-        L1diff, L1diffOnehot = (C_neg - C) / 2 + 0.5, (C_negOnehot - COnehot)/2+0.5
+        L1diff, L1diffOnehot = (C_neg - C) / 2. + 0.5, (C_negOnehot - COnehot) / 2. +0.5
         if 'rand' in self.alg:
             X = np.concatenate((M, C_neg), 2)
             Y, YOnehot = L1diff, L1diffOnehot
@@ -364,7 +364,7 @@ class PairedInputParser(InputParser):
             X = np.concatenate((MC, MC_neg), 0)
             Y, YOnehot = np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0), \
                 np.concatenate((np.tile(Zeros, 119) + 0.5, L1diffOnehot), 0)
-        Y, YOnehot = 1 - Y / 12.0, 1 - YOnehot/119
+        Y, YOnehot = 1 - Y / 12.0, 1 - YOnehot / 119.
         return X, Y, YOnehot
 
 def get_test(alg, m, C):
