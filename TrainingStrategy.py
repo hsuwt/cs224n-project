@@ -108,7 +108,7 @@ class PairTrainingStrategy(TrainingStrategy):
         # record and save models after nb_epoch_pred epochs
 
         filename = self.get_filename(self.alg)
-
+        epochs_to_predict = 10
         for i in range(nb_epoch):
             # print epoch
             sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
@@ -116,7 +116,9 @@ class PairTrainingStrategy(TrainingStrategy):
             hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, batch_size=batch_size, nb_epoch=1, verbose=0,
                              validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}))
       
-            predOnehot, predChroma = model.predict(x_test)
+            epochs_to_predict -=1
+            if epochs_to_predict != 0: continue
+            epochs_to_predict = 10            
 
             # testing
             predOnehot, predChroma = model.predict(x_test)            
