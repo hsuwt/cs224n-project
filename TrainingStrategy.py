@@ -5,7 +5,7 @@ import csv
 class HistoryWriterPair(object):
     def __init__(self):
         self.state = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg'],['uniqIdx'], ['norm']]
-        
+
     def write_history(self, hist, epoch, errCntAvg, uniqIdx, norm):
         state = self.state
         state[0].append(epoch)
@@ -13,7 +13,7 @@ class HistoryWriterPair(object):
         state[2].append(round(hist.history['val_loss'][0], 2))
         state[3].append(round(errCntAvg, 2))
         state[4].append(uniqIdx)
-        state[5].append(norm)        
+        state[5].append(norm)
 
 class HistoryWriterLM(object):
     def __init__(self):
@@ -103,14 +103,16 @@ class PairTrainingStrategy(TrainingStrategy):
         # record and save models after nb_epoch_pred epochs
 
         filename = self.get_filename(self.alg)
-
+        numcount = 10
         for i in range(nb_epoch):
             # print epoch
             sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
             sys.stdout.flush()
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0,
                              validation_data=(x, y))
-
+            numcount-=1
+            if (numcount!=0): continue
+            numcount=10
             # testing
             pred = np.array(model.predict(x_test))
             if 'L1diff' in alg:

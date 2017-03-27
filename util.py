@@ -334,7 +334,7 @@ class InputParser(object):
         if 'L1' in self.alg or 'L2' in self.alg or 'L1diff' in self.alg:
             # use L1 or L2 of two sources of chord as labels
             np.seterr(divide='ignore', invalid='ignore')
-            L1diff = (C_neg - C) / 2 + 0.5
+            L1diff = (C_neg - C) / 2.0 + 0.5
             L1 = np.sum(abs(C - C_neg), 2)
             L1 = L1.reshape((n, 128, 1))
             L2 = np.sqrt(L1)
