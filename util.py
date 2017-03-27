@@ -362,7 +362,7 @@ class PairedInputParser(InputParser):
 
 def get_test(alg, m, C):
     # x_te are the final testing features to match m to C
-    if alg.strategy == 'pair':
+    if alg.strategy == 'pair' or alg.strategy == 'correct':
         m_rep, C_rep = rep(m, C)
         return np.concatenate((m_rep, C_rep), 2)
     elif  alg.strategy == 'LM':

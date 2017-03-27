@@ -31,7 +31,8 @@ if __name__ == "__main__":
     from TrainingStrategy import *
 
     strategies = {'pair': PairTrainingStrategy,
-                    'LM': LanguageModelTrainingStrategy}
+                    'LM': LanguageModelTrainingStrategy,
+              'correct': IterativeImproveStrategy}
 
     try:
         ts = strategies[args.strategy](args)
