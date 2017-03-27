@@ -108,8 +108,7 @@ class PairTrainingStrategy(TrainingStrategy):
             # print epoch
             sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
             sys.stdout.flush()
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0,
-                             validation_data=(x, y))
+            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
             numcount-=1
             if (numcount!=0): continue
             numcount=10
