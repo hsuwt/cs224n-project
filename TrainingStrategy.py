@@ -325,7 +325,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                 best = pred[np.arange(100), idx]  # 100, 128 x 12
                 thresh = 0.3
                 temp = (best < thresh).astype(np.int)  # 100, 128 x 12
-                np.save('../pred/' + filename + '-correction1.npy', thresh.reshape((nb_test, 128, 12)))
+                np.save('../pred/' + filename + '-correction1.npy', temp.reshape((nb_test, 128, 12)))
 
                 c_hat = C[idx]
 
