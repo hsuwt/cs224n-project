@@ -5,13 +5,6 @@ import pretty_midi
 from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder, chroma2Onehot
 import csv
 
-
-def parse_algorithm(alg_str):
-    alg = {x: None for x in alg_str.strip().split()}
-    if 'one-hot' in alg:
-        alg['one-hot-dim'] = 0  # to be filled in
-    return alg
-
 def rotate(Chroma, semitone):
     if semitone == 0:
         return Chroma
@@ -188,14 +181,14 @@ def toCandidateBestN(CP, allCP, bestN):
 def parse_data(alg, max_length):
     with open('csv/npy-exists.config') as keyvaluefile:
         avaialable = [key[0] for key in csv.reader(keyvaluefile)]
-        if 'sample-biased' not in alg and 'normal' in avaialable:
+        if 'sample-biased' not in alg.model and 'normal' in avaialable:
             print "I can load normal set of params from npy files"
             M = np.load('csv/normal-melody.npy')
             C = np.load('csv/normal-chord.npy')
             SW = np.load('csv/normal-sampleweight.npy')
             return C, M, SW
 
-        if 'sample-biased' in alg and 'sample-biased' in avaialable:
+        if 'sample-biased' in alg.model and 'sample-biased' in avaialable:
             print "I can load sample-biased set of params from npy files"
             M = np.load('csv/sample-biased-melody.npy')
             C = np.load('csv/sample-biased-chord.npy')
@@ -220,7 +213,7 @@ def parse_data(alg, max_length):
     C = np.swapaxes(C.reshape((C.shape[0], 12, -1)), 1, 2)
 
     sample_weight = np.ones((C.shape[0], C.shape[1]))
-    if 'sample-biased' in alg:
+    if 'sample-biased' in alg.model:
         for p in range(1,8):
             sample_weight[:,::2**p] +=1
         sample_weight/= 8.0
@@ -228,7 +221,7 @@ def parse_data(alg, max_length):
     # store
     with open('csv/npy-exists.config', 'w') as keyvaluefile:
         avaialable = csv.writer(keyvaluefile)
-        key = 'sample-biased' if 'sample-biased' in alg else 'normal'
+        key = 'sample-biased' if 'sample-biased' in alg.model else 'normal'
         avaialable.writerow([key])
         np.save('csv/' + key + '-chord', C)
         np.save('csv/' + key + '-melody', M)
@@ -352,10 +345,10 @@ class PairedInputParser(InputParser):
         C_neg, C_negOnehot = C[idx], COnehot[idx]
         Ones = np.ones((n, 128, 1))
         Zeros = np.zeros((n, 128, 1))
-        assert 'L1diff' in self.alg
+        assert 'L1diff' in self.alg.model
 
         L1diff, L1diffOnehot = (C_neg - C) / 2. + 0.5, (C_negOnehot - COnehot) / 2. +0.5
-        if 'rand' in self.alg:
+        if 'rand' in self.alg.model:
             X = np.concatenate((M, C_neg), 2)
             Y, YOnehot = L1diff, L1diffOnehot
         else:
@@ -369,18 +362,18 @@ class PairedInputParser(InputParser):
 
 def get_test(alg, m, C):
     # x_te are the final testing features to match m to C
-    if 'pair' in alg:
+    if alg.strategy == 'pair':
         m_rep, C_rep = rep(m, C)
         return np.concatenate((m_rep, C_rep), 2)
-    elif 'LM' in alg:
+    elif  alg.strategy == 'LM':
         return m;
     else:
-        print('Error in get_test')
+        raise ValueError('Invalid strategy %s' % alg.strategy)
 
 def print_result(pred, y, Y, alg, printCP, bestN):
     print('\nAlg: %s' %(alg))
     nb_test = pred.shape[0]
-    if 'L2' in alg:
+    if 'L2' in alg.model:
         pred, bestNIdx = toCandidate(pred, Y, bestN, 'L2')
         norm = np.sqrt(np.sum(np.square(pred - y))) / 128.0 / nb_test
     else:

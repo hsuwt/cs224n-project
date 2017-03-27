@@ -89,10 +89,10 @@ class PairTrainingStrategy(TrainingStrategy):
         self.nb_train = M.shape[0]
 
     def train(self, model):
-        nodes1 = self.alg['nodes1']
-        nodes2 = self.alg['nodes2']
-        nb_epoch = self.alg['nb_epoch']
-        batch_size = self.alg['batch_size']
+        nodes1 = self.alg.nodes1
+        nodes2 = self.alg.nodes2
+        nb_epoch = self.alg.nb_epoch
+        batch_size = self.alg.batch_size
         seq_len = self.seq_len
 
         alg = self.alg
