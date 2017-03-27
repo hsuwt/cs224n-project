@@ -30,38 +30,39 @@ def gen_input(feat, seq_len):
 
 def build(alg, input, nodes, drp):
     return_sequences = True
-    if 'RNN' in alg:
+    if 'RNN' in alg.model:
         M1 = SimpleRNN(nodes, return_sequences=return_sequences)(input)
         M2 = SimpleRNN(nodes, return_sequences=return_sequences, go_backwards=True)(input)
-    elif 'GRU' in alg:
+    elif 'GRU' in alg.model:
         M1 = GRU(nodes, return_sequences=return_sequences)(input)
         M2 = GRU(nodes, return_sequences=return_sequences, go_backwards=True)(input)
-    elif 'LSTM' in alg:
+    elif 'LSTM' in alg.model:
         M1 = LSTM(nodes, return_sequences=return_sequences)(input)
         M2 = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)(input)
     M1 = Dropout(drp)(M1)
     M2 = Dropout(drp)(M2)
-    if 'Bidirectional' in alg:
+    if 'Bidirectional' in alg.model:
         M1 = merge([M1, M2], mode='concat')
     return M1
 
 def build_model(alg, nodes1, nodes2, drp, seq_len):
-    if 'attention' in alg:  # FIXME: do something about this
+    if alg.strategy == 'attention':
+        # FIXME: do something about this
         # Input dimension
         model = AttentionSeq2Seq(output_length=128, output_dim=12, input_dim=12)
-        loss = 'categorical_crossentropy' if 'LM' in alg and 'one-hot' in alg else 'binary_crossentropy'
+        loss = 'categorical_crossentropy' if alg.strategy == 'LM' and 'one-hot' in alg.model else 'binary_crossentropy'
         model.compile(optimizer=Adam(), loss=loss, sample_weight_mode="temporal")
         return model
-    if 'LM' in alg:
+    if alg.strategy == 'LM':
         input = gen_input('melody', seq_len)
         M = build(alg, input, nodes1, drp)
-        outputOneHot = TimeDistributed(Dense(alg['one-hot-dim'], activation='softmax'), name='one-hot')(M)
+        outputOneHot = TimeDistributed(Dense(alg.one_hot_dim, activation='softmax'), name='one-hot')(M)
         outputChroma = TimeDistributed(Dense(12, activation='sigmoid'), name='chroma')(M)
         model = Model(input=input, output=[outputOneHot, outputChroma])
         model.compile(optimizer=Adam(), loss={'one-hot':'categorical_crossentropy', 'chroma':'binary_crossentropy'}, \
-            sample_weight_mode="temporal", loss_weights={'one-hot': alg['mtl_ratio'], 'chroma': 5*(1 - alg['mtl_ratio'])})
+            sample_weight_mode="temporal", loss_weights={'one-hot': alg.mtl_ratio, 'chroma': 5*(1 - alg.mtl_ratio)})
         return model
-    elif 'pair' in alg:
+    elif alg.strategy == 'pair':
         input = gen_input('pair', seq_len)
         M = build(alg, input, nodes1, drp)
         outputOneHot = TimeDistributed(Dense(119, activation='softmax'), name='one-hot')(M)

@@ -17,7 +17,7 @@ class HistoryWriterPair(object):
 
 class HistoryWriterLM(object):
     def __init__(self):
-        self.state = [['epoch'], ['train1'], ['train12'], ['val1'], ['val12'], ['err1'], ['err12'], ['err1Avg'], ['err12Avg']]
+        self.state = [['epoch'], ['train1'], ['train12'], ['val1'], ['val12'], ['err1'], ['err12'], ['errEn'], ['err1Avg'], ['err12Avg'], ['errEnAvg']]
 
     def write_history(self, hist, epoch, errCntAvg):
         state = self.state
@@ -30,6 +30,8 @@ class HistoryWriterLM(object):
         state[6].append(round(errCntAvg[1], 2))
         state[7].append(round(errCntAvg[2], 2))
         state[8].append(round(errCntAvg[3], 2))
+        state[9].append(round(errCntAvg[4], 2))
+        state[10].append(round(errCntAvg[5], 2))
 
 
 class TrainingStrategy(object):
@@ -42,26 +44,26 @@ class TrainingStrategy(object):
 
 
     def get_filename(self, _alg):
-        major = 'LM' if 'LM' in _alg else 'pair' if 'pair' in _alg else 'attention' if 'attention' in _alg else ''
-        minor = 'onehot' if 'one-hot' in _alg else 'rand' if 'rand' in _alg else 'L1diff' if 'L1diff' in _alg else ''
-        rnn = 'RNN' if 'RNN' in _alg else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg else ''
-        if 'Bidirectional' in _alg: rnn = 'B' + rnn
+        major = _alg.strategy
+        minor = 'onehot' if 'one-hot' in _alg.model else  'L1diff' if 'L1diff' in _alg.model else ''
+        rnn = 'RNN' if 'RNN' in _alg.model else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg.model else ''
+        if 'Bidirectional' in _alg.model: rnn = 'B' + rnn
 
         fn = rnn + '_' + major
         if minor:
             fn += '_' + minor
-        if 'sample-biased' in _alg:
+        if 'sample-biased' in _alg.model:
             fn += '_' + 'sb'
-        fn += '_nodes' + str(_alg["nodes1"])
+        fn += '_nodes' + str(_alg.nodes1)
         if 'mtl_ratio' in _alg:
-            fn += '_' + str(_alg['mtl_ratio'])
+            fn += '_' + str(_alg.mtl_ratio)
         return fn
 
 
 class PairTrainingStrategy(TrainingStrategy):
     def __init__(self, alg):
         self.alg = alg
-        self.ip = InputParser(alg)
+        self.ip = PairedInputParser(alg)
         ## Naming Guide
         # X = training features
         # x = validation features (to evaluate val_loss & val_acc)
@@ -80,10 +82,10 @@ class PairTrainingStrategy(TrainingStrategy):
         self.nb_train = M.shape[0]
 
     def train(self, model):
-        nodes1 = self.alg['nodes1']
-        nodes2 = self.alg['nodes2']
-        nb_epoch = self.alg['nb_epoch']
-        batch_size = self.alg['batch_size']
+        nodes1 = self.alg.nodes1
+        nodes2 = self.alg.nodes2
+        nb_epoch = self.alg.nb_epoch
+        batch_size = self.alg.batch_size
         seq_len = self.seq_len
 
         alg = self.alg
@@ -154,7 +156,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # m = testing melody
         # C = training chord progression
         # c = testing chord progression
-        self.ip = InputParser(self.alg)
+        self.ip = LanguageModelInputParser()
 
 
         ## Naming Guide
@@ -220,20 +222,26 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             predChromaAvg = np.repeat(predChromaAvg, 8, axis=1)
 
             # signature here refers to theo output feature vector to be used for training
-            yOnehot12      = self.chord2signatureOnehot(yOnehot)
             c_hatOnehot    = self.chord2signatureOnehot(predOnehot)
             c_hatChroma    = self.chord2signatureChroma(predChroma)
+            c_hatEnsemble  = self.chord2signatureOnehot((predOnehot+ self.chroma2WeightedOnehot(predChroma))/2.0)
             c_hatOnehotAvg = self.chord2signatureOnehot(predOnehotAvg)
             c_hatChromaAvg = self.chord2signatureChroma(predChromaAvg)
-            errCntAvgOnehot    = np.average(np.abs(yOnehot12 - c_hatOnehot)) * 12
-            errCntAvgChroma    = np.average(np.abs(yChroma   - c_hatChroma)) * 12
-            errCntAvgOnehotAvg = np.average(np.abs(yOnehot12 - c_hatOnehotAvg)) * 12
-            errCntAvgChromaAvg = np.average(np.abs(yChroma   - c_hatChromaAvg)) * 12
+            c_hatEnsembleAvg = self.chord2signatureOnehot((predOnehotAvg+ self.chroma2WeightedOnehot(predChromaAvg))/2.0)
+            errCntAvgOnehot    = np.average(np.abs(yChroma - c_hatOnehot)) * 12
+            errCntAvgChroma    = np.average(np.abs(yChroma - c_hatChroma)) * 12
+            errCntAvgEnsemble  = np.average(np.abs(yChroma - c_hatEnsemble)) * 12
+            errCntAvgOnehotAvg = np.average(np.abs(yChroma - c_hatOnehotAvg)) * 12
+            errCntAvgChromaAvg = np.average(np.abs(yChroma - c_hatChromaAvg)) * 12
+            errCntAvgEnsembleAvg  = np.average(np.abs(yChroma - c_hatEnsembleAvg)) * 12
             np.save('../pred/' + filename + 'Onehot.npy', c_hatOnehot.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'Chroma.npy', c_hatChroma.astype(int).reshape((nb_test, seq_len, 12)))
+            np.save('../pred/' + filename + 'Ensemble.npy', c_hatEnsemble.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'OnehotAvg.npy', c_hatOnehotAvg.astype(int).reshape((nb_test, seq_len, 12)))
             np.save('../pred/' + filename + 'ChromaAvg.npy', c_hatChromaAvg.astype(int).reshape((nb_test, seq_len, 12)))
-            errCntAvg = [errCntAvgOnehot, errCntAvgChroma, errCntAvgOnehotAvg, errCntAvgChromaAvg]
+            np.save('../pred/' + filename + 'EnsembleAvg.npy', c_hatEnsembleAvg.astype(int).reshape((nb_test, seq_len, 12)))
+            errCntAvg = [errCntAvgOnehot, errCntAvgChroma, errCntAvgEnsemble, errCntAvgOnehotAvg, \
+                         errCntAvgChromaAvg, errCntAvgEnsembleAvg]
             # record something
             history.write_history(hist, i+1, errCntAvg)
             with open('history/' + filename + '.csv', 'w') as csvfile:
@@ -246,5 +254,3 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             # record & save model
             # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
             # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
-
-

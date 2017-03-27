@@ -2,15 +2,9 @@ import sys
 import os
 import numpy as np
 import pretty_midi
-from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder,get_onehot2chordnotes_transcoder
+from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder, chroma2Onehot
 import csv
 
-
-def parse_algorithm(alg_str):
-    alg = {x: None for x in alg_str.strip().split()}
-    if 'one-hot' in alg:
-        alg['one-hot-dim'] = 0  # to be filled in
-    return alg
 
 def rotate(Chroma, semitone):
     if semitone == 0:
@@ -188,14 +182,14 @@ def toCandidateBestN(CP, allCP, bestN):
 def parse_data(alg, max_length):
     with open('csv/npy-exists.config') as keyvaluefile:
         avaialable = [key[0] for key in csv.reader(keyvaluefile)]
-        if 'sample-biased' not in alg and 'normal' in avaialable:
+        if 'sample-biased' not in alg.model and 'normal' in avaialable:
             print "I can load normal set of params from npy files"
             M = np.load('csv/normal-melody.npy')
             C = np.load('csv/normal-chord.npy')
             SW = np.load('csv/normal-sampleweight.npy')
             return C, M, SW
 
-        if 'sample-biased' in alg and 'sample-biased' in avaialable:
+        if 'sample-biased' in alg.model and 'sample-biased' in avaialable:
             print "I can load sample-biased set of params from npy files"
             M = np.load('csv/sample-biased-melody.npy')
             C = np.load('csv/sample-biased-chord.npy')
@@ -220,7 +214,7 @@ def parse_data(alg, max_length):
     C = np.swapaxes(C.reshape((C.shape[0], 12, -1)), 1, 2)
 
     sample_weight = np.ones((C.shape[0], C.shape[1]))
-    if 'sample-biased' in alg:
+    if 'sample-biased' in alg.model:
         for p in range(1,8):
             sample_weight[:,::2**p] +=1
         sample_weight/= 8.0
@@ -228,7 +222,7 @@ def parse_data(alg, max_length):
     # store
     with open('csv/npy-exists.config', 'w') as keyvaluefile:
         avaialable = csv.writer(keyvaluefile)
-        key = 'sample-biased' if 'sample-biased' in alg else 'normal'
+        key = 'sample-biased' if 'sample-biased' in alg.model else 'normal'
         avaialable.writerow([key])
         np.save('csv/' + key + '-chord', C)
         np.save('csv/' + key + '-melody', M)
@@ -316,63 +310,70 @@ class InputParser(object):
     """
     This replaces previous function GetXY
     """
-    def __init__(self, alg):
-        if 'LM' in alg:
-            self.transcoder = ChordNotes2OneHotTranscoder()
-        self.alg = alg
+    def __init__(self):
+        raise NotImplementedError('inherit me')
 
     def get_XY(self, M, C):
-        if 'LM' in self.alg:
-            COnehot = self.transcoder.transcode(C)
-            return M, C, COnehot
-        assert 'pair' in self.alg
+        raise NotImplementedError('override me!')
+
+
+class LanguageModelInputParser(InputParser):
+    """
+    This replaces previous function GetXY
+    """
+    def __init__(self):
+        self.transcoder = ChordNotes2OneHotTranscoder()
+
+
+    def get_XY(self, M, C):
+        COnehot = self.transcoder.transcode(C)
+        return M, C, COnehot
+
+
+class PairedInputParser(InputParser):
+    """
+    This replaces previous function GetXY
+    """
+    def __init__(self, alg):
+        self.alg = alg
+        self.transcoder = ChordNotes2OneHotTranscoder()
+
+
+    def get_XY(self, M, C):
+        COnehot = self.transcoder.transcode(C)
         n = M.shape[0]
         idx = np.random.randint(n, size=n)
-        C_neg = C[idx]
+        C_neg, C_negOnehot = C[idx], COnehot[idx]
         Ones = np.ones((n, 128, 1))
         Zeros = np.zeros((n, 128, 1))
-        if 'L1' in self.alg or 'L2' in self.alg or 'L1diff' in self.alg:
-            # use L1 or L2 of two sources of chord as labels
-            np.seterr(divide='ignore', invalid='ignore')
-            L1diff = (C_neg - C) / 2.0 + 0.5
-            L1 = np.sum(abs(C - C_neg), 2)
-            L1 = L1.reshape((n, 128, 1))
-            L2 = np.sqrt(L1)
-            p = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C_neg, 2)
-            r = np.sum(np.logical_and(C, C_neg), 2) / np.sum(C, 2)
-            F1 = 2*p*r/(p+r)
-            F1 = np.nan_to_num(F1.reshape((n, 128, 1)))
-            if 'rand' in self.alg:
-                X = np.concatenate((M, C_neg), 2)
-                Y = L1 if 'L1' in self.alg \
-                    else L2 if 'L2' in self.alg \
-                    else F1 if 'F1' in self.alg \
-                    else L1diff
-            else:
-                MC_neg = np.concatenate((M, C_neg), 2)
-                MC = np.concatenate((M, C), 2)
-                X = np.concatenate((MC, MC_neg), 0)
-                Y = np.concatenate((Zeros, L1), 0) if 'L1' in self.alg \
-                    else np.concatenate((Zeros, L2), 0) if 'L2' in self.alg \
-                    else np.concatenate((Ones, F1), 0) if 'F1' in self.alg \
-                    else np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
-            Y = 1 - Y / 12.0
+        assert 'L1diff' in self.alg.model
+
+        L1diff, L1diffOnehot = (C_neg - C) / 2. + 0.5, (C_negOnehot - COnehot) / 2. +0.5
+        if 'rand' in self.alg.model:
+            X = np.concatenate((M, C_neg), 2)
+            Y = L1diff
+        else:
+            MC_neg = np.concatenate((M, C_neg), 2)
+            MC = np.concatenate((M, C), 2)
+            X = np.concatenate((MC, MC_neg), 0)
+            Y = np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
+        Y = 1 - Y / 12.0
         return X, Y
 
 def get_test(alg, m, C):
     # x_te are the final testing features to match m to C
-    if 'pair' in alg:
+    if alg.strategy == 'pair':
         m_rep, C_rep = rep(m, C)
         return np.concatenate((m_rep, C_rep), 2)
-    elif 'LM' in alg:
+    elif  alg.strategy == 'LM':
         return m;
     else:
-        print('Error in get_test')
+        raise ValueError('Invalid strategy %s' % alg.strategy)
 
 def print_result(pred, y, Y, alg, printCP, bestN):
     print('\nAlg: %s' %(alg))
     nb_test = pred.shape[0]
-    if 'L2' in alg:
+    if 'L2' in alg.model:
         pred, bestNIdx = toCandidate(pred, Y, bestN, 'L2')
         norm = np.sqrt(np.sum(np.square(pred - y))) / 128.0 / nb_test
     else:
@@ -518,6 +519,7 @@ def top3notes(chord):
     idx[idx < 9] = 0
     idx[idx >= 12-3] = 1
     return idx
+
 
 def Matrices_to_MIDI(melody_matrix, chord_matrix):
     #assert(melody_matrix.shape[0] == chord_matrix.shape[0])

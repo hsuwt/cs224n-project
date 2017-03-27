@@ -1,49 +1,48 @@
-import sys
-from util import *
-from model import *
-import time
 import argparse
-import tensorflow as tf
-#from genMIDI import *
-tf.python.control_flow_ops = tf
-
-from TrainingStrategy import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')
-    parser.add_argument(dest='algorithm', metavar='algorithm', nargs='?', default='GRU LM')
-    parser.add_argument(dest='nodes1', nargs='?', type=int, default=128)
-    parser.add_argument(dest='nodes2', nargs='?', type=int, default=128)
-    parser.add_argument(dest='nb_epoch', nargs='?', type=int, default=100)
-    parser.add_argument(dest='dropout_rate', nargs='?', type=float, default=0.5)
-    parser.add_argument(dest='batch_size', nargs='?', type=int, default=250)
-    parser.add_argument(dest='nb_test', nargs='?', type=int, default=100)
-    parser.add_argument(dest='mtl_ratio', nargs='?', type=float, default=0.5)
-    args = parser.parse_args()
-    alg = parse_algorithm(args.algorithm)
-    alg.update(vars(args))
-    nodes1, nodes2,  = args.nodes1, args.nodes2
-    nb_epoch, nb_test = args.nb_epoch, args.nb_test
-    dropout_rate = args.dropout_rate
-    batch_size = args.batch_size
-    mtl_ratio = args.mtl_ratio
+    parser.add_argument('strategy', nargs='?', help='Default = pair')
+    parser.add_argument('model', nargs='?', help='Default = GRU L1diff Bidirectional')
+    parser.add_argument('--mtl_ratio', nargs='?', type=float)
+    parser.add_argument('--nodes1',nargs='?', type=int)
+    parser.add_argument('--nodes2', nargs='?', type=int)
+    parser.add_argument('--nb_epoch', nargs='?', type=int)
+    parser.add_argument('--dropout_rate', nargs='?', type=float)
+    parser.add_argument('--batch_size', nargs='?', type=int)
+    parser.add_argument('--nb_test', nargs='?', type=int)
 
-    # I am thinking it should be like this
-    if 'pair' in alg:
-        ts = PairTrainingStrategy(alg)
-    elif 'LM' in alg:
-        ts = LanguageModelTrainingStrategy(alg)
-    else:
+    args = parser.parse_args()
+    args.strategy = args.strategy if args.strategy else 'pair'
+    args.model = args.model if args.model else 'GRU L1diff Bidirectional'
+    args.nodes1 = args.nodes1 if args.nodes1 else 128
+    args.nodes2 = args.nodes2 if args.nodes2 else 128
+    args.nb_epoch = args.nb_epoch if args.nb_epoch else 200
+    args.nb_test = args.nb_test if args.nb_test else 100
+    args.dropout_rate = args.dropout_rate if args.dropout_rate else 0.5
+    args.batch_size = args.batch_size if args.batch_size else 250
+    args.mtl_ratio = args.mtl_ratio if args.mtl_ratio else 0.5
+
+    print args
+
+    import tensorflow as tf
+    tf.python.control_flow_ops = tf
+    from model import *
+    from TrainingStrategy import *
+
+    strategies = {'pair': PairTrainingStrategy,
+                    'LM': LanguageModelTrainingStrategy}
+
+    try:
+        ts = strategies[args.strategy](args)
+    except KeyError:
         raise ValueError('Please specify a valid training strategy!')
 
 
-    if 'LM' in alg:
-        alg['one-hot-dim'] = ts.ydim
-
-        for i in range(11):
-            alg['mtl_ratio'] = 0.1 * i
-            model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
-            ts.train(model)
+    if args.strategy == 'LM':
+        args.one_hot_dim = ts.ydim
+        model = build_model(args, args.nodes1, args.nodes2, args.dropout_rate, ts.seq_len)
+        ts.train(model)
     else:
-        model = build_model(alg, nodes1, nodes2, dropout_rate, ts.seq_len)
+        model = build_model(args, args.nodes1, args.nodes2, args.dropout_rate, ts.seq_len)
         ts.train(model)
