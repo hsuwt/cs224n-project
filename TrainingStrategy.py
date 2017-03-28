@@ -322,7 +322,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                 else:
                     pred = pred.reshape((nb_test, nb_train, 128))
                     idx = np.argmax(np.sum(pred, axis=2), axis=1)
-                best = pred[np.arange(100][idx]  # 100, 128 x 12
+                best = pred[np.arange(100)][idx]  # 100, 128 x 12
                 for i in range(1, 5):
                     thresh = 0.1 * i
                     temp = (best < thresh).astype(np.int)  # 100, 128 x 12
