@@ -47,7 +47,7 @@ class TrainingStrategy(object):
     def get_filename(self, _alg):
         major = _alg.strategy
         minor = 'onehot' if 'one-hot' in _alg.model else  'L1diff' if 'L1diff' in _alg.model else ''
-        rnn = 'RNN' if 'RNN' in _alg.model else "GRU" if "GRU" in _alg else "LSTM" if "LSTM" in _alg.model else ''
+        rnn = 'RNN' if 'RNN' in _alg.model else "GRU" if "GRU" in _alg.model else "LSTM" if "LSTM" in _alg.model else ''
         if 'Bidirectional' in _alg.model: rnn = 'B' + rnn
 
         fn = rnn + '_' + major
@@ -118,7 +118,7 @@ class PairTrainingStrategy(TrainingStrategy):
             numcount=10
             # testing
             pred = np.array(model.predict(x_test))
-            if 'L1diff' in alg:
+            if 'L1diff' in alg.model:
                 pred = pred.reshape((nb_test, nb_train, 128 * 12))
                 idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
             else:
@@ -127,10 +127,10 @@ class PairTrainingStrategy(TrainingStrategy):
             c_hat = C[idx]
             bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
             # L1 error
-            if 'L1' in alg or 'L1diff' in alg:
+            if 'L1' in alg.model or 'L1diff' in alg.model:
                 errCntAvg = np.average(np.abs(c_hat - c)) * 12
                 # F1 error
-            elif 'F1' in alg:
+            elif 'F1' in alg.model:
                 np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
                 p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
                 r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
@@ -279,7 +279,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.seq_len = 128
         self.nb_train = M.shape[0]
 
-        self.test_freq = 2
+        self.test_freq = 20
 
     def train(self, model):
         nodes1 = self.alg.nodes1
@@ -322,19 +322,19 @@ class IterativeImproveStrategy(TrainingStrategy):
                 else:
                     pred = pred.reshape((nb_test, nb_train, 128))
                     idx = np.argmax(np.sum(pred, axis=2), axis=1)
-                best = pred[np.arange(100), idx]  # 100, 128 x 12
-                thresh = 0.3
-                temp = (best < thresh).astype(np.int)  # 100, 128 x 12
-                np.save('../pred/' + filename + '-correction1.npy', temp.reshape((nb_test, 128, 12)))
-
+                best = pred[np.arange(100][idx]  # 100, 128 x 12
+                for i in range(1, 5):
+                    thresh = 0.1 * i
+                    temp = (best < thresh).astype(np.int)  # 100, 128 x 12
+                    np.save('../pred/' + filename + '-correction0.' + str(i) +'.npy', temp.reshape((nb_test, 128, 12)))
                 c_hat = C[idx]
 
                 bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
                 # L1 error
-                if 'L1' in alg or 'L1diff' in alg:
+                if 'L1' in alg.model or 'L1diff' in alg.model:
                     errCntAvg = np.average(np.abs(c_hat - c)) * 12
                     # F1 error
-                elif 'F1' in alg:
+                elif 'F1' in alg.model:
                     np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
                     p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
                     r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
@@ -342,7 +342,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                 np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
 
             # record something
-            history.write_history(hist, i+1, errCntAvg,uniqIdx, norm )
+            history.write_history(hist, i+1, errCntAvg, uniqIdx, norm )
             with open('history/' + filename + '.csv', 'w') as csvfile:
                 csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
             print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
