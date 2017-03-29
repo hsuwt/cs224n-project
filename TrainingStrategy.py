@@ -60,8 +60,6 @@ class TrainingStrategy(object):
             fn += '_' + str(_alg.mtl_ratio)
         return fn
 
-
-
 class PairTrainingStrategy(TrainingStrategy):
     def __init__(self, alg):
         self.alg = alg
@@ -211,17 +209,11 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, sample_weight={'one-hot': SW, 'chroma': SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
                              validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}, {'one-hot': sw_val, 'chroma': sw_val}))
             # testing
-            print nb_test
-
             predOnehot, predChroma = model.predict(x_test)
-            predOnehot = np.array(predOnehot).reshape((nb_test, seq_len, self.ydim))
-            predChroma = np.array(predChroma).reshape((nb_test, seq_len, 12))
-            predOnehotAvg = (predOnehot + 0.0).reshape((nb_test, seq_len / 8, 8, self.ydim))
-            predChromaAvg = (predChroma + 0.0).reshape((nb_test, seq_len / 8, 8, 12))
-            predOnehotAvg = np.average(predOnehotAvg, axis=2)
-            predChromaAvg = np.average(predChromaAvg, axis=2)
-            predOnehotAvg = np.repeat(predOnehotAvg, 8, axis=1)
-            predChromaAvg = np.repeat(predChromaAvg, 8, axis=1)
+            predOnehot = np.array(predOnehot)
+            predChroma = np.array(predChroma)
+            predOnehotAvg = smooth(predOnehot)
+            predChromaAvg = smooth(predChroma)
 
             # signature here refers to theo output feature vector to be used for training
             c_hatOnehot    = self.chord2signatureOnehot(predOnehot)
@@ -270,7 +262,6 @@ class IterativeImproveStrategy(TrainingStrategy):
         # x_test = testing features (to evaluate unique_idx & norms)
         self.nb_test = 100
         M, m, C, c, SW, sw_val = load_data(alg, self.nb_test)
-
         self.SW, self.sw_val = SW, sw_val
         self.X, self.Y = self.ip.get_XY(M, C)
         self.x, self.y = self.ip.get_XY(m, c)
@@ -278,7 +269,6 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.c, self.C = c, C
         self.seq_len = 128
         self.nb_train = M.shape[0]
-
         self.test_freq = 20
 
     def train(self, model):
@@ -310,36 +300,37 @@ class IterativeImproveStrategy(TrainingStrategy):
             sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
             sys.stdout.flush()
             hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
+            if i % self.test_freq != 19: continue
+            pred = np.array(model.predict(x_test))
+            pred = pred.reshape((nb_test, nb_train, 128 * 12))  # 100, 1000, 128 x 12
+            errs = np.sum(np.abs(pred - 0.5), axis=2)  # 100, (128 x 12)
+            idx = np.argmin(errs, axis=1)  # 100,
+            c_hat = C[idx] # 100, 128, 12
+            corrected = c_hat + 0.0
+            pred = pred[np.arange(nb_test), idx].reshape((nb_test, 128, 12)) - 0.5 # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
+            print np.min(pred) #0.3
+            print np.max(pred) #0.9
+            thres = 0.2
+            print np.sum(corrected)
+            corrected[np.logical_and(c_hat == 0, pred < -thres)] = 1
+            corrected[np.logical_and(c_hat == 1, pred > +thres)] = 0
+            print np.sum(corrected)
+            corrected = corrected.astype(int)
+            print("saving numpy file")
+            np.save('../pred/' + filename + 'Corrected.npy', corrected)
+            np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
 
-            if i % self.test_freq == 0:
-                print "Testing!"
-
-                pred = np.array(model.predict(x_test))
-                if 'L1diff' in alg.model:
-                    pred = pred.reshape((nb_test, nb_train, 128 * 12))  # 100, 1000, 128 x 12
-                    errs = np.sum(np.abs(pred - 0.5), axis=2)  # 100, (128 x 12)
-                    idx = np.argmin(errs, axis=1)  # 100,
-                else:
-                    pred = pred.reshape((nb_test, nb_train, 128))
-                    idx = np.argmax(np.sum(pred, axis=2), axis=1)
-                best = pred[np.arange(100)][idx]  # 100, 128 x 12
-                for i in range(1, 5):
-                    thresh = 0.1 * i
-                    temp = (best < thresh).astype(np.int)  # 100, 128 x 12
-                    np.save('../pred/' + filename + '-correction0.' + str(i) +'.npy', temp.reshape((nb_test, 128, 12)))
-                c_hat = C[idx]
-
-                bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
-                # L1 error
-                if 'L1' in alg.model or 'L1diff' in alg.model:
-                    errCntAvg = np.average(np.abs(c_hat - c)) * 12
-                    # F1 error
-                elif 'F1' in alg.model:
-                    np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
-                    p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
-                    r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
-                    errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
-                np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
+            bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+            # L1 error
+            if 'L1' in alg.model or 'L1diff' in alg.model:
+                errCntAvg = np.average(np.abs(c_hat - c)) * 12
+                # F1 error
+            elif 'F1' in alg.model:
+                np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
+                p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
+                r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
+                errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
+            np.save('../pred/' + filename + '.npy', c_hat.astype(int))
 
             # record something
             history.write_history(hist, i+1, errCntAvg, uniqIdx, norm )

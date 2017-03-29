@@ -357,6 +357,7 @@ class PairedInputParser(InputParser):
             MC = np.concatenate((M, C), 2)
             X = np.concatenate((MC, MC_neg), 0)
             Y = np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
+            return X, Y
         Y = 1 - Y / 12.0
         return X, Y
 
@@ -582,3 +583,10 @@ def Matrices_to_MIDI(melody_matrix, chord_matrix):
     song.instruments.append(melody)
     song.instruments.append(chords)
     return song
+
+def smooth(C):
+    ydim = C.shape[2]
+    ret = C.reshape((-1, 128/8, 8, ydim))
+    ret = np.average(ret, axis=2)
+    return np.repeat(ret, 8, axis=1)
+
