@@ -308,11 +308,10 @@ class IterativeImproveStrategy(TrainingStrategy):
             c_hat = C[idx] # 100, 128, 12
             corrected = c_hat + 0.0
             pred = pred[np.arange(nb_test), idx].reshape((nb_test, 128, 12)) - 0.5 # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
-            print np.min(pred) #0.3
-            print np.max(pred) #0.9
-            thres = 0.2
+            thres = 0.1
             print np.sum(corrected)
             corrected[np.logical_and(c_hat == 0, pred < -thres)] = 1
+            print np.sum(corrected)
             corrected[np.logical_and(c_hat == 1, pred > +thres)] = 0
             print np.sum(corrected)
             corrected = corrected.astype(int)
