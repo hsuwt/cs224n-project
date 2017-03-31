@@ -2,36 +2,64 @@
 from util import *
 import csv
 
-class HistoryWriterPair(object):
-    def __init__(self):
-        self.state = [['epoch'], ['loss'], ['val_loss'], ['errCntAvg'],['uniqIdx'], ['norm']]
 
-    def write_history(self, hist, epoch, errCntAvg, uniqIdx, norm):
-        state = self.state
-        state[0].append(epoch)
-        state[1].append(round(hist.history['loss'][0], 2))
-        state[2].append(round(hist.history['val_loss'][0], 2))
-        state[3].append(round(errCntAvg, 2))
-        state[4].append(uniqIdx)
-        state[5].append(norm)
+# history will record the loss of every epoch
+# since it's too time-consuming to compute the unique_idx and norms,
+# record and save models after nb_epoch_pred epochs
+
+class HistoryWriterPair(object):
+    def __init__(self, csvfile):
+        cols = ('epoch', 'loss', 'val_loss', 'errCntAvg','uniq_idx', 'norm')
+        self.state = {k: list() for k in cols}
+        self.new_state = {k: None for k in cols}
+        self.writer = csv.DictWriter(csvfile, fieldnames=cols, lineterminator=os.linesep)
+
+    def write_history(self, hist, epoch, errCntAvg, uniq_idx, norm):
+        state = self.new_state
+        state['epoch'] = epoch
+        state['loss'] = round(hist.history['loss'][0], 2)
+        state['val_loss'] = round(hist.history['val_loss'][0], 2)
+        state['errCntAvg'] = round(errCntAvg, 2)
+        state['uniq_idx'] = uniq_idx
+        state['norm'] = norm
+        self.writer.writerow(**state)
+        for k, v in state:
+            self.state[k].append(v)
+
+    def log(self):
+        print "epoch: {epoch}, train_loss: {train_loss}, " \
+              "test_loss: {test_loss}, errCntAvg: {errCntAvg}".format(**self.new_state)
+
 
 class HistoryWriterLM(object):
-    def __init__(self):
-        self.state = [['epoch'], ['train1'], ['train12'], ['val1'], ['val12'], ['err1'], ['err12'], ['errEn'], ['err1Avg'], ['err12Avg'], ['errEnAvg']]
+    def __init__(self, csvfile):
+        cols = ('epoch', 'train1', 'train12', 'val1', 'val12', 'err1', 'err12',
+                'errEn', 'err1Avg', 'err12Avg', 'errEnAvg')
+        self.state = {k: list() for k in cols}
+        self.new_state = {k: None for k in cols}
+        self.writer = csv.DictWriter(csvfile, fieldnames=cols, lineterminator=os.linesep)
 
     def write_history(self, hist, epoch, errCntAvg):
-        state = self.state
-        state[0].append(epoch)
-        state[1].append(round(hist.history['one-hot_loss'][0], 2))
-        state[2].append(round(hist.history['chroma_loss'][0], 2))
-        state[3].append(round(hist.history['val_one-hot_loss'][0], 2))
-        state[4].append(round(hist.history['val_chroma_loss'][0], 2))
-        state[5].append(round(errCntAvg[0], 2))
-        state[6].append(round(errCntAvg[1], 2))
-        state[7].append(round(errCntAvg[2], 2))
-        state[8].append(round(errCntAvg[3], 2))
-        state[9].append(round(errCntAvg[4], 2))
-        state[10].append(round(errCntAvg[5], 2))
+        state = self.new_state
+        state['epoch'] = epoch
+        state['train1'] = round(hist.history['one-hot_loss'][0], 2)
+        state['train12'] = round(hist.history['chroma_loss'][0], 2)
+        state['val1'] = round(hist.history['val_one-hot_loss'][0], 2)
+        state['val12'] = round(hist.history['val_chroma_loss'][0], 2)
+        state['err1'] = round(errCntAvg[0], 2)
+        state['err12'] = round(errCntAvg[1], 2)
+        state['errEn'] = round(errCntAvg[2], 2)
+        state['err1Avg'] = round(errCntAvg[3], 2)
+        state['err12Avg'] = round(errCntAvg[4], 2)
+        state['errEnAvg'] = round(errCntAvg[5], 2)
+        self.writer.writerow(**state)
+        for k, v in state:
+            self.state[k].append(v)
+
+    def log(self):
+        print "epoch: {epoch}, train1: {train1}, train12: {train12}, " \
+              "val1: {val1}, val12: {val12}. " \
+              "err1: {err1}, err12: {err12}, err1Avg: {err1Avg}, err12Avg: {err12Avg}".format(**self.new_state)
 
 
 class TrainingStrategy(object):
@@ -97,51 +125,42 @@ class PairTrainingStrategy(TrainingStrategy):
         SW, sw_val = self.SW, self.sw_val
         # loaded data
 
-        # model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
-        history = HistoryWriterPair()
-
-        # history will record the loss of every epoch
-        # since it's too time-consuming to compute the unique_idx and norms,
-        # record and save models after nb_epoch_pred epochs
-
         filename = self.get_filename(self.alg)
         numcount = 10
-        for i in range(nb_epoch):
-            # print epoch
-            sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
-            sys.stdout.flush()
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
-            numcount-=1
-            if (numcount!=0): continue
-            numcount=10
-            # testing
-            pred = np.array(model.predict(x_test))
-            if 'L1diff' in alg.model:
-                pred = pred.reshape((nb_test, nb_train, 128 * 12))
-                idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
-            else:
-                pred = pred.reshape((nb_test, nb_train, 128))
-                idx = np.argmax(np.sum(pred, axis=2), axis=1)
-            c_hat = C[idx]
-            bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
-            # L1 error
-            if 'L1' in alg.model or 'L1diff' in alg.model:
-                errCntAvg = np.average(np.abs(c_hat - c)) * 12
-                # F1 error
-            elif 'F1' in alg.model:
-                np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
-                p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
-                r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
-                errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
-            np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
+        with open('history/' + filename + '.csv', 'w') as csvfile:
+            history = HistoryWriterPair(csvfile)
 
-            # record something
-            history.write_history(hist, i+1, errCntAvg,uniqIdx, norm )
-            with open('history/' + filename + '.csv', 'w') as csvfile:
-                csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
-            print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
-                "test_loss:", history.state[2][-1], "errCntAvg:", \
-            history.state[3][-1]
+            for i in range(nb_epoch):
+                # print epoch
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
+                sys.stdout.flush()
+                hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
+                numcount-=1
+                if (numcount!=0): continue
+                numcount=10
+                # testing
+                pred = np.array(model.predict(x_test))
+                if 'L1diff' in alg.model:
+                    pred = pred.reshape((nb_test, nb_train, 128 * 12))
+                    idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
+                else:
+                    pred = pred.reshape((nb_test, nb_train, 128))
+                    idx = np.argmax(np.sum(pred, axis=2), axis=1)
+                c_hat = C[idx]
+                bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+                # L1 error
+                if 'L1' in alg.model or 'L1diff' in alg.model:
+                    errCntAvg = np.average(np.abs(c_hat - c)) * 12
+                    # F1 error
+                elif 'F1' in alg.model:
+                    np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
+                    p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
+                    r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
+                    errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
+                np.save('../pred/' + filename + '.npy', c_hat.astype(int).reshape((nb_test, 128, 12)))
+
+                history.write_history(hist, i+1, errCntAvg,uniqIdx, norm)
+                history.log()
 
 
 class LanguageModelTrainingStrategy(TrainingStrategy):
@@ -180,10 +199,8 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
 
 
     def train(self, model):
-        nodes1 = self.alg['nodes1']
-        nodes2 = self.alg['nodes2']
-        nb_epoch = self.alg['nb_epoch']
-        batch_size = self.alg['batch_size']
+        nb_epoch = self.alg.nb_epoch
+        batch_size = self.alg.batch_size
         seq_len = self.seq_len
         nb_test = 100  # FIXME: Magic Number!!
 
@@ -193,61 +210,51 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         SW, sw_val = self.SW, self.sw_val
         # loaded data
 
-        # model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
-        history = HistoryWriterLM()
-
-        # history will record the loss of every epoch
-        # since it's too time-consuming to compute the unique_idx and norms,
-        # record and save models after nb_epoch_pred epochs
-
         filename = self.get_filename(self.alg)
 
-        for i in range(nb_epoch):
-            # print epoch
-            sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
-            sys.stdout.flush()
-            hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, sample_weight={'one-hot': SW, 'chroma': SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
-                             validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}, {'one-hot': sw_val, 'chroma': sw_val}))
-            # testing
-            predOnehot, predChroma = model.predict(x_test)
-            predOnehot = np.array(predOnehot)
-            predChroma = np.array(predChroma)
-            predOnehotAvg = smooth(predOnehot)
-            predChromaAvg = smooth(predChroma)
+        with open('history/' + filename + '.csv', 'w') as csvfile:
+            history = HistoryWriterLM(csvfile)
 
-            # signature here refers to theo output feature vector to be used for training
-            c_hatOnehot    = self.chord2signatureOnehot(predOnehot)
-            c_hatChroma    = self.chord2signatureChroma(predChroma)
-            c_hatEnsemble  = self.chord2signatureOnehot((predOnehot+ self.chroma2WeightedOnehot(predChroma))/2.0)
-            c_hatOnehotAvg = self.chord2signatureOnehot(predOnehotAvg)
-            c_hatChromaAvg = self.chord2signatureChroma(predChromaAvg)
-            c_hatEnsembleAvg = self.chord2signatureOnehot((predOnehotAvg+ self.chroma2WeightedOnehot(predChromaAvg))/2.0)
-            errCntAvgOnehot    = np.average(np.abs(yChroma - c_hatOnehot)) * 12
-            errCntAvgChroma    = np.average(np.abs(yChroma - c_hatChroma)) * 12
-            errCntAvgEnsemble  = np.average(np.abs(yChroma - c_hatEnsemble)) * 12
-            errCntAvgOnehotAvg = np.average(np.abs(yChroma - c_hatOnehotAvg)) * 12
-            errCntAvgChromaAvg = np.average(np.abs(yChroma - c_hatChromaAvg)) * 12
-            errCntAvgEnsembleAvg  = np.average(np.abs(yChroma - c_hatEnsembleAvg)) * 12
-            np.save('../pred/' + filename + 'Onehot.npy', c_hatOnehot.astype(int).reshape((nb_test, seq_len, 12)))
-            np.save('../pred/' + filename + 'Chroma.npy', c_hatChroma.astype(int).reshape((nb_test, seq_len, 12)))
-            np.save('../pred/' + filename + 'Ensemble.npy', c_hatEnsemble.astype(int).reshape((nb_test, seq_len, 12)))
-            np.save('../pred/' + filename + 'OnehotAvg.npy', c_hatOnehotAvg.astype(int).reshape((nb_test, seq_len, 12)))
-            np.save('../pred/' + filename + 'ChromaAvg.npy', c_hatChromaAvg.astype(int).reshape((nb_test, seq_len, 12)))
-            np.save('../pred/' + filename + 'EnsembleAvg.npy', c_hatEnsembleAvg.astype(int).reshape((nb_test, seq_len, 12)))
-            errCntAvg = [errCntAvgOnehot, errCntAvgChroma, errCntAvgEnsemble, errCntAvgOnehotAvg, \
-                         errCntAvgChromaAvg, errCntAvgEnsembleAvg]
-            # record something
-            history.write_history(hist, i+1, errCntAvg)
-            with open('history/' + filename + '.csv', 'w') as csvfile:
-                csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
-            print "epoch:", history.state[0][-1], "train1:", history.state[1][-1], "train12:", history.state[2][-1], \
-            "val1:", history.state[3][-1], "val12:", history.state[4][-1], \
-            "err1:", history.state[5][-1], "err12:", history.state[6][-1], \
-            "err1Avg:", history.state[7][-1], "err12Avg:", history.state[8][-1]
+            for i in range(nb_epoch):
+                # print epoch
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
+                sys.stdout.flush()
+                hist = model.fit(X, {'one-hot': YOnehot, 'chroma': YChroma}, sample_weight={'one-hot': SW, 'chroma': SW}, batch_size=batch_size, nb_epoch=1, verbose=0,
+                                 validation_data=(x, {'one-hot': yOnehot, 'chroma': yChroma}, {'one-hot': sw_val, 'chroma': sw_val}))
+                # testing
+                predOnehot, predChroma = model.predict(x_test)
+                predOnehot = np.array(predOnehot)
+                predChroma = np.array(predChroma)
+                predOnehotAvg = smooth(predOnehot)
+                predChromaAvg = smooth(predChroma)
 
-            # record & save model
-            # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
-            # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+                # signature here refers to theo output feature vector to be used for training
+                c_hatOnehot    = self.chord2signatureOnehot(predOnehot)
+                c_hatChroma    = self.chord2signatureChroma(predChroma)
+                c_hatEnsemble  = self.chord2signatureOnehot((predOnehot+ self.chroma2WeightedOnehot(predChroma))/2.0)
+                c_hatOnehotAvg = self.chord2signatureOnehot(predOnehotAvg)
+                c_hatChromaAvg = self.chord2signatureChroma(predChromaAvg)
+                c_hatEnsembleAvg = self.chord2signatureOnehot((predOnehotAvg+ self.chroma2WeightedOnehot(predChromaAvg))/2.0)
+                errCntAvgOnehot    = np.average(np.abs(yChroma - c_hatOnehot)) * 12
+                errCntAvgChroma    = np.average(np.abs(yChroma - c_hatChroma)) * 12
+                errCntAvgEnsemble  = np.average(np.abs(yChroma - c_hatEnsemble)) * 12
+                errCntAvgOnehotAvg = np.average(np.abs(yChroma - c_hatOnehotAvg)) * 12
+                errCntAvgChromaAvg = np.average(np.abs(yChroma - c_hatChromaAvg)) * 12
+                errCntAvgEnsembleAvg  = np.average(np.abs(yChroma - c_hatEnsembleAvg)) * 12
+                np.save('../pred/' + filename + 'Onehot.npy', c_hatOnehot.astype(int).reshape((nb_test, seq_len, 12)))
+                np.save('../pred/' + filename + 'Chroma.npy', c_hatChroma.astype(int).reshape((nb_test, seq_len, 12)))
+                np.save('../pred/' + filename + 'Ensemble.npy', c_hatEnsemble.astype(int).reshape((nb_test, seq_len, 12)))
+                np.save('../pred/' + filename + 'OnehotAvg.npy', c_hatOnehotAvg.astype(int).reshape((nb_test, seq_len, 12)))
+                np.save('../pred/' + filename + 'ChromaAvg.npy', c_hatChromaAvg.astype(int).reshape((nb_test, seq_len, 12)))
+                np.save('../pred/' + filename + 'EnsembleAvg.npy', c_hatEnsembleAvg.astype(int).reshape((nb_test, seq_len, 12)))
+                errCntAvg = [errCntAvgOnehot, errCntAvgChroma, errCntAvgEnsemble, errCntAvgOnehotAvg, \
+                             errCntAvgChromaAvg, errCntAvgEnsembleAvg]
+                # record something
+                history.write_history(hist, i+1, errCntAvg)
+                history.log()
+                # record & save model
+                # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
+                # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
 
 
 class IterativeImproveStrategy(TrainingStrategy):
@@ -287,54 +294,44 @@ class IterativeImproveStrategy(TrainingStrategy):
         SW, sw_val = self.SW, self.sw_val
         # loaded data
 
-        # model = build_model(alg, nodes1, nodes2, dropout_rate, seq_len)
-        history = HistoryWriterPair()
-
-        # history will record the loss of every epoch
-        # since it's too time-consuming to compute the unique_idx and norms,
-        # record and save models after nb_epoch_pred epochs
-
         filename = self.get_filename(self.alg)
-        for i in range(nb_epoch):
-            # print epoch
-            sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
-            sys.stdout.flush()
-            hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
-            if i % self.test_freq != 19: continue
-            pred = np.array(model.predict(x_test))
-            pred = pred.reshape((nb_test, nb_train, 128 * 12))  # 100, 1000, 128 x 12
-            errs = np.sum(np.abs(pred - 0.5), axis=2)  # 100, (128 x 12)
-            idx = np.argmin(errs, axis=1)  # 100,
-            c_hat = C[idx] # 100, 128, 12
-            corrected = c_hat + 0.0
-            pred = pred[np.arange(nb_test), idx].reshape((nb_test, 128, 12)) - 0.5 # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
-            thres = 0.1
-            print np.sum(corrected)
-            corrected[np.logical_and(c_hat == 0, pred < -thres)] = 1
-            print np.sum(corrected)
-            corrected[np.logical_and(c_hat == 1, pred > +thres)] = 0
-            print np.sum(corrected)
-            corrected = corrected.astype(int)
-            print("saving numpy file")
-            np.save('../pred/' + filename + 'Corrected.npy', corrected)
-            np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
+        with open('history/' + filename + '.csv', 'w') as csvfile:
+            history = HistoryWriterPair(csvfile)
+            for i in range(nb_epoch):
+                # print epoch
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
+                sys.stdout.flush()
+                hist = model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0, validation_data=(x, y))
+                if i % self.test_freq != 19: continue
+                pred = np.array(model.predict(x_test))
+                pred = pred.reshape((nb_test, nb_train, 128 * 12))  # 100, 1000, 128 x 12
+                errs = np.sum(np.abs(pred - 0.5), axis=2)  # 100, (128 x 12)
+                idx = np.argmin(errs, axis=1)  # 100,
+                c_hat = C[idx] # 100, 128, 12
+                corrected = c_hat + 0.0
+                pred = pred[np.arange(nb_test), idx].reshape((nb_test, 128, 12)) - 0.5 # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
+                thres = 0.1
+                print np.sum(corrected)
+                corrected[np.logical_and(c_hat == 0, pred < -thres)] = 1
+                print np.sum(corrected)
+                corrected[np.logical_and(c_hat == 1, pred > +thres)] = 0
+                print np.sum(corrected)
+                corrected = corrected.astype(int)
+                print("saving numpy file")
+                np.save('../pred/' + filename + 'Corrected.npy', corrected)
+                np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
 
-            bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
-            # L1 error
-            if 'L1' in alg.model or 'L1diff' in alg.model:
-                errCntAvg = np.average(np.abs(c_hat - c)) * 12
-                # F1 error
-            elif 'F1' in alg.model:
-                np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
-                p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
-                r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
-                errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
-            np.save('../pred/' + filename + '.npy', c_hat.astype(int))
+                bestN, uniqIdx, norm = print_result(c_hat, c, C, alg, False, 1)
+                # L1 error
+                if 'L1' in alg.model or 'L1diff' in alg.model:
+                    errCntAvg = np.average(np.abs(c_hat - c)) * 12
+                    # F1 error
+                elif 'F1' in alg.model:
+                    np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
+                    p = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c_hat, 2)
+                    r = np.sum(np.logical_and(c, c_hat), 2) / np.sum(c, 2)
+                    errCntAvg = np.average(np.nan_to_num(2 * p * r / (p + r)))
+                np.save('../pred/' + filename + '.npy', c_hat.astype(int))
 
-            # record something
-            history.write_history(hist, i+1, errCntAvg, uniqIdx, norm )
-            with open('history/' + filename + '.csv', 'w') as csvfile:
-                csv.writer(csvfile, lineterminator=os.linesep).writerows(map(list, zip(*history.state)))
-            print "epoch:", history.state[0][-1], "train_loss:", history.state[1][-1], \
-                "test_loss:", history.state[2][-1], "errCntAvg:", \
-            history.state[3][-1]
+                history.write_history(hist, i+1, errCntAvg, uniqIdx, norm)
+                history.log()

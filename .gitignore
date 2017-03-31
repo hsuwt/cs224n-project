@@ -6,3 +6,4 @@ npy/
 csv/npy-exists.config
 .ipynb_checkpoints
 history/*.png
+history
