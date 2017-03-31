@@ -4,6 +4,7 @@ import numpy as np
 import pretty_midi
 from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder, chroma2Onehot
 import csv
+from collections import namedtuple
 
 
 def rotate(Chroma, semitone):
@@ -294,6 +295,7 @@ def csv2npy():
         np.save('~/npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
         print("saving csv" + str(j) + ".npy")
 
+Data = namedtuple('Data', ['melody', 'chord', 'sw'])
 
 def load_data(alg, nb_test):
     C, M, SW = parse_data(alg, 128)
@@ -303,7 +305,8 @@ def load_data(alg, nb_test):
     M = M[:-nb_test]
     sw = SW[-nb_test:]
     SW = SW[:-nb_test]
-    return M, m, C, c, SW, sw
+    return {'train': Data(melody=M, chord=C, sw=SW),
+            'test': Data(melody=m, chord=c, sw=sw)}
 
 
 class InputParser(object):
