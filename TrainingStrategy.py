@@ -18,7 +18,7 @@ class TrainingStrategy(object):
     @staticmethod
     def get_filename(_alg):
         major = _alg.strategy
-        minor = 'onehot' if 'one-hot' in _alg.model else 'L1diff' if 'L1diff' in _alg.model else ''
+        minor = 'onehot' if 'one-hot' in _alg.model else ''
         rnn = 'RNN' if 'RNN' in _alg.model else "GRU" if "GRU" in _alg.model else "LSTM" if "LSTM" in _alg.model else ''
         if 'Bidirectional' in _alg.model:
             rnn += 'B'
@@ -156,11 +156,11 @@ class IterativeImproveStrategy(TrainingStrategy):
         train_data = data['train']
         test_data = data['test']
 
-        DataSet = namedtuple('DataSet', ['x', 'y', 'sw'])
-        x, y = self.ip.get_XY(train_data.melody, train_data.chord)
-        self.trainset = DataSet(x, y, train_data.sw)
-        x, y = self.ip.get_XY(test_data.melody, test_data.chord)
-        self.testset = DataSet(x, y, test_data.sw)
+        DataSet = namedtuple('DataSet', ['x', 'yAdd', 'yDelete', 'sw'])
+        x, yAdd, yDelete = self.ip.get_XY(train_data.melody, train_data.chord)
+        self.trainset = DataSet(x, yAdd, yDelete, np.tile(train_data.sw, (2,1)))
+        x, yAdd, yDelete = self.ip.get_XY(test_data.melody, test_data.chord)
+        self.testset = DataSet(x, yAdd, yDelete, np.tile(test_data.sw, (2,1)))
         self.x_test = get_test(args.strategy, test_data.melody, train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.seq_len = 128
@@ -189,9 +189,19 @@ class IterativeImproveStrategy(TrainingStrategy):
             for i in range(nb_epoch):
                 sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
                 sys.stdout.flush()
-                hist = model.fit(train.x, train.y,
-                                 batch_size=batch_size, nb_epoch=1, verbose=0,
-                                 validation_data=(test.x, test.y))
+                print train.sw.shape
+                print train.yAdd.shape
+                print train.yDelete.shape
+                print test.sw.shape
+                print test.yAdd.shape
+                print test.yDelete.shape
+                hist = model.fit(train.x, {'add': train.yAdd, 'delete': train.yDelete},
+                                 nb_epoch=1, verbose=0,
+                                 batch_size=batch_size, 
+                                 sample_weight={'add': train.sw, 'delete': train.sw},
+                                 validation_data=(test.x, 
+                                                  {'add': test.yAdd, 'delete': test.yDelete},
+                                                  {'add': test.sw, 'delete': test.sw}))
                 if i % self.test_freq == 19:  # FIXME magic number!
                     pred = np.array(model.predict(x_test))
                     pred = pred.reshape((nb_test, nb_train, 128 * 12))  # 100, 1000, 128 x 12
@@ -215,15 +225,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                         np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
 
                     bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
-                    # L1 error
-                    if 'L1' in args.model or 'L1diff' in args.model:
-                        err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
-                        # F1 error
-                    elif 'F1' in args.model:
-                        np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
-                        p = np.sum(np.logical_and(test_chord, c_hat), 2) / np.sum(c_hat, 2)
-                        r = np.sum(np.logical_and(test_chord, c_hat), 2) / np.sum(test_chord, 2)
-                        err_count_avg = np.average(np.nan_to_num(2 * p * r / (p + r)))
+                    err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
                     np.save('../pred/' + filename + '.npy', c_hat.astype(int))
 
                     history.write_history(hist, i+1, err_count_avg, uniq_idx, norm)

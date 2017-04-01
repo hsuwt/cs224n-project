@@ -48,27 +48,21 @@ class PairedInputParser(InputParser):
         self.transcoder = ChordNotes2OneHotTranscoder()
 
     def get_XY(self, M, C):
-        COnehot = self.transcoder.transcode(C)
         n = M.shape[0]
         idx = np.random.randint(n, size=n)
-        C_neg, C_negOnehot = C[idx], COnehot[idx]
+        C_neg = C[idx]
         Ones = np.ones((n, 128, 1))
         Zeros = np.zeros((n, 128, 1))
-        assert 'L1diff' in self.alg.model
+        add    = C - C_neg == 1
+        delete = C_neg - C == 1
 
-        L1diff, L1diffOnehot = (C_neg - C) / 2. + 0.5, (C_negOnehot - COnehot) / 2. + 0.5
-        if 'rand' in self.alg.model:
-            X = np.concatenate((M, C_neg), 2)
-            Y = L1diff
-        else:
-            MC_neg = np.concatenate((M, C_neg), 2)
-            MC = np.concatenate((M, C), 2)
-            X = np.concatenate((MC, MC_neg), 0)
-            Y = np.concatenate((np.tile(Zeros, 12) + 0.5, L1diff), 0)
-            return X, Y
-        Y = 1 - Y / 12.0
-        return X, Y
+        MC_pos = np.concatenate((M, C), 2)
+        MC_neg = np.concatenate((M, C_neg), 2)
+        X = np.concatenate((MC_pos, MC_neg), 0)
 
+        YAdd    = np.concatenate((np.tile(Zeros, 12), add), 0)
+        YDelete = np.concatenate((np.tile(Zeros, 12), delete), 0)
+        return X, YAdd, YDelete
 
 def get_test(strategy, m, C):
     # x_te are the final testing features to match m to C
