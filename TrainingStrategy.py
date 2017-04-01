@@ -1,66 +1,8 @@
 # from util import top3notes, InputParser
 from util import *
-import csv
-from collections import namedtuple
-
-
-# history will record the loss of every epoch
-# since it's too time-consuming to compute the unique_idx and norms,
-# record and save models after nb_epoch_pred epochs
-
-class HistoryWriterPair(object):
-    def __init__(self, csv_file):
-        cols = ('epoch', 'loss', 'val_loss', 'errCntAvg', 'uniq_idx', 'norm')
-        self.state = {k: list() for k in cols}
-        self.new_state = {k: None for k in cols}
-        self.writer = csv.DictWriter(csv_file, fieldnames=cols, lineterminator=os.linesep)
-
-    def write_history(self, hist, epoch, err_count_avg, uniq_idx, norm):
-        state = self.new_state
-        state['epoch'] = epoch
-        state['loss'] = round(hist.history['loss'][0], 2)
-        state['val_loss'] = round(hist.history['val_loss'][0], 2)
-        state['errCntAvg'] = round(err_count_avg, 2)
-        state['uniq_idx'] = uniq_idx
-        state['norm'] = norm
-        self.writer.writerow(**state)
-        for k, v in state:
-            self.state[k].append(v)
-
-    def log(self):
-        print "epoch: {epoch}, train_loss: {train_loss}, " \
-              "test_loss: {test_loss}, errCntAvg: {errCntAvg}".format(**self.new_state)
-
-
-class HistoryWriterLM(object):
-    def __init__(self, csv_file):
-        cols = ('epoch', 'train1', 'train12', 'val1', 'val12', 'err1', 'err12',
-                'errEn', 'err1Avg', 'err12Avg', 'errEnAvg')
-        self.state = {k: list() for k in cols}
-        self.new_state = {k: None for k in cols}
-        self.writer = csv.DictWriter(csv_file, fieldnames=cols, lineterminator=os.linesep)
-
-    def write_history(self, hist, epoch, err):
-        state = self.new_state
-        state['epoch'] = epoch
-        state['train1'] = round(hist.history['one-hot_loss'][0], 2)
-        state['train12'] = round(hist.history['chroma_loss'][0], 2)
-        state['val1'] = round(hist.history['val_one-hot_loss'][0], 2)
-        state['val12'] = round(hist.history['val_chroma_loss'][0], 2)
-        state['err1'] = round(err['err_count_avg'].onehot, 2)
-        state['err12'] = round(err['err_count_avg'].chroma, 2)
-        state['errEn'] = round(err['err_count_avg'].ensemble, 2)
-        state['err1Avg'] = round(err['err_count_avg_avg'].onehot, 2)
-        state['err12Avg'] = round(err['err_count_avg_avg'].chroma, 2)
-        state['errEnAvg'] = round(err['err_count_avg_avg'].ensemble, 2)
-        self.writer.writerow(**state)
-        for k, v in state:
-            self.state[k].append(v)
-
-    def log(self):
-        print "epoch: {epoch}, train1: {train1}, train12: {train12}, " \
-              "val1: {val1}, val12: {val12}. " \
-              "err1: {err1}, err12: {err12}, err1Avg: {err1Avg}, err12Avg: {err12Avg}".format(**self.new_state)
+from utils.load_data import *
+from utils.build_chord_repr import *
+from utils.history_writer import *
 
 
 class TrainingStrategy(object):
@@ -109,7 +51,7 @@ class PairTrainingStrategy(TrainingStrategy):
         test_data = data['test']
 
         DataSet = namedtuple('DataSet', ['x', 'y', 'sw'])
-        x, y = self.ip.get_XY(train_data.melody, train_data.melody)
+        x, y = self.ip.get_XY(train_data.melody, train_data.chord)
         self.trainset = DataSet(x, y, train_data.sw)
         x, y = self.ip.get_XY(test_data.melody, test_data.chord)
         self.testset = DataSet(x, y, test_data.sw)
@@ -119,9 +61,14 @@ class PairTrainingStrategy(TrainingStrategy):
         self.seq_len = 128
 
     def train(self, model):
-        nb_epoch = self.alg.nb_epoch
-        batch_size = self.alg.batch_size
-        numcount = 10
+        if self.alg.debug:
+            nb_epoch = 1
+            batch_size = self.alg.batch_size
+            numcount = 1
+        else:
+            nb_epoch = self.alg.nb_epoch
+            batch_size = self.alg.batch_size
+            numcount = 10
 
         alg = self.alg
         train = self.trainset
@@ -210,7 +157,10 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         return self.ydim
 
     def train(self, model):
-        nb_epoch = self.alg.nb_epoch
+        if self.alg.debug:
+            nb_epoch = self.alg.nb_epoch
+        else:
+            nb_epoch = 1
         batch_size = self.alg.batch_size
         seq_len = self.seq_len
         nb_test = 100  # FIXME: Magic Number!!
@@ -301,8 +251,12 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.test_freq = 20
 
     def train(self, model):
-        nb_epoch = self.alg.nb_epoch
-        batch_size = self.alg.batch_size
+        if self.alg.debug:
+            nb_epoch = 1
+            batch_size = self.alg.batch_size
+        else:
+            nb_epoch = self.alg.nb_epoch
+            batch_size = self.alg.batch_size
 
         alg = self.alg
 

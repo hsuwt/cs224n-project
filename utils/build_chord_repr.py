@@ -72,7 +72,7 @@ def get_onehot2chordnotes_transcoder():
         return newC.reshape(M, T, 12)
     return f
 
-def onehot2weighteChords():
+def get_onehot2weighted_chords_transcoder():
     """
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
     :return: f: the translator function
@@ -88,28 +88,28 @@ def onehot2weighteChords():
         M, T, Dim = chord.shape
         C2 = chord.reshape([M*T, Dim])
         weightedChords = np.dot(C2, chordId2sign)
-        return newC.reshape(M, T, 12)
+        return weightedChords.reshape(M, T, 12)
     return f
 
 
-def load_data():
+def _load_data():
     """
     :return: chord data
     """
-    C = np.genfromtxt('csv/chord.csv', delimiter=',')  # Mx(T*12)
+    C = np.genfromtxt('../csv/chord.csv', delimiter=',')  # Mx(T*12)
     C = np.swapaxes(C.reshape((C.shape[0],12,128)), 1, 2)  # MxTx12
     C = C.reshape((C.shape[0]*128, 12))  # (MT)x12
     return C
 
 
-def get_uniq(c):
+def _get_uniq(c):
     bytes = np.packbits(c.astype(np.int), axis=1).astype(np.int64)
     integer = (bytes[:, 0] << 4) + (bytes[:, 1] >> 4)
     uniqs = {integer: chord for integer, chord in zip(integer, c)}
     return uniqs
 
 
-def build_repr(uniqs):
+def _build_repr(uniqs):
     repr_set = {}
     reverse_set = []
 
@@ -119,19 +119,19 @@ def build_repr(uniqs):
     return repr_set, np.array(reverse_set)
 
 
-def savemap(amap, path):
+def _savemap(amap, path):
     with open(path, 'wb') as pfile:
         pkl.dump(amap, pfile)
 
 
-def saveunmap(unmap, path):
+def _saveunmap(unmap, path):
     np.save(path, unmap)
 
 
 if __name__ == '__main__':
-    c = load_data()
-    cs = get_uniq(c)
+    c = _load_data()
+    cs = _get_uniq(c)
     print "Discovered %d different chord signatures, out of %d possibilities" % (len(cs), 2 << 12)
-    amap, unmap = build_repr(cs)
-    savemap(amap, 'csv/chord-1hot-signatures.pickle')
-    saveunmap(unmap, 'csv/chord-1hot-signatures-rev')
+    amap, unmap = _build_repr(cs)
+    _savemap(amap, 'csv/chord-1hot-signatures.pickle')
+    _saveunmap(unmap, 'csv/chord-1hot-signatures-rev')

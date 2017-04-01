@@ -15,6 +15,7 @@ if __name__ == "__main__":
     parser.add_argument('--dropout_rate', nargs='?', type=float)
     parser.add_argument('--batch_size', nargs='?', type=int)
     parser.add_argument('--nb_test', nargs='?', type=int)
+    parser.add_argument('--debug', dest='debug', action='store_true')  # debug flag
 
     args = parser.parse_args()
     args.strategy = args.strategy if args.strategy else 'correct'
