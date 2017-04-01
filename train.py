@@ -29,7 +29,7 @@ if __name__ == "__main__":
     args.mtl_ratio = args.mtl_ratio if args.mtl_ratio else 0.5
     print args
 
-    strategies = {'pair': PairTrainingStrategy, 'LM': LanguageModelTrainingStrategy, 'correct': IterativeImproveStrategy}
+    strategies = {'pair': IterativeImproveStrategy, 'LM': LanguageModelTrainingStrategy}
     ts = strategies[args.strategy](args)
     if args.strategy == 'LM': args.one_hot_dim = ts.ydim
     model = build_model(args, args.nodes1, args.nodes2, args.dropout_rate, ts.seq_len)

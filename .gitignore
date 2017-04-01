@@ -1,10 +1,9 @@
 .idea/
 *.pyc
+.ipynb_checkpoints
+.DS_Store
+
 midilabel/
 npy/
-.DS_Store
-csv/npy-exists.config
-.ipynb_checkpoints
-history/*.png
 history
-.DS_Store
+csv/npy-exists.config
