@@ -1,4 +1,4 @@
-from build_chord_repr import ChordNotes2OneHotTranscoder, get_onehot2chordnotes_transcoder, chroma2Onehot
+from build_chord_repr import ChordNotes2OneHotTranscoder
 from collections import namedtuple
 import numpy as np
 import csv

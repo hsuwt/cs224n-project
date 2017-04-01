@@ -115,7 +115,6 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                                 chroma=smooth(np.array(pred.chroma)))
 
                 # signature here refers to theo output feature vector to be used for training
-                # FIXME what is "chroma2WeightedOnehot"???
                 c_hat = Triple(onehot=self.chord2signatureOnehot(pred.onehot),
                                chroma=self.chord2signatureOnehot(pred.chroma),
                                ensemble=self.chord2signatureOnehot((pred.onehot
@@ -129,8 +128,8 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                                                  c_hat_avg)
 
                 base = '../pred/' + filename + '{}.npy'
-                for c, fn in zip(c_hat, ('Onehot', 'Chroma', 'Ensemble')):
-                    np.save(base.format(fn), c.astype(int).reshape((nb_test, seq_len, 12)))
+                for _c, fn in zip(c_hat, ('Onehot', 'Chroma', 'Ensemble')):
+                    np.save(base.format(fn), _c.astype(int).reshape((nb_test, seq_len, 12)))
                 for cavg, fn in zip(c_hat_avg, ('OnehotAvg', 'ChromaAvg', 'EnsembleAvg')):
                     np.save(base.format(fn), cavg.astype(int).reshape((nb_test, seq_len, 12)))
 
@@ -190,6 +189,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         nb_train, nb_test = self.nb_train, self.nb_test
 
         filename = self.get_filename(self.args)
+        print "Result will be written to history/{}.csv".format(filename)
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterPair(csvfile)
             for i in range(nb_epoch):

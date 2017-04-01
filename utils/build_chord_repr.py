@@ -23,23 +23,25 @@ class ChordNotes2OneHotTranscoder(object):
             self.size = len(self.sign2chord)
 
     def transcode(self, chord):
-        N = chord.shape[0] * chord.shape[1]
-        C2 = chord.reshape([N, 12]).astype(np.int)
-        newC = np.zeros([N, self.size]).astype(np.int)
-        indexes = np.packbits(C2, axis=1).astype(np.int)
+        n = chord.shape[0] * chord.shape[1]
+        chord2 = chord.reshape([n, 12]).astype(np.int)
+        new_chord = np.zeros([n, self.size]).astype(np.int)
+        indexes = np.packbits(chord2, axis=1).astype(np.int)
         # packbits assumes numbers are in 8 bits. Instead our data uses 12 bits
         # therefore it is necessary to do the bit operaation below:
         indexes = (indexes[:, 0] << 4) + (indexes[:, 1] >> 4)
         chord_indexes = [self.sign2chord[i] for i in indexes]
-        newC[np.arange(N), chord_indexes] = 1
-        newC = newC.reshape([chord.shape[0], chord.shape[1], self.size])
-        return newC
+        new_chord[np.arange(n), chord_indexes] = 1
+        new_chord = new_chord.reshape([chord.shape[0], chord.shape[1], self.size])
+        return new_chord
 
 
-def chroma2Onehot(pred):
+# TODO: what is this? How is this different from ChordNotes2OneHotTranscoder
+def chroma2onehot():
     chord_id2sign = np.load('csv/chord-1hot-signatures-rev.npy')
-    chord_id2sign = chord_id2sign / np.reshape(np.sum(chord_id2sign, axis=1), (119,1))
+    chord_id2sign = chord_id2sign / np.reshape(np.sum(chord_id2sign, axis=1), (119, 1))
     chord_id2sign = np.nan_to_num(chord_id2sign)
+
     def f(pred):
         pred = np.dot(pred, chord_id2sign.T)
 
@@ -65,12 +67,13 @@ def get_onehot2chordnotes_transcoder():
         :param chord: 1-hot representation of chords in (M, T, Dim)
         :return: chord signature in (M, T, 12)
         """
-        M, T, Dim = chord.shape
-        C2 = chord.reshape([M*T, Dim])
-        index = np.argmax(C2, axis=1)
-        newC = chord_id2sign[index, :]
-        return newC.reshape(M, T, 12)
+        m, length, dim = chord.shape
+        chord2 = chord.reshape([m*length, dim])
+        index = np.argmax(chord2, axis=1)
+        new_chord = chord_id2sign[index, :]
+        return new_chord.reshape(m, length, 12)
     return f
+
 
 def get_onehot2weighted_chords_transcoder():
     """
@@ -85,10 +88,10 @@ def get_onehot2weighted_chords_transcoder():
         :param chord: 1-hot representation of chords in (M, T, Dim)
         :return: chord signature in (M, T, 12)
         """
-        M, T, Dim = chord.shape
-        C2 = chord.reshape([M*T, Dim])
-        weightedChords = np.dot(C2, chord_id2sign)
-        return weightedChords.reshape(M, T, 12)
+        m, length, dim = chord.shape
+        chord2 = chord.reshape([m*length, dim])
+        weighted_chords = np.dot(chord2, chord_id2sign)
+        return weighted_chords.reshape(m, length, 12)
     return f
 
 
@@ -96,15 +99,15 @@ def _load_data():
     """
     :return: chord data
     """
-    C = np.genfromtxt('../csv/chord.csv', delimiter=',')  # Mx(T*12)
-    C = np.swapaxes(C.reshape((C.shape[0],12,128)), 1, 2)  # MxTx12
-    C = C.reshape((C.shape[0]*128, 12))  # (MT)x12
-    return C
+    c = np.genfromtxt('../csv/chord.csv', delimiter=',')  # Mx(T*12)
+    c = np.swapaxes(c.reshape((c.shape[0], 12, 128)), 1, 2)  # MxTx12
+    c = c.reshape((c.shape[0]*128, 12))  # (MT)x12
+    return c
 
 
 def _get_uniq(c):
-    bytes = np.packbits(c.astype(np.int), axis=1).astype(np.int64)
-    integer = (bytes[:, 0] << 4) + (bytes[:, 1] >> 4)
+    _bytes = np.packbits(c.astype(np.int), axis=1).astype(np.int64)
+    integer = (_bytes[:, 0] << 4) + (_bytes[:, 1] >> 4)
     uniqs = {integer: chord for integer, chord in zip(integer, c)}
     return uniqs
 
@@ -119,9 +122,9 @@ def _build_repr(uniqs):
     return repr_set, np.array(reverse_set)
 
 
-def _savemap(amap, path):
+def _savemap(_amap, path):
     with open(path, 'wb') as pfile:
-        pkl.dump(amap, pfile)
+        pkl.dump(_amap, pfile)
 
 
 def _saveunmap(_umap, path):
@@ -129,9 +132,8 @@ def _saveunmap(_umap, path):
 
 
 if __name__ == '__main__':
-    c = _load_data()
-    cs = _get_uniq(c)
-    print "Discovered %d different chord signatures, out of %d possibilities" % (len(cs), 2 << 12)
-    amap, unmap = _build_repr(cs)
+    chords = _get_uniq(_load_data())
+    print "Discovered %d different chord signatures, out of %d possibilities" % (len(chords), 2 << 12)
+    amap, unmap = _build_repr(chords)
     _savemap(amap, 'csv/chord-1hot-signatures.pickle')
     _saveunmap(unmap, 'csv/chord-1hot-signatures-rev')

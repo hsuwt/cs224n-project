@@ -9,7 +9,7 @@ if __name__ == "__main__":
     parser.add_argument('strategy', nargs='?', help='Default = pair')
     parser.add_argument('model', nargs='?', help='Default = GRU correct')
     parser.add_argument('--mtl_ratio', nargs='?', type=float)
-    parser.add_argument('--nodes1',nargs='?', type=int)
+    parser.add_argument('--nodes1', nargs='?', type=int)
     parser.add_argument('--nodes2', nargs='?', type=int)
     parser.add_argument('--nb_epoch', nargs='?', type=int)
     parser.add_argument('--dropout_rate', nargs='?', type=float)
@@ -31,6 +31,7 @@ if __name__ == "__main__":
 
     strategies = {'pair': IterativeImproveStrategy, 'LM': LanguageModelTrainingStrategy}
     ts = strategies[args.strategy](args)
-    if args.strategy == 'LM': args.one_hot_dim = ts.ydim
+    if args.strategy == 'LM':
+        args.one_hot_dim = ts.ydim
     model = build_model(args, args.nodes1, args.nodes2, args.dropout_rate, ts.seq_len)
     ts.train(model)
