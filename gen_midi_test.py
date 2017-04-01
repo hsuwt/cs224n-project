@@ -4,7 +4,7 @@ import numpy as np
 from os import listdir
 from os.path import isfile, join
 mypath = '../pred/'
-files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and 'correct' in f]
+files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and 'Corrected' in f]
 midi_output_path = 'midi_out/'
 M = np.load('csv/normal-melody.npy')
 C = np.load('csv/normal-chord.npy')
