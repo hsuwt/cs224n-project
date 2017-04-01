@@ -70,15 +70,15 @@ class PairedInputParser(InputParser):
         return X, Y
 
 
-def get_test(alg, m, C):
+def get_test(strategy, m, C):
     # x_te are the final testing features to match m to C
-    if alg.strategy == 'pair' or alg.strategy == 'correct':
+    if strategy == 'pair' or strategy == 'correct':
         m_rep, C_rep = rep(m, C)
         return np.concatenate((m_rep, C_rep), 2)
-    elif alg.strategy == 'LM':
-        return m;
+    elif strategy == 'LM':
+        return m
     else:
-        raise ValueError('Invalid strategy %s' % alg.strategy)
+        raise ValueError('Invalid strategy %s' % strategy)
 
 def rep(m, C):
     nb_test = m.shape[0]

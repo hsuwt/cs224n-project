@@ -35,10 +35,10 @@ class TrainingStrategy(object):
 
 
 class PairTrainingStrategy(TrainingStrategy):
-    def __init__(self, alg):
+    def __init__(self, args):
         super(PairTrainingStrategy, self).__init__()
-        self.alg = alg
-        self.ip = PairedInputParser(alg)
+        self.args = args
+        self.ip = PairedInputParser(args)
         # Naming Guide
         # X = training features
         # x = validation features (to evaluate val_loss & val_acc)
@@ -46,7 +46,7 @@ class PairTrainingStrategy(TrainingStrategy):
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
         self.nb_test = 100
-        data = load_data(alg, self.nb_test)
+        data = load_data(args, self.nb_test)
         train_data = data['train']
         test_data = data['test']
 
@@ -55,35 +55,35 @@ class PairTrainingStrategy(TrainingStrategy):
         self.trainset = DataSet(x, y, train_data.sw)
         x, y = self.ip.get_XY(test_data.melody, test_data.chord)
         self.testset = DataSet(x, y, test_data.sw)
-        self.x_test = get_test(alg, test_data.melody, train_data.chord)
+        self.x_test = get_test(args.strategy, test_data.melody, train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.nb_train = train_data.melody.shape[0]
         self.seq_len = 128
 
     def train(self, model):
-        if self.alg.debug:
+        if self.args.debug:
             nb_epoch = 1
-            batch_size = self.alg.batch_size
+            batch_size = self.args.batch_size
             numcount = 1
         else:
-            nb_epoch = self.alg.nb_epoch
-            batch_size = self.alg.batch_size
+            nb_epoch = self.args.nb_epoch
+            batch_size = self.args.batch_size
             numcount = 10
 
-        alg = self.alg
+        args = self.args
         train = self.trainset
         test = self.testset
         x_test = self.x_test
         test_chord, train_chord = self.test_chord, self.train_chord
         nb_train, nb_test = self.nb_train, self.nb_test
 
-        filename = self.get_filename(self.alg)
+        filename = self.get_filename(self.args)
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterPair(csvfile)
 
             for i in range(nb_epoch):
                 # print epoch
-                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
                 sys.stdout.flush()
                 hist = model.fit(train.x, train.y,
                                  batch_size=batch_size, nb_epoch=1, verbose=0,
@@ -94,19 +94,19 @@ class PairTrainingStrategy(TrainingStrategy):
 
                     # validate and log result
                     pred = np.array(model.predict(x_test))
-                    if 'L1diff' in alg.model:
+                    if 'L1diff' in args.model:
                         pred = pred.reshape((nb_test, nb_train, 128 * 12))
                         idx = np.argmin(np.sum(np.abs(pred - 0.5), axis=2), axis=1)
                     else:
                         pred = pred.reshape((nb_test, nb_train, 128))
                         idx = np.argmax(np.sum(pred, axis=2), axis=1)
                     c_hat = train_chord[idx]
-                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, alg, False, 1)
+                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
                     # L1 error
-                    if 'L1' in alg.model or 'L1diff' in alg.model:
+                    if 'L1' in args.model or 'L1diff' in args.model:
                         err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
                         # F1 error
-                    elif 'F1' in alg.model:
+                    elif 'F1' in args.model:
                         np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
                         p = np.sum(np.logical_and(test_chord, c_hat), 2) / np.sum(c_hat, 2)
                         r = np.sum(np.logical_and(test_chord, c_hat), 2) / np.sum(test_chord, 2)
@@ -118,10 +118,10 @@ class PairTrainingStrategy(TrainingStrategy):
 
 
 class LanguageModelTrainingStrategy(TrainingStrategy):
-    def __init__(self, alg):
+    def __init__(self, args):
         super(LanguageModelTrainingStrategy, self).__init__()
-        self.alg = alg
-        alg = self.alg
+        self.args = args
+        args = self.args
         self.chord2signatureOnehot = get_onehot2chordnotes_transcoder()
         self.chord2signatureChroma = top3notes
 
@@ -139,7 +139,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
         nb_test = 100
-        data = load_data(alg, nb_test)
+        data = load_data(args, nb_test)
         train_data = data['train']
         test_data = data['test']
 
@@ -157,11 +157,11 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         return self.ydim
 
     def train(self, model):
-        if self.alg.debug:
-            nb_epoch = self.alg.nb_epoch
+        if self.args.debug:
+            nb_epoch = self.args.nb_epoch
         else:
             nb_epoch = 1
-        batch_size = self.alg.batch_size
+        batch_size = self.args.batch_size
         seq_len = self.seq_len
         nb_test = 100  # FIXME: Magic Number!!
 
@@ -169,7 +169,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         test = self.testset
         x_test = self.x_test
 
-        filename = self.get_filename(self.alg)
+        filename = self.get_filename(self.args)
 
         Pair = namedtuple('Pair', ['onehot', 'chroma'])
         Triple = namedtuple('Triple', ['onehot', 'chroma', 'ensemble'])
@@ -182,7 +182,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
 
             for i in range(nb_epoch):
                 # print epoch
-                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
                 sys.stdout.flush()
                 hist = model.fit(train.x, {'one-hot': train.y_onehot, 'chroma': train.y_chroma},
                                  nb_epoch=1, verbose=0,
@@ -224,10 +224,10 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
 
 
 class IterativeImproveStrategy(TrainingStrategy):
-    def __init__(self, alg):
+    def __init__(self, args):
         super(IterativeImproveStrategy, self).__init__()
-        self.alg = alg
-        self.ip = PairedInputParser(alg)
+        self.args = args
+        self.ip = PairedInputParser(args)
         # Naming Guide
         # X = training features
         # x = validation features (to evaluate val_loss & val_acc)
@@ -235,7 +235,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
         self.nb_test = 100
-        data = load_data(alg, self.nb_test)
+        data = load_data(args, self.nb_test)
         train_data = data['train']
         test_data = data['test']
 
@@ -244,21 +244,21 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.trainset = DataSet(x, y, train_data.sw)
         x, y = self.ip.get_XY(test_data.melody, test_data.chord)
         self.testset = DataSet(x, y, test_data.sw)
-        self.x_test = get_test(alg, test_data.melody, train_data.chord)
+        self.x_test = get_test(args.strategy, test_data.melody, train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]
         self.test_freq = 20
 
     def train(self, model):
-        if self.alg.debug:
+        if self.args.debug:
             nb_epoch = 1
-            batch_size = self.alg.batch_size
+            batch_size = self.args.batch_size
         else:
-            nb_epoch = self.alg.nb_epoch
-            batch_size = self.alg.batch_size
+            nb_epoch = self.args.nb_epoch
+            batch_size = self.args.batch_size
 
-        alg = self.alg
+        args = self.args
 
         train = self.trainset
         test = self.testset
@@ -266,11 +266,11 @@ class IterativeImproveStrategy(TrainingStrategy):
         test_chord, train_chord = self.test_chord, self.train_chord
         nb_train, nb_test = self.nb_train, self.nb_test
 
-        filename = self.get_filename(self.alg)
+        filename = self.get_filename(self.args)
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterPair(csvfile)
             for i in range(nb_epoch):
-                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.alg, i))
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
                 sys.stdout.flush()
                 hist = model.fit(train.x, train.y,
                                  batch_size=batch_size, nb_epoch=1, verbose=0,
@@ -295,12 +295,12 @@ class IterativeImproveStrategy(TrainingStrategy):
                     np.save('../pred/' + filename + 'Corrected.npy', corrected)
                     np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
 
-                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, alg, False, 1)
+                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
                     # L1 error
-                    if 'L1' in alg.model or 'L1diff' in alg.model:
+                    if 'L1' in args.model or 'L1diff' in args.model:
                         err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
                         # F1 error
-                    elif 'F1' in alg.model:
+                    elif 'F1' in args.model:
                         np.seterr(divide='ignore', invalid='ignore')  # turn off warning of division by zero
                         p = np.sum(np.logical_and(test_chord, c_hat), 2) / np.sum(c_hat, 2)
                         r = np.sum(np.logical_and(test_chord, c_hat), 2) / np.sum(test_chord, 2)
