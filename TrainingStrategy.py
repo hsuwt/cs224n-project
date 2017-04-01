@@ -40,6 +40,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         self.args = args
         args = self.args
         self.chord2signatureOnehot = get_onehot2chordnotes_transcoder()
+        self.chroma2WeightedOnehot = get_onehot2weighted_chords_transcoder()
         self.chord2signatureChroma = top3notes
 
         # Naming Guide:
@@ -156,12 +157,12 @@ class IterativeImproveStrategy(TrainingStrategy):
         train_data = data['train']
         test_data = data['test']
 
-        DataSet = namedtuple('DataSet', ['x', 'yAdd', 'yDelete', 'sw'])
-        x, yAdd, yDelete = self.ip.get_XY(train_data.melody, train_data.chord)
-        self.trainset = DataSet(x, yAdd, yDelete, np.tile(train_data.sw, (2,1)))
-        x, yAdd, yDelete = self.ip.get_XY(test_data.melody, test_data.chord)
-        self.testset = DataSet(x, yAdd, yDelete, np.tile(test_data.sw, (2,1)))
-        self.x_test = get_test(args.strategy, test_data.melody, train_data.chord)
+        DataSet = namedtuple('DataSet', ['x', 'y_add', 'y_delete', 'sw'])
+        x, y_add, y_delete = self.ip.get_XY(train_data.melody, train_data.chord)
+        self.trainset = DataSet(x, y_add, y_delete, np.tile(train_data.sw, (2, 1)))
+        x, y_add, y_delete = self.ip.get_XY(test_data.melody, test_data.chord)
+        self.testset = DataSet(x, y_add, y_delete, np.tile(test_data.sw, (2, 1)))
+        self.x_test = get_test(args.strategy, m=test_data.melody, M=train_data.melody, C=train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]

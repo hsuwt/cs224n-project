@@ -7,6 +7,7 @@ import os
 
 Data = namedtuple('Data', ['melody', 'chord', 'sw'])
 
+
 def load_data(alg, nb_test):
     chord, melody, sw = parse_data(alg, 128)
     return {'train': Data(melody=melody[:-nb_test], chord=chord[:-nb_test], sw=sw[:-nb_test]),
@@ -66,18 +67,19 @@ class PairedInputParser(InputParser):
 
 def get_test(strategy, m, M, C, ratio=100):
     """
-    Compute the testing features to match melody to chord
+    Create a testing feature for training
     :param strategy:
-    :param m:
-    :param M:
-    :param C:
+    :param m: test melody     (nb_test,  128, 12)
+    :param M: train melody    (nb_train, 128, 12)
+    :param C: train melody    (nb_train, 128, 12)
+    :param ratio: For pair strategy, select {ratio} best matching songs for
     :return:
     """
     if strategy == 'pair':
         best_indexes = select_closest_n(m, M, ratio)
-        C_rep = C[best_indexes.ravel()]
-        m_rep = np.repeat(m, ratio, axis=0)
-        return np.concatenate((m_rep, C_rep), 2)
+        chord_expanded = C[best_indexes.ravel()]
+        melody_repeated = np.repeat(m, ratio, axis=0)
+        return np.concatenate((melody_repeated, chord_expanded), 2)  # (nb_test * ratio, 128, 24)
     elif strategy == 'LM':
         return m
     else:
@@ -90,11 +92,16 @@ def select_closest_n(m, M, n=100):
     This does so by computing
     :param m: test melody     (nb_test,  128, 12)
     :param M: train melody    (nb_train, 128, 12)
-    :param thresh: a threshold for
+    :param n:
     :return: indexes of {n} best matching training songs for each teset songs (nb_test, n)
     """
     nb_test = m.shape[0]
-    best_match = np.array([(m[i] * M).sum(axis=(1,2)).argsort()[::-1][:n] for i in range(nb_test)])
+    if n > 1:
+        best_match = np.array([(m[i] * M).sum(axis=(1, 2)).argsort()[::-1][:n] for i in range(nb_test)], dtype=np.int)
+    elif n == 1:
+        best_match = np.array([(m[i] * M).sum(axis=(1, 2)).argmax() for i in range(nb_test)], dtype=np.int)
+    else:
+        raise ValueError('n cannot be less than 1')
     return best_match
 
 
