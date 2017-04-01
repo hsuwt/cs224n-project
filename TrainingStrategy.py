@@ -168,6 +168,11 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.nb_train = train_data.melody.shape[0]
         self.test_freq = 20
 
+        # KNN baseline
+        best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
+        best1 = best_matches[:, 0].ravel()
+        self.knn_err_count_avg = np.average(np.abs(train_data.chord[best1] - test_data.chord)) * 12
+
     def train(self, model):
         if self.args.debug:
             nb_epoch = 1
@@ -199,7 +204,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                                                   {'add': test.sw, 'delete': test.sw}))
                 if i % self.test_freq == 19:  # FIXME magic number!
                     pred = np.array(model.predict(x_test))
-                    pred = pred.reshape((nb_test, nb_train, 128 * 12))  # 100, 1000, 128 x 12
+                    pred = pred.reshape((nb_test, nb_test, 128 * 12))  # nbtest, nbtest, 128 x 12
                     errs = np.sum(np.abs(pred - 0.5), axis=2)  # 100, (128 x 12)
                     idx = np.argmin(errs, axis=1)  # 100,
                     c_hat = train_chord[idx]  # 100, 128, 12
@@ -223,5 +228,5 @@ class IterativeImproveStrategy(TrainingStrategy):
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
                     np.save('../pred/' + filename + '.npy', c_hat.astype(int))
 
-                    history.write_history(hist, i+1, err_count_avg, uniq_idx, norm)
+                    history.write_history(hist, i+1, err_count_avg, uniq_idx, norm, self.knn_err_count_avg)
                     history.log()
