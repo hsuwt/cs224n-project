@@ -199,18 +199,20 @@ class IterativeImproveStrategy(TrainingStrategy):
                     idx = np.argmin(errs, axis=1)  # 100,
                     c_hat = train_chord[idx]  # 100, 128, 12
                     corrected = c_hat + 0.0
-                    pred = pred[np.arange(nb_test), idx].reshape((nb_test, 128, 12)) - 0.5
-                    # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
-                    thres = 0.1
-                    print np.sum(corrected)
-                    corrected[np.logical_and(c_hat == 0, pred < -thres)] = 1
-                    print np.sum(corrected)
-                    corrected[np.logical_and(c_hat == 1, pred > +thres)] = 0
-                    print np.sum(corrected)
-                    corrected = corrected.astype(int)
-                    print("saving numpy file")
-                    np.save('../pred/' + filename + 'Corrected.npy', corrected)
-                    np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
+
+                    if 'correct' in args.model:
+                        pred = pred[np.arange(nb_test), idx].reshape((nb_test, 128, 12)) - 0.5
+                        # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
+                        thres = 0.1
+                        print np.sum(corrected)
+                        corrected[np.logical_and(c_hat == 0, pred < -thres)] = 1
+                        print np.sum(corrected)
+                        corrected[np.logical_and(c_hat == 1, pred > +thres)] = 0
+                        print np.sum(corrected)
+                        corrected = corrected.astype(int)
+                        print("saving numpy file")
+                        np.save('../pred/' + filename + 'Corrected.npy', corrected)
+                        np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
 
                     bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
                     # L1 error
