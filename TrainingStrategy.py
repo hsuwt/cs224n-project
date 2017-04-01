@@ -3,6 +3,7 @@ from util import *
 from utils.load_data import *
 from utils.build_chord_repr import *
 from utils.history_writer import *
+from tqdm import trange
 
 
 class TrainingStrategy(object):
@@ -97,11 +98,8 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
 
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterLM(csvfile)
-
-            for i in range(nb_epoch):
-                # print epoch
-                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
-                sys.stdout.flush()
+            pbar = trange(nb_epoch)
+            for i in pbar:
                 hist = model.fit(train.x, {'one-hot': train.y_onehot, 'chroma': train.y_chroma},
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size,
@@ -117,12 +115,12 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                 # signature here refers to theo output feature vector to be used for training
                 c_hat = Triple(onehot=self.chord2signatureOnehot(pred.onehot),
                                chroma=self.chord2signatureOnehot(pred.chroma),
-                               ensemble=self.chord2signatureOnehot((pred.onehot
-                                                                    + self.chroma2WeightedOnehot(pred.chroma)) / 2.))
+                               ensemble=self.chord2signatureOnehot(
+                                   (pred.onehot + self.chroma2WeightedOnehot(pred.chroma)) / 2.))
                 c_hat_avg = Triple(onehot=self.chord2signatureOnehot(pred_avg.onehot),
                                    chroma=self.chord2signatureOnehot(pred_avg.chroma),
-                                   ensemble=self.chord2signatureOnehot((pred_avg.onehot
-                                                                        + self.chroma2WeightedOnehot(pred_avg.chroma)) / 2.))
+                                   ensemble=self.chord2signatureOnehot(
+                                       (pred_avg.onehot + self.chroma2WeightedOnehot(pred_avg.chroma)) / 2.))
                 err_count_avg = apply_triple(lambda chat: np.average(np.abs(test.y_chroma - chat)) * 12, c_hat)
                 err_count_avg_avg = apply_triple(lambda chat_avg: np.average(np.abs(test.y_chroma - chat_avg)) * 12,
                                                  c_hat_avg)
@@ -134,10 +132,10 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                     np.save(base.format(fn), cavg.astype(int).reshape((nb_test, seq_len, 12)))
 
                 history.write_history(hist, i+1, {'err_count': err_count_avg, 'err_count_avg_avg': err_count_avg_avg})
-                history.log()
-                # record & save model
-                # record(model, [alg, nodes1, nodes2, epoch, uniqIdx, norm, trn_loss, val_loss, trn_acc, val_acc])
-                # save_model(model, alg + '_' + str(nodes1) + '_' + str(nodes2) + '_' + str(epoch))
+                ns = history.new_state
+                pbar.set_postfix(train_loss=(ns['train1'], ns['train12']),
+                                 test_loss=(ns['val1'], ns['val12']),
+                                 errCntAvg=(ns['err1'], ns['err12']))
 
 
 class IterativeImproveStrategy(TrainingStrategy):
@@ -178,9 +176,11 @@ class IterativeImproveStrategy(TrainingStrategy):
         if self.args.debug:
             nb_epoch = 1
             batch_size = self.args.batch_size
+            test_freq = 1
         else:
             nb_epoch = self.args.nb_epoch
             batch_size = self.args.batch_size
+            test_freq = self.test_freq
 
         args = self.args
 
@@ -195,9 +195,9 @@ class IterativeImproveStrategy(TrainingStrategy):
         print "Result will be written to history/{}.csv".format(filename)
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterPair(csvfile)
-            for i in range(nb_epoch):
-                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
-                sys.stdout.flush()
+            pbar = trange(nb_epoch)
+            pbar.set_postfix(train_loss='_', test_loss='_', errCntAvg='_')
+            for i in pbar:
                 hist = model.fit(train.x, {'add': train.y_add, 'delete': train.y_delete},
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size, 
@@ -205,7 +205,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                                  validation_data=(test.x, 
                                                   {'add': test.y_add, 'delete': test.y_delete},
                                                   {'add': test.sw, 'delete': test.sw}))
-                if i % self.test_freq == self.test_freq - 1:
+                if i % test_freq == test_freq - 1:
                     pred_add, pred_delete = np.array(model.predict(x_test))
                     pred_add = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
                     pred_delete = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
@@ -222,40 +222,38 @@ class IterativeImproveStrategy(TrainingStrategy):
                         pred_delete *= corrected
                         pred_add, pred_delete = smooth(pred_add), smooth(pred_delete)
                         max_add, max_delete = np.amax(pred_add), np.amax(pred_delete)
-                        pred_add[pred_add<max_add] = 0
-                        pred_add[pred_add==max_add] = 1
-                        pred_delete[pred_delete<max_delete] = 0
-                        pred_delete[pred_delete==max_delete] = 1
+                        pred_add[pred_add < max_add] = 0
+                        pred_add[pred_add == max_add] = 1
+                        pred_delete[pred_delete < max_delete] = 0
+                        pred_delete[pred_delete == max_delete] = 1
                         
-                        print np.sum(corrected)
                         corrected += pred_add
-                        print np.sum(corrected)
                         corrected -= pred_delete
-                        print np.sum(corrected)
-                        
+
                         # iteratively improve corrected
                         for _ in range(self.num_iter):
-                            x_iter = np.concatenate((test_melody[idx], corrected),2)
+                            x_iter = np.concatenate((test_melody[idx], corrected), 2)
                             pred_iter_add, pred_iter_delete = np.array(model.predict(x_iter))
                             pred_iter_add *= (1-corrected)
                             pred_iter_delete *= corrected                            
                             pred_iter_add, pred_iter_delete = smooth(pred_iter_add), smooth(pred_iter_delete)
                             max_iter_add, max_iter_delete = np.amax(pred_iter_add), np.amax(pred_iter_delete)
-                            pred_iter_add[pred_iter_add<max_iter_add] = 0
-                            pred_iter_add[pred_iter_add==max_iter_add] = 1
-                            pred_iter_delete[pred_iter_delete<max_iter_delete] = 0
-                            pred_iter_delete[pred_iter_delete==max_iter_delete] = 1
+                            pred_iter_add[pred_iter_add < max_iter_add] = 0
+                            pred_iter_add[pred_iter_add == max_iter_add] = 1
+                            pred_iter_delete[pred_iter_delete < max_iter_delete] = 0
+                            pred_iter_delete[pred_iter_delete == max_iter_delete] = 1
                             
                             corrected += pred_iter_add
                             corrected -= pred_iter_delete
                         corrected = corrected.astype(int)
-                        print("saving numpy file")
                         np.save('../pred/' + filename + 'Corrected.npy', corrected)
                         np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
 
-                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
+                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, 1)
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
                     np.save('../pred/' + filename + '.npy', c_hat.astype(int))
 
                     history.write_history(hist, i+1, err_count_avg, uniq_idx, norm, self.knn_err_count_avg)
-                    history.log()
+                    pbar.set_postfix(train_loss=history.new_state['loss'],
+                                     test_loss=history.new_state['val_loss'],
+                                     errCntAvg=history.new_state['errCntAvg'])

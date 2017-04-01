@@ -210,8 +210,7 @@ def csv2npy():
         print("saving csv" + str(j) + ".npy")
 
 
-def print_result(pred, y, Y, alg, printCP, bestN):
-    print('\nAlg: %s' % (alg))
+def print_result(pred, y, Y, alg, bestN, printCP=False, verbose=False):
     nb_test = pred.shape[0]
     if 'L2' in alg.model:
         pred, bestNIdx = toCandidate(pred, Y, bestN, 'L2')
@@ -222,8 +221,9 @@ def print_result(pred, y, Y, alg, printCP, bestN):
     numUniqIdx = len(np.unique(bestNIdx))
     if printCP:
         printChordProgression(y, pred)
-    print('num of unique idx  = %d/%d' % (numUniqIdx, nb_test))
-    print('norm after mapping = %.3f' % (norm))
+    if verbose:
+        print('num of unique idx  = %d/%d' % (numUniqIdx, nb_test))
+        print('norm after mapping = %.3f' % (norm))
     return bestNIdx, numUniqIdx, norm
 
 
