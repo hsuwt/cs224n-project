@@ -22,9 +22,9 @@ class ChordNotes2OneHotTranscoder(object):
             self.sign2chord = pkl.load(pfile)
             self.size = len(self.sign2chord)
 
-    def transcode(self, C):
-        N = C.shape[0] * C.shape[1]
-        C2 = C.reshape([N, 12]).astype(np.int)
+    def transcode(self, chord):
+        N = chord.shape[0] * chord.shape[1]
+        C2 = chord.reshape([N, 12]).astype(np.int)
         newC = np.zeros([N, self.size]).astype(np.int)
         indexes = np.packbits(C2, axis=1).astype(np.int)
         # packbits assumes numbers are in 8 bits. Instead our data uses 12 bits
@@ -32,7 +32,7 @@ class ChordNotes2OneHotTranscoder(object):
         indexes = (indexes[:, 0] << 4) + (indexes[:, 1] >> 4)
         chord_indexes = [self.sign2chord[i] for i in indexes]
         newC[np.arange(N), chord_indexes] = 1
-        newC = newC.reshape([C.shape[0], C.shape[1], self.size])
+        newC = newC.reshape([chord.shape[0], chord.shape[1], self.size])
         return newC
 
 

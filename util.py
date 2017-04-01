@@ -27,6 +27,7 @@ def union(chroma1, chroma2):
             ret[i] = 1
     return ret
 
+
 chroma2chord_LUT = np.array([
     [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
     [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
@@ -45,43 +46,43 @@ def chroma2chord_v2(Chroma):
     notes = np.where(Chroma)[0]
     interval = np.diff(notes)
     if len(notes) == 3:
-        if all(interval==np.array([4,3])): return [notes[0],1] #maj root position
-        if all(interval==np.array([3,5])): return [notes[2],1] #maj 1st inversion
-        if all(interval==np.array([5,4])): return [notes[1],1] #maj 2nd inversion
-        if all(interval==np.array([3,4])): return [notes[0],2] #maj root position
-        if all(interval==np.array([4,5])): return [notes[2],2] #maj 1st inversion
-        if all(interval==np.array([5,3])): return [notes[1],2] #maj 2nd inversion
-        return [0,6]
+        if all(interval == np.array([4, 3])): return [notes[0], 1]  # maj root position
+        if all(interval == np.array([3, 5])): return [notes[2], 1]  # maj 1st inversion
+        if all(interval == np.array([5, 4])): return [notes[1], 1]  # maj 2nd inversion
+        if all(interval == np.array([3, 4])): return [notes[0], 2]  # maj root position
+        if all(interval == np.array([4, 5])): return [notes[2], 2]  # maj 1st inversion
+        if all(interval == np.array([5, 3])): return [notes[1], 2]  # maj 2nd inversion
+        return [0, 6]
     if len(notes) == 4:
-        if all(interval==np.array([4,3,4])): return [notes[0],3] #maj7 root position
-        if all(interval==np.array([3,4,1])): return [notes[3],3] #maj7 1st inversion
-        if all(interval==np.array([4,1,4])): return [notes[2],3] #maj7 2nd inversion
-        if all(interval==np.array([1,4,3])): return [notes[1],3] #maj7 3rd inversion
-        if all(interval==np.array([4,3,3])): return [notes[0],4] #dmn7 root position
-        if all(interval==np.array([3,3,2])): return [notes[3],4] #dmn7 1st inversion
-        if all(interval==np.array([3,2,4])): return [notes[2],4] #dmn7 2nd inversion
-        if all(interval==np.array([2,4,3])): return [notes[1],4] #dmn7 3rd inversion
-        if all(interval==np.array([3,4,3])): return [notes[0],5] #min7 root position
-        if all(interval==np.array([4,3,2])): return [notes[3],5] #min7 1st inversion
-        if all(interval==np.array([3,2,3])): return [notes[2],5] #min7 2nd inversion
-        if all(interval==np.array([2,3,4])): return [notes[1],5] #min7 3rd inversion
-        return [0,6]
+        if all(interval == np.array([4, 3, 4])): return [notes[0], 3]  # maj7 root position
+        if all(interval == np.array([3, 4, 1])): return [notes[3], 3]  # maj7 1st inversion
+        if all(interval == np.array([4, 1, 4])): return [notes[2], 3]  # maj7 2nd inversion
+        if all(interval == np.array([1, 4, 3])): return [notes[1], 3]  # maj7 3rd inversion
+        if all(interval == np.array([4, 3, 3])): return [notes[0], 4]  # dmn7 root position
+        if all(interval == np.array([3, 3, 2])): return [notes[3], 4]  # dmn7 1st inversion
+        if all(interval == np.array([3, 2, 4])): return [notes[2], 4]  # dmn7 2nd inversion
+        if all(interval == np.array([2, 4, 3])): return [notes[1], 4]  # dmn7 3rd inversion
+        if all(interval == np.array([3, 4, 3])): return [notes[0], 5]  # min7 root position
+        if all(interval == np.array([4, 3, 2])): return [notes[3], 5]  # min7 1st inversion
+        if all(interval == np.array([3, 2, 3])): return [notes[2], 5]  # min7 2nd inversion
+        if all(interval == np.array([2, 3, 4])): return [notes[1], 5]  # min7 3rd inversion
+        return [0, 6]
     if len(notes) == 2:
-        if all(interval==np.array([7])): return [notes[0],7] #power chord
-        if all(interval==np.array([5])): return [notes[1],7] #power chord
-        return [0,6]
-    return [0,6]
+        if all(interval == np.array([7])): return [notes[0], 7]  # power chord
+        if all(interval == np.array([5])): return [notes[1], 7]  # power chord
+        return [0, 6]
+    return [0, 6]
 
 
 def chroma2chord_v1(chroma):
     for i in range(12):
         chroma_shifted = rotate(chroma, i)
-        if all(chroma_shifted == np.array([1,0,0,0,1,0,0,1,0,0,0,0])): return [(12-i)%12,1] #maj
-        if all(chroma_shifted == np.array([1,0,0,1,0,0,0,1,0,0,0,0])): return [(12-i)%12,2] #min
-        if all(chroma_shifted == np.array([1,0,0,0,1,0,0,1,0,0,0,1])): return [(12-i)%12,3] #maj7
-        if all(chroma_shifted == np.array([1,0,0,0,1,0,0,1,0,0,1,0])): return [(12-i)%12,4] #7
-        if all(chroma_shifted == np.array([1,0,0,1,0,0,0,1,0,0,1,0])): return [(12-i)%12,5] #min7
-    return [0,0]
+        if all(chroma_shifted == np.array([1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0])): return [(12 - i) % 12, 1]  # maj
+        if all(chroma_shifted == np.array([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0])): return [(12 - i) % 12, 2]  # min
+        if all(chroma_shifted == np.array([1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1])): return [(12 - i) % 12, 3]  # maj7
+        if all(chroma_shifted == np.array([1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0])): return [(12 - i) % 12, 4]  # 7
+        if all(chroma_shifted == np.array([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0])): return [(12 - i) % 12, 5]  # min7
+    return [0, 0]
 
 
 def isChord(notes):
@@ -101,12 +102,6 @@ def isChord(notes):
     # assert len(notes) == 0
     return chord_list
 
-_rootNote = {
-    0: 'C', 1: 'C#', 2: 'D', 3: 'D#',
-    4: 'E', 5: 'F', 6: 'F#', 7: 'G',
-    8: 'G#', 9: 'A', 10: 'A#', 11: 'B',
-}
-
 _qualifier = {
     1: 'Maj', 2: 'Min', 3: 'Maj7', 4: '7', 5: 'Min7'
 }
@@ -114,7 +109,7 @@ _qualifier = {
 
 def printChord(Chroma):
     r, t = chroma2chord_v2(Chroma)
-    S = _rootNote[r] + _qualifier[t] if t != 6 else 'N'
+    S = notes._list[r] + _qualifier[t] if t != 6 else 'N'
     print '%s\t' % S
 
 
@@ -127,25 +122,25 @@ def printChordProgression(y, cp):
     for i in range(n_song):
         print 'song %d\t answ:' % i
         for j in range(8):
-            printChord(y[i][16*j])
+            printChord(y[i][16 * j])
         print '\nsong %d\t pred:' % i
         for j in range(8):
-            printChord(cp[i][16*j])
+            printChord(cp[i][16 * j])
         print '\nsong %d\t diff:' % i
         cnt = 0
         for j in range(8):
-            tmp = np.sum(abs(y[i][16*j]-cp[i][16*j]))
+            tmp = np.sum(abs(y[i][16 * j] - cp[i][16 * j]))
             cnt += tmp
             print '%d\t' % tmp
         print '%d\n' % cnt
 
 
 def pred2chord(pred):
-    pred = pred.reshape((pred.shape[0], 12, 8, pred.shape[1]/12/8))
+    pred = pred.reshape((pred.shape[0], 12, 8, pred.shape[1] / 12 / 8))
     pred = np.mean(pred, axis=3)
     for i in range(len(pred)):
         for j in range(len(pred[0][0])):
-            pred[i][:][:,j] = closestChord(pred[i][:][:,j])
+            pred[i][:][:, j] = closestChord(pred[i][:][:, j])
 
 
 def toCandidate(CP, allCP, bestN, criteria):
@@ -157,9 +152,9 @@ def toCandidate(CP, allCP, bestN, criteria):
         dis = np.zeros((len(allCP)))
         for j in range(len(allCP)):
             if criteria == 'L1':
-                dis[j] = np.sum(abs(CP[i]-allCP[j]))
+                dis[j] = np.sum(abs(CP[i] - allCP[j]))
             elif criteria == 'L2':
-                dis[j] = np.sqrt(np.sum(np.square(CP[i]-allCP[j])))
+                dis[j] = np.sqrt(np.sum(np.square(CP[i] - allCP[j])))
             else:
                 print("Error in toCandidate function")
             if dis[j] < minDis:
@@ -175,7 +170,7 @@ def toCandidateBestN(CP, allCP, bestN):
     for i in range(len(CP)):
         dis = np.zeros((len(allCP)))
         for j in range(len(allCP)):
-            dis[j] = np.sum(abs(CP[i]-allCP[j]))
+            dis[j] = np.sum(abs(CP[i] - allCP[j]))
         bestIdx[i] = np.argsort(dis)[:bestN]
     return bestIdx
 
@@ -201,14 +196,14 @@ def parse_data(alg, max_length):
     # Data in melody.csv and root.csv are represented as [0,11].
     # Thus, we first span it to boolean matrix
     M_dense = np.genfromtxt('csv/melody.csv', delimiter=',')
-    assert (M_dense.shape[1]*12 == C.shape[1])
-    M = np.zeros((M_dense.shape[0], M_dense.shape[1]*12))
-    sample_weight = np.zeros(M_dense.shape) # Use this if using variable length
+    assert (M_dense.shape[1] * 12 == C.shape[1])
+    M = np.zeros((M_dense.shape[0], M_dense.shape[1] * 12))
+    sample_weight = np.zeros(M_dense.shape)  # Use this if using variable length
     for i in range(M_dense.shape[0]):
         for j in range(M_dense.shape[1]):
             if not np.isnan(M_dense[i][j]):
                 notes = int(M_dense[i][j])
-                M[i][M_dense.shape[1]*notes+j] = 1
+                M[i][M_dense.shape[1] * notes + j] = 1
                 sample_weight[i][j] = 1
     C = np.nan_to_num(C)
     M = np.swapaxes(M.reshape((M_dense.shape[0], 12, M_dense.shape[1])), 1, 2)
@@ -216,9 +211,9 @@ def parse_data(alg, max_length):
 
     sample_weight = np.ones((C.shape[0], C.shape[1]))
     if 'sample-biased' in alg.model:
-        for p in range(1,8):
-            sample_weight[:,::2**p] +=1
-        sample_weight/= 8.0
+        for p in range(1, 8):
+            sample_weight[:, ::2 ** p] += 1
+        sample_weight /= 8.0
 
     # store
     with open('csv/npy-exists.config', 'w') as keyvaluefile:
@@ -229,6 +224,7 @@ def parse_data(alg, max_length):
         np.save('csv/' + key + '-melody', M)
         np.save('csv/' + key + '-sampleweight', sample_weight)
     return C, M, sample_weight
+
 
 def parse_big_data(alg, max_length):
     nb_train = sum([len(files) for r, d, files in os.walk("../dataset/melody")])
@@ -243,16 +239,16 @@ def parse_big_data(alg, max_length):
             m_file_matrix = np.genfromtxt(m_file_name_path, delimiter=',')
             c_file_matrix = np.genfromtxt(c_file_name_path, delimiter=',')
             if len(m_file_matrix) == 0 or len(c_file_matrix) == 0: continue
-            m_file_matrix = m_file_matrix[:,:max_length]
-            c_file_matrix = c_file_matrix[:,:max_length]
+            m_file_matrix = m_file_matrix[:, :max_length]
+            c_file_matrix = c_file_matrix[:, :max_length]
             seq_len = min(m_file_matrix.shape[1], c_file_matrix.shape[1])
-            tmp_m, tmp_c = np.zeros((12,seq_len)), np.zeros((12,seq_len))
-            for i in range(128/12):
-                tmp_m = np.logical_or(tmp_m, m_file_matrix[i*12:(i+1)*12,:seq_len] )
-                tmp_c = np.logical_or(tmp_c, c_file_matrix[i*12:(i+1)*12,:seq_len] )
-            sample_weight[train_idx,:seq_len] = np.ones((1,seq_len))
-            M[train_idx,:seq_len], C[train_idx,:seq_len] = np.swapaxes(tmp_m, 0,1), np.swapaxes(tmp_c,0,1)
-            train_idx +=1
+            tmp_m, tmp_c = np.zeros((12, seq_len)), np.zeros((12, seq_len))
+            for i in range(128 / 12):
+                tmp_m = np.logical_or(tmp_m, m_file_matrix[i * 12:(i + 1) * 12, :seq_len])
+                tmp_c = np.logical_or(tmp_c, c_file_matrix[i * 12:(i + 1) * 12, :seq_len])
+            sample_weight[train_idx, :seq_len] = np.ones((1, seq_len))
+            M[train_idx, :seq_len], C[train_idx, :seq_len] = np.swapaxes(tmp_m, 0, 1), np.swapaxes(tmp_c, 0, 1)
+            train_idx += 1
     C = C[:train_idx]
     M = M[:train_idx]
     sample_weight = sample_weight[:train_idx]
@@ -267,23 +263,23 @@ def csv2npy():
         M = np.zeros((nb_train, max_length, 12))
         sample_weight = np.zeros((nb_train, max_length))
         train_idx = 0
-        for root,_,files in os.walk("../dataset_bk/melody/part" + str(j)):
+        for root, _, files in os.walk("../dataset_bk/melody/part" + str(j)):
             for m_file_name in files:
                 m_file_name_path = os.path.join(root, m_file_name)
                 c_file_name_path = m_file_name_path.replace("/melody/", "/chord/", 1)
                 m_file_matrix = np.genfromtxt(m_file_name_path, delimiter=',')
                 c_file_matrix = np.genfromtxt(c_file_name_path, delimiter=',')
                 if len(m_file_matrix) == 0 or len(c_file_matrix) == 0: continue
-                m_file_matrix = m_file_matrix[:,:max_length]
-                c_file_matrix = c_file_matrix[:,:max_length]
+                m_file_matrix = m_file_matrix[:, :max_length]
+                c_file_matrix = c_file_matrix[:, :max_length]
                 seq_len = min(m_file_matrix.shape[1], c_file_matrix.shape[1])
-                tmp_m, tmp_c = np.zeros((12,seq_len)), np.zeros((12,seq_len))
-                for i in range(128/12):
-                    tmp_m = np.logical_or(tmp_m, m_file_matrix[i*12:(i+1)*12,:seq_len] )
-                    tmp_c = np.logical_or(tmp_c, c_file_matrix[i*12:(i+1)*12,:seq_len] )
-                sample_weight[train_idx,:seq_len] = np.ones((1,seq_len))
-                M[train_idx,:seq_len], C[train_idx,:seq_len] = np.swapaxes(tmp_m, 0,1), np.swapaxes(tmp_c,0,1)
-                train_idx +=1
+                tmp_m, tmp_c = np.zeros((12, seq_len)), np.zeros((12, seq_len))
+                for i in range(128 / 12):
+                    tmp_m = np.logical_or(tmp_m, m_file_matrix[i * 12:(i + 1) * 12, :seq_len])
+                    tmp_c = np.logical_or(tmp_c, c_file_matrix[i * 12:(i + 1) * 12, :seq_len])
+                sample_weight[train_idx, :seq_len] = np.ones((1, seq_len))
+                M[train_idx, :seq_len], C[train_idx, :seq_len] = np.swapaxes(tmp_m, 0, 1), np.swapaxes(tmp_c, 0, 1)
+                train_idx += 1
         C = C[:train_idx]
         M = M[:train_idx]
         sample_weight = sample_weight[:train_idx]
@@ -295,7 +291,9 @@ def csv2npy():
         np.save('~/npy/sw_csv' + str(j) + '.npy', sample_weight.astype(int))
         print("saving csv" + str(j) + ".npy")
 
+
 Data = namedtuple('Data', ['melody', 'chord', 'sw'])
+
 
 def load_data(alg, nb_test):
     C, M, SW = parse_data(alg, 128)
@@ -313,6 +311,7 @@ class InputParser(object):
     """
     This replaces previous function GetXY
     """
+
     def __init__(self):
         raise NotImplementedError('inherit me')
 
@@ -324,9 +323,9 @@ class LanguageModelInputParser(InputParser):
     """
     This replaces previous function GetXY
     """
+
     def __init__(self):
         self.transcoder = ChordNotes2OneHotTranscoder()
-
 
     def get_XY(self, M, C):
         COnehot = self.transcoder.transcode(C)
@@ -337,10 +336,10 @@ class PairedInputParser(InputParser):
     """
     This replaces previous function GetXY
     """
+
     def __init__(self, alg):
         self.alg = alg
         self.transcoder = ChordNotes2OneHotTranscoder()
-
 
     def get_XY(self, M, C):
         COnehot = self.transcoder.transcode(C)
@@ -351,7 +350,7 @@ class PairedInputParser(InputParser):
         Zeros = np.zeros((n, 128, 1))
         assert 'L1diff' in self.alg.model
 
-        L1diff, L1diffOnehot = (C_neg - C) / 2. + 0.5, (C_negOnehot - COnehot) / 2. +0.5
+        L1diff, L1diffOnehot = (C_neg - C) / 2. + 0.5, (C_negOnehot - COnehot) / 2. + 0.5
         if 'rand' in self.alg.model:
             X = np.concatenate((M, C_neg), 2)
             Y = L1diff
@@ -364,18 +363,20 @@ class PairedInputParser(InputParser):
         Y = 1 - Y / 12.0
         return X, Y
 
+
 def get_test(alg, m, C):
     # x_te are the final testing features to match m to C
     if alg.strategy == 'pair' or alg.strategy == 'correct':
         m_rep, C_rep = rep(m, C)
         return np.concatenate((m_rep, C_rep), 2)
-    elif  alg.strategy == 'LM':
+    elif alg.strategy == 'LM':
         return m;
     else:
         raise ValueError('Invalid strategy %s' % alg.strategy)
 
+
 def print_result(pred, y, Y, alg, printCP, bestN):
-    print('\nAlg: %s' %(alg))
+    print('\nAlg: %s' % (alg))
     nb_test = pred.shape[0]
     if 'L2' in alg.model:
         pred, bestNIdx = toCandidate(pred, Y, bestN, 'L2')
@@ -386,160 +387,102 @@ def print_result(pred, y, Y, alg, printCP, bestN):
     numUniqIdx = len(np.unique(bestNIdx))
     if printCP:
         printChordProgression(y, pred)
-    print('num of unique idx  = %d/%d' %(numUniqIdx, nb_test))
-    print('norm after mapping = %.3f' %(norm))
+    print('num of unique idx  = %d/%d' % (numUniqIdx, nb_test))
+    print('norm after mapping = %.3f' % (norm))
     return bestNIdx, numUniqIdx, norm
+
 
 def rep(m, C):
     nb_test = m.shape[0]
     nb_train = C.shape[0]
-    C_rep = np.tile(C, (nb_test,  1, 1))
+    C_rep = np.tile(C, (nb_test, 1, 1))
     m_rep = np.tile(m, (nb_train, 1, 1))
     m_rep = np.reshape(m_rep, (nb_train, nb_test, 128, 12))
     m_rep = np.swapaxes(m_rep, 1, 0)
     m_rep = np.reshape(m_rep, (nb_test * nb_train, 128, 12))
     return m_rep, C_rep
 
-def note2int(note):
-    if note == 'C' : return 0
-    if note == 'C#': return 1
-    if note == 'Db': return 1
-    if note == 'D' : return 2
-    if note == 'D#': return 3
-    if note == 'Eb': return 3
-    if note == 'E' : return 4
-    if note == 'F' : return 5
-    if note == 'F#': return 6
-    if note == 'Gb': return 6
-    if note == 'G' : return 7
-    if note == 'G#': return 8
-    if note == 'Ab': return 8
-    if note == 'A' : return 9
-    if note == 'A#': return 10
-    if note == 'Bb': return 10
-    if note == 'B' : return 11
-    else:
-        print 'no match in note2int: ', note
-        return 0
 
-def mode2int(mode):
-    mode = mode.title()
-    if mode == 'Major'     : return 0
-    if mode == 'Minor'     : return 1
-    if mode == 'Dorian'    : return 2
-    if mode == 'Phrygian'  : return 3
-    if mode == 'Lydian'    : return 4
-    if mode == 'Mixolydian': return 5
-    if mode == 'Locryan'   : return 6
-    else:
-        print 'no match in mode2int: ', mode
-        return 0
+class LUT(object):
+    def __init__(self, name, _list):
+        self.__name__ = name
+        self._list = list
+        assert len(_list) > 0
+        self._dict = {x: i for i, x in enumerate(_list)}
 
-def int2note(i):
-    if i == 0 : return 'C'
-    if i == 1 : return 'C#'
-    if i == 2 : return 'D'
-    if i == 3 : return 'D#'
-    if i == 4 : return 'E'
-    if i == 5 : return 'F'
-    if i == 6 : return 'F#'
-    if i == 7 : return 'G'
-    if i == 8 : return 'G#'
-    if i == 9 : return 'A'
-    if i == 10: return 'A#'
-    if i == 11: return 'B'
-    else:
-        print 'no match in int2note: ', i
-        return 'C'
+    def lookup(self, i):
+        try:
+            return self._list[i]
+        except:
+            print 'no match in {}: {}'.format(self.__name__, i)
+            return self._list[0]
 
-def int2mode(i):
-    if i == 0: return 'Major'
-    if i == 1: return 'Minor'
-    if i == 2: return 'Dorian'
-    if i == 3: return 'Phrygian'
-    if i == 4: return 'Lydian'
-    if i == 5: return 'Mixolydian'
-    if i == 6: return 'Locryan'
-    else:
-        print 'no match in int2mode: ', i
-        return 'Major'
+    def lookup_idx(self, x):
+        return self._dict.get(x, 0)
 
-def int2type(i):
-    if i == 0: return 'Non-chord'
-    if i == 1: return 'Maj'
-    if i == 2: return 'Min'
-    if i == 3: return 'Maj7'
-    if i == 4: return 'Dominant7'
-    if i == 5: return 'Min7'
-    if i == 6: return 'omplex' #complex chord, but not recognized
-    if i == 7: return 'power' #power chord, but not recognized
-    else:
-        print 'no match in int2type: ', i
-        return 'Non-chord'
+    def __len__(self):
+        return len(self._list)
+
+
+notes = LUT('notes', ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'])
+modes = LUT('modes', ['Major', 'Minor', 'Dorian', 'Phrygian', 'Lydian', 'Mixolydian', 'Locryan'])
+types = LUT('types', ['Non-chord', 'Maj', 'Min', 'Maj7', 'Dominant7', 'Min7', 'Complex'])
 
 
 def toMajKey(key, mode):
-    if mode == 1: # Minor to Major
+    if mode == 1:  # Minor to Major
         key = (key + 3) % 12
-    elif mode == 2: # Dorian to Major
+    elif mode == 2:  # Dorian to Major
         key = (key + 10) % 12
-    elif mode == 3: # Phrygian to Major
+    elif mode == 3:  # Phrygian to Major
         key = (key + 8) % 12
-    elif mode == 4: # Lydian to Major
+    elif mode == 4:  # Lydian to Major
         key = (key + 7) % 12
-    elif mode == 5: # Mixolydian to Major
+    elif mode == 5:  # Mixolydian to Major
         key = (key + 5) % 12
-    elif mode == 6: # Locrian to Major
+    elif mode == 6:  # Locrian to Major
         key = (key + 1) % 12
     mode = 0
     return key, mode
 
-def write_history(history, hist, epoch, errCntAvg):
-    history[0].append(epoch)
-    history[1].append(round(hist.history['loss'][0], 2))
-    history[2].append(round(hist.history['val_loss'][0], 2))
-    history[3].append(round(errCntAvg[0], 2))
-    history[4].append(round(errCntAvg[1], 2))
-    history[5].append(round(errCntAvg[2], 2))
-    history[6].append(round(errCntAvg[3], 2))
-    return history
 
-def Melody_Matrix_to_Section_Composed(melody_matrix):
-    section = int(np.ceil(melody_matrix.shape[0]/16.0))
-    section_composed = np.zeros((section,13), dtype=np.int)
+def melody_matrix_to_section_composed(melody_matrix):
+    section = int(np.ceil(melody_matrix.shape[0] / 16.0))
+    section_composed = np.zeros((section, 13), dtype=np.int)
     for m in xrange(128):
         mimax = np.amax(melody_matrix[m])
         mi = np.argmax(melody_matrix[m])
         if mimax == 0:
-            section_composed[m/16][0] += 1
+            section_composed[m / 16][0] += 1
             continue
         for mm in xrange(12):
             if mm == mi:
-                section_composed[m/16][mm+1] += 1
+                section_composed[m / 16][mm + 1] += 1
     return section_composed
+
 
 def top3notes(chord):
     idx = np.argsort(chord)
     idx[idx < 9] = 0
-    idx[idx >= 12-3] = 1
+    idx[idx >= 12 - 3] = 1
     return idx
 
 
-def Matrices_to_MIDI(melody_matrix, chord_matrix):
-    #assert(melody_matrix.shape[0] == chord_matrix.shape[0])
-    assert(melody_matrix.shape[1] == 12 and chord_matrix.shape[1] ==12)
+def matrices2midi(melody_matrix, chord_matrix):
+    # assert(melody_matrix.shape[0] == chord_matrix.shape[0])
+    assert (melody_matrix.shape[1] == 12 and chord_matrix.shape[1] == 12)
 
-    defaultMelOct = 5 # default melody octave
+    defaultMelOct = 5  # default melody octave
     defaultChrdOct = 3
     BPM = 160
-    duration = 15.0/BPM
-    m_start, c_start = 0,0
+    duration = 15.0 / BPM
+    m_start, c_start = 0, 0
     length = melody_matrix.shape[0]
     song = pretty_midi.PrettyMIDI()
-    agp_program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano') # use for chords
-    bap_program = pretty_midi.instrument_name_to_program('Bright Acoustic Piano') # use for melody
-    melody = pretty_midi.Instrument(program= agp_program)
-    chords = pretty_midi.Instrument(program= bap_program)
+    agp_program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano')  # use for chords
+    bap_program = pretty_midi.instrument_name_to_program('Bright Acoustic Piano')  # use for melody
+    melody = pretty_midi.Instrument(program=agp_program)
+    chords = pretty_midi.Instrument(program=bap_program)
 
     for i in range(length):
         # Synthesizing melody
@@ -551,7 +494,8 @@ def Matrices_to_MIDI(melody_matrix, chord_matrix):
             m_time += 1
         else:
             if m_note_nb_cur is not None:
-                note = pretty_midi.Note(velocity=100, pitch=(m_note_nb_cur +12*(defaultMelOct + 1)) , start=m_start*duration, end=(m_start+m_time)*duration)
+                note = pretty_midi.Note(velocity=100, pitch=(m_note_nb_cur + 12 * (defaultMelOct + 1)),
+                                        start=m_start * duration, end=(m_start + m_time) * duration)
                 melody.notes.append(note)
             m_start += m_time
             m_note_nb_cur = m_note_nb_new
@@ -563,7 +507,7 @@ def Matrices_to_MIDI(melody_matrix, chord_matrix):
             chords_cur = chords_new
             c_time = 1
         elif np.array_equal(chords_cur, chords_new):
-            c_time +=1
+            c_time += 1
         else:
             for n in chords_cur.tolist():
                 note = pretty_midi.Note(velocity=100, pitch=(n + 12 * (defaultChrdOct + 1)),
@@ -587,9 +531,9 @@ def Matrices_to_MIDI(melody_matrix, chord_matrix):
     song.instruments.append(chords)
     return song
 
+
 def smooth(C):
     ydim = C.shape[2]
-    ret = C.reshape((-1, 128/8, 8, ydim))
+    ret = C.reshape((-1, 128 / 8, 8, ydim))
     ret = np.average(ret, axis=2)
     return np.repeat(ret, 8, axis=1)
-

@@ -28,7 +28,7 @@ for csvfile in csvfiles:
         rows = iter(reader)
         next(rows)
         for row in rows:
-            key, mode = toMajKey(note2int(row[5]), mode2int(row[6]))
+            key, mode = toMajKey(notes.lookup_idx(row[5]), modes.lookup_idx(row[6]))
             keys.append(key)
             modes.append(mode)
             bars.append(int(row[-1]))

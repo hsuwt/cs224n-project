@@ -193,7 +193,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # x_test = testing features (to evaluate unique_idx & norms)
         nb_test = 100
         data = load_data(alg, nb_test)
-        train_data = data['trainset']
+        train_data = data['train']
         test_data = data['test']
 
         DataSet = namedtuple('DataSet', ['x', 'y_chroma', 'y_onehot', 'sw'])
@@ -290,7 +290,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         test_data = data['test']
 
         DataSet = namedtuple('DataSet', ['x', 'y', 'sw'])
-        x, y = self.ip.get_XY(train_data.melody, train_data.melody)
+        x, y = self.ip.get_XY(train_data.melody, train_data.chord)
         self.trainset = DataSet(x, y, train_data.sw)
         x, y = self.ip.get_XY(test_data.melody, test_data.chord)
         self.testset = DataSet(x, y, test_data.sw)
