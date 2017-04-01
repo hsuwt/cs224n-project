@@ -156,11 +156,11 @@ class IterativeImproveStrategy(TrainingStrategy):
         train_data = data['train']
         test_data = data['test']
 
-        DataSet = namedtuple('DataSet', ['x', 'y_add', 'y_delete', 'sw'])
-        x, y_add, y_delete = self.ip.get_XY(train_data.melody, train_data.chord)
-        self.trainset = DataSet(x, y_add, y_delete, np.tile(train_data.sw, (2, 1)))
-        x, y_add, y_delete = self.ip.get_XY(test_data.melody, test_data.chord)
-        self.testset = DataSet(x, y_add, y_delete, np.tile(test_data.sw, (2, 1)))
+        DataSet = namedtuple('DataSet', ['x', 'y', 'sw'])
+        x, y = self.ip.get_XY(train_data.melody, train_data.chord)
+        self.trainset = DataSet(x, y, np.tile(train_data.sw, (2, 1)))
+        x, y = self.ip.get_XY(test_data.melody, test_data.chord)
+        self.testset = DataSet(x, y, np.tile(test_data.sw, (2, 1)))
         self.x_test = get_test(args, m=test_data.melody, M=train_data.melody, C=train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.test_melody, self.test_melody = test_data.melody, train_data.melody
@@ -168,7 +168,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.nb_train = train_data.melody.shape[0]
         self.test_freq = 20
         self.num_iter = 50
-
+        
         # KNN baseline
         best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
         best1 = best_matches[:, 0].ravel()
@@ -198,26 +198,21 @@ class IterativeImproveStrategy(TrainingStrategy):
             for i in range(nb_epoch):
                 sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
                 sys.stdout.flush()
-                hist = model.fit(train.x, {'add': train.y_add, 'delete': train.y_delete},
+                hist = model.fit(train.x, train.y,
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size, 
-                                 sample_weight={'add': train.sw, 'delete': train.sw},
-                                 validation_data=(test.x, 
-                                                  {'add': test.y_add, 'delete': test.y_delete},
-                                                  {'add': test.sw, 'delete': test.sw}))
+                                 validation_data=(test.x, test.y))
                 if i % self.test_freq == self.test_freq - 1:
-                    pred_add, pred_delete = np.array(model.predict(x_test))
-                    pred_add = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
-                    pred_delete = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
-                    errs = np.sum(np.abs(pred_add), axis=2) + np.sum(np.abs(pred_delete), axis=2)  # 100, 1000
+                    pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))
+                    errs = np.sum(pred, axis=(2,3))
                     idx = np.argmin(errs, axis=1)  # 100,
                     c_hat = train_chord[idx]  # 100, 128, 12
                     corrected = c_hat + 0.0
-
                     if 'correct' in args.model:
+                        pred_add = pred[:,:,:,:12]
+                        pred_delete = pred[:,:,:,-12:]
                         pred_add = pred_add[np.arange(nb_test), idx].reshape((nb_test, 128, 12))
                         pred_delete = pred_delete[np.arange(nb_test), idx].reshape((nb_test, 128, 12))
-                        # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
                         pred_add *= (1-corrected)
                         pred_delete *= corrected
                         pred_add, pred_delete = smooth(pred_add), smooth(pred_delete)
@@ -236,16 +231,17 @@ class IterativeImproveStrategy(TrainingStrategy):
                         # iteratively improve corrected
                         for _ in range(self.num_iter):
                             x_iter = np.concatenate((test_melody[idx], corrected),2)
-                            pred_iter_add, pred_iter_delete = np.array(model.predict(x_iter))
+                            pred_iter = np.array(model.predict(x_iter)).reshape((nb_test, 128, 24))
+                            pred_iter_add = pred_iter[:,:,:12]
+                            pred_iter_delete = pred_iter[:,:,-12:]
                             pred_iter_add *= (1-corrected)
-                            pred_iter_delete *= corrected                            
+                            pred_iter_delete *= corrected
                             pred_iter_add, pred_iter_delete = smooth(pred_iter_add), smooth(pred_iter_delete)
                             max_iter_add, max_iter_delete = np.amax(pred_iter_add), np.amax(pred_iter_delete)
                             pred_iter_add[pred_iter_add<max_iter_add] = 0
                             pred_iter_add[pred_iter_add==max_iter_add] = 1
                             pred_iter_delete[pred_iter_delete<max_iter_delete] = 0
                             pred_iter_delete[pred_iter_delete==max_iter_delete] = 1
-                            
                             corrected += pred_iter_add
                             corrected -= pred_iter_delete
                         corrected = corrected.astype(int)

@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     args.strategy = args.strategy if args.strategy else 'pair'
-    args.model = args.model if args.model else 'GRU correct'
+    args.model = args.model if args.model else 'GRU correct knn'
     args.nodes1 = args.nodes1 if args.nodes1 else 128
     args.nodes2 = args.nodes2 if args.nodes2 else 0
     args.nb_epoch = args.nb_epoch if args.nb_epoch else 200
