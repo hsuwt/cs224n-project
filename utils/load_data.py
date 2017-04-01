@@ -62,10 +62,10 @@ class PairedInputParser(InputParser):
         X = np.concatenate((MC_pos, MC_neg), 0)
 
         YAdd    = np.concatenate((np.tile(Zeros, 12), add), 0)
-        YDelete = np.concatenate((np.tile(Zeros, 12), delete), 0)
+        YDelete = np.concagtenate((np.tile(Zeros, 12), delete), 0)
         return X, YAdd, YDelete
 
-def get_test(strategy, m, M, C):
+def get_test(args, m, M, C):
     """
     Create a testing feature for training
     :param strategy:
@@ -78,16 +78,26 @@ def get_test(strategy, m, M, C):
 
     :return: m[] + D : (nb_test * nb_test, 128, 24)
     """
-    if strategy == 'pair':
+    if args.strategy == 'pair' and 'knn' in args.model:
         nb_test = m.shape[0]
         best_indexes = select_closest_n(m, M)
         chord_expanded = C[best_indexes.ravel()]
         melody_repeated = np.repeat(m, nb_test, axis=0)
-        return np.concatenate((melody_repeated, chord_expanded), 2)  # (nb_test * ratio, 128, 24)
-    elif strategy == 'LM':
+        return np.concatenate((melody_repeated, chord_expanded), 2)  # (nb_test * nb_test, 128, 24)
+    elif args.strategy == 'pair':
+        m_rep, C_rep = rep(m, C)
+        return np.concatenate((m_rep, C_rep), 2)
+    elif args.strategy == 'LM':
         return m
     else:
         raise ValueError('Invalid strategy %s' % strategy)
+
+def rep(m, C):
+    nb_test = m.shape[0]
+    nb_train = C.shape[0]
+    C_rep = np.tile(C, (nb_test,  1, 1))
+    m_rep = np.repeat(m, nb_train, axis=0)
+    return m_rep, C_rep
 
 def select_closest_n(m, M):
     """

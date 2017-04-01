@@ -161,12 +161,11 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.trainset = DataSet(x, y_add, y_delete, np.tile(train_data.sw, (2, 1)))
         x, y_add, y_delete = self.ip.get_XY(test_data.melody, test_data.chord)
         self.testset = DataSet(x, y_add, y_delete, np.tile(test_data.sw, (2, 1)))
-        self.x_test = get_test(args.strategy, m=test_data.melody, M=train_data.melody, C=train_data.chord)
+        self.x_test = get_test(args, m=test_data.melody, M=train_data.melody, C=train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.test_melody, self.test_melody = test_data.melody, train_data.melody
         self.seq_len = 128
-        #self.nb_train = train_data.melody.shape[0]
-        self.nb_train = 100
+        self.nb_train = train_data.melody.shape[0]
         self.test_freq = 20
         self.num_iter = 50
 
@@ -206,10 +205,10 @@ class IterativeImproveStrategy(TrainingStrategy):
                                  validation_data=(test.x, 
                                                   {'add': test.y_add, 'delete': test.y_delete},
                                                   {'add': test.sw, 'delete': test.sw}))
-                if i % self.test_freq == 0:  # FIXME magic number!
+                if i % self.test_freq == self.test_freq - 1:
                     pred_add, pred_delete = np.array(model.predict(x_test))
-                    pred_add = pred_add.reshape((nb_test, nb_train, 128 * 12))   # 100, 1000, 128 x 12
-                    pred_delete = pred_add.reshape((nb_test, nb_train, 128 * 12))   # 100, 1000, 128 x 12
+                    pred_add = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
+                    pred_delete = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
                     errs = np.sum(np.abs(pred_add), axis=2) + np.sum(np.abs(pred_delete), axis=2)  # 100, 1000
                     idx = np.argmin(errs, axis=1)  # 100,
                     c_hat = train_chord[idx]  # 100, 128, 12
@@ -233,7 +232,6 @@ class IterativeImproveStrategy(TrainingStrategy):
                         print np.sum(corrected)
                         corrected -= pred_delete
                         print np.sum(corrected)
-                        corrected = corrected.astype(int)
                         
                         # iteratively improve corrected
                         for _ in range(self.num_iter):
@@ -250,7 +248,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                             
                             corrected += pred_iter_add
                             corrected -= pred_iter_delete
-                            corrected = corrected.astype(int)                        
+                        corrected = corrected.astype(int)
                         print("saving numpy file")
                         np.save('../pred/' + filename + 'Corrected.npy', corrected)
                         np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
@@ -259,5 +257,5 @@ class IterativeImproveStrategy(TrainingStrategy):
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
                     np.save('../pred/' + filename + '.npy', c_hat.astype(int))
 
-                    history.write_history(hist, i+1, err_count_avg, uniq_idx, norm)
+                    history.write_history(hist, i+1, err_count_avg, uniq_idx, norm, self.knn_err_count_avg)
                     history.log()
