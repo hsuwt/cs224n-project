@@ -7,12 +7,12 @@ import os
 # record and save models after nb_epoch_pred epochs)
 class HistoryWriterPair(object):
     def __init__(self, csv_file):
-        cols = ('epoch', 'loss', 'val_loss', 'errCntAvg', 'uniq_idx', 'norm')
+        cols = ('epoch', 'loss', 'val_loss', 'errCntAvg', 'uniq_idx', 'norm', 'knn_errCntAvg')
         self.state = {k: list() for k in cols}
         self.new_state = {k: None for k in cols}
         self.writer = csv.DictWriter(csv_file, fieldnames=cols, lineterminator=os.linesep)
 
-    def write_history(self, hist, epoch, err_count_avg, uniq_idx, norm):
+    def write_history(self, hist, epoch, err_count_avg, uniq_idx, norm, knn_err):
         state = self.new_state
         state['epoch'] = epoch
         state['loss'] = round(hist.history['loss'][0], 2)
@@ -20,6 +20,7 @@ class HistoryWriterPair(object):
         state['errCntAvg'] = round(err_count_avg, 2)
         state['uniq_idx'] = uniq_idx
         state['norm'] = norm
+        state['knn_errCntAvg'] = knn_err
         self.writer.writerow(state)
         for k, v in state.items():
             self.state[k].append(v)

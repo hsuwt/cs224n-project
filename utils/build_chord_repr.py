@@ -37,11 +37,11 @@ class ChordNotes2OneHotTranscoder(object):
 
 
 def chroma2Onehot(pred):
-    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
-    chordId2sign = chordId2sign / np.reshape(np.sum(chordId2sign, axis=1), (119,1))
-    chordId2sign = np.nan_to_num(chordId2sign)
+    chord_id2sign = np.load('csv/chord-1hot-signatures-rev.npy')
+    chord_id2sign = chord_id2sign / np.reshape(np.sum(chord_id2sign, axis=1), (119,1))
+    chord_id2sign = np.nan_to_num(chord_id2sign)
     def f(pred):
-        pred = np.dot(pred, chordId2sign.T)
+        pred = np.dot(pred, chord_id2sign.T)
 
         maxes = np.amax(pred, axis=2)
         maxes = maxes.reshape(pred.shape[0], pred.shape[1], 1)
@@ -57,7 +57,7 @@ def get_onehot2chordnotes_transcoder():
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
     :return: f: the translator function
     """
-    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
+    chord_id2sign = np.load('csv/chord-1hot-signatures-rev.npy')
 
     def f(chord):
         """
@@ -68,7 +68,7 @@ def get_onehot2chordnotes_transcoder():
         M, T, Dim = chord.shape
         C2 = chord.reshape([M*T, Dim])
         index = np.argmax(C2, axis=1)
-        newC = chordId2sign[index, :]
+        newC = chord_id2sign[index, :]
         return newC.reshape(M, T, 12)
     return f
 
@@ -77,7 +77,7 @@ def get_onehot2weighted_chords_transcoder():
     generate a translator function that will map from a 1-hot repr of chord to a classical chord signature
     :return: f: the translator function
     """
-    chordId2sign = np.load('csv/chord-1hot-signatures-rev.npy')
+    chord_id2sign = np.load('csv/chord-1hot-signatures-rev.npy')
 
     def f(chord):
         """
@@ -87,7 +87,7 @@ def get_onehot2weighted_chords_transcoder():
         """
         M, T, Dim = chord.shape
         C2 = chord.reshape([M*T, Dim])
-        weightedChords = np.dot(C2, chordId2sign)
+        weightedChords = np.dot(C2, chord_id2sign)
         return weightedChords.reshape(M, T, 12)
     return f
 
@@ -124,8 +124,8 @@ def _savemap(amap, path):
         pkl.dump(amap, pfile)
 
 
-def _saveunmap(unmap, path):
-    np.save(path, unmap)
+def _saveunmap(_umap, path):
+    np.save(path, _umap)
 
 
 if __name__ == '__main__':

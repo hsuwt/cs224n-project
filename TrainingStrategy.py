@@ -195,12 +195,12 @@ class IterativeImproveStrategy(TrainingStrategy):
             for i in range(nb_epoch):
                 sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
                 sys.stdout.flush()
-                hist = model.fit(train.x, {'add': train.yAdd, 'delete': train.yDelete},
+                hist = model.fit(train.x, {'add': train.y_add, 'delete': train.y_delete},
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size, 
                                  sample_weight={'add': train.sw, 'delete': train.sw},
                                  validation_data=(test.x, 
-                                                  {'add': test.yAdd, 'delete': test.yDelete},
+                                                  {'add': test.y_add, 'delete': test.y_delete},
                                                   {'add': test.sw, 'delete': test.sw}))
                 if i % self.test_freq == 19:  # FIXME magic number!
                     pred = np.array(model.predict(x_test))
