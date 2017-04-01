@@ -26,7 +26,7 @@ if __name__ == "__main__":
     args.nb_test = args.nb_test if args.nb_test else 10
     args.dropout_rate = args.dropout_rate if args.dropout_rate else 0.5
     args.batch_size = args.batch_size if args.batch_size else 250
-    args.mtl_ratio = args.mtl_ratio if args.mtl_ratio else 0.5
+    args.mtl_ratio = args.mtl_ratio if args.mtl_ratio else 0.
     print args
 
     strategies = {'pair': IterativeImproveStrategy, 'LM': LanguageModelTrainingStrategy}

@@ -56,7 +56,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # Y = training ground truth
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
-        nb_test = 100
+        nb_test = args.nb_test
         data = load_data(args, nb_test)
         train_data = data['train']
         test_data = data['test']
@@ -81,7 +81,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             nb_epoch = 1
         batch_size = self.args.batch_size
         seq_len = self.seq_len
-        nb_test = 100  # FIXME: Magic Number!!
+        nb_test = self.nb_test
 
         train = self.trainset
         test = self.testset
@@ -151,7 +151,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         # Y = training ground truth
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
-        self.nb_test = 100
+        self.nb_test = args.nb_test
         data = load_data(args, self.nb_test)
         train_data = data['train']
         test_data = data['test']
@@ -206,9 +206,10 @@ class IterativeImproveStrategy(TrainingStrategy):
                     pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))
                     errs = np.sum(pred, axis=(2,3))
                     idx = np.argmin(errs, axis=1)  # 100,
-                    c_hat = train_chord[idx]  # 100, 128, 12
+                    c_hat = train_chord[idx].astype(int)  # 100, 128, 12
                     if 'correct' in args.model:
-                        corrected = c_hat.astype(int) + 0
+                        corrected = c_hat + 0
+                        print np.sum(corrected)
                         pred = pred[np.arange(nb_test), idx]
                         # iteratively improve corrected
                         for j in range(self.num_iter):
@@ -224,11 +225,9 @@ class IterativeImproveStrategy(TrainingStrategy):
                             np.save('../pred/' + filename + 'CorrectedAvg' + str(j) + '.npy', smooth(corrected))
                             x_test_correct = np.concatenate((test_melody[idx], corrected), 2)
                             pred = np.array(model.predict(x_test_correct)).reshape((nb_test, 128, 24))
-
-
                     bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
-                    np.save('../pred/' + filename + '.npy', c_hat.astype(int))
+                    np.save('../pred/' + filename + '.npy', c_hat)
 
                     history.write_history(hist, i+1, err_count_avg, uniq_idx, norm, self.knn_err_count_avg)
                     history.log()
