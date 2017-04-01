@@ -167,7 +167,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]
         self.test_freq = 20
-        self.num_iter = 50
+        self.num_iter = 20
         
         # KNN baseline
         best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
@@ -207,47 +207,24 @@ class IterativeImproveStrategy(TrainingStrategy):
                     errs = np.sum(pred, axis=(2,3))
                     idx = np.argmin(errs, axis=1)  # 100,
                     c_hat = train_chord[idx]  # 100, 128, 12
-                    corrected = c_hat + 0.0
                     if 'correct' in args.model:
-                        pred_add = pred[:,:,:,:12]
-                        pred_delete = pred[:,:,:,-12:]
-                        pred_add = pred_add[np.arange(nb_test), idx].reshape((nb_test, 128, 12))
-                        pred_delete = pred_delete[np.arange(nb_test), idx].reshape((nb_test, 128, 12))
-                        pred_add *= (1-corrected)
-                        pred_delete *= corrected
-                        pred_add, pred_delete = smooth(pred_add), smooth(pred_delete)
-                        max_add, max_delete = np.amax(pred_add), np.amax(pred_delete)
-                        pred_add[pred_add<max_add] = 0
-                        pred_add[pred_add==max_add] = 1
-                        pred_delete[pred_delete<max_delete] = 0
-                        pred_delete[pred_delete==max_delete] = 1
-                        
-                        print np.sum(corrected)
-                        corrected += pred_add
-                        print np.sum(corrected)
-                        corrected -= pred_delete
-                        print np.sum(corrected)
-                        
+                        corrected = c_hat.astype(int) + 0
+                        pred = pred[np.arange(nb_test), idx]
                         # iteratively improve corrected
-                        for _ in range(self.num_iter):
-                            x_iter = np.concatenate((test_melody[idx], corrected),2)
-                            pred_iter = np.array(model.predict(x_iter)).reshape((nb_test, 128, 24))
-                            pred_iter_add = pred_iter[:,:,:12]
-                            pred_iter_delete = pred_iter[:,:,-12:]
-                            pred_iter_add *= (1-corrected)
-                            pred_iter_delete *= corrected
-                            pred_iter_add, pred_iter_delete = smooth(pred_iter_add), smooth(pred_iter_delete)
-                            max_iter_add, max_iter_delete = np.amax(pred_iter_add), np.amax(pred_iter_delete)
-                            pred_iter_add[pred_iter_add<max_iter_add] = 0
-                            pred_iter_add[pred_iter_add==max_iter_add] = 1
-                            pred_iter_delete[pred_iter_delete<max_iter_delete] = 0
-                            pred_iter_delete[pred_iter_delete==max_iter_delete] = 1
-                            corrected += pred_iter_add
-                            corrected -= pred_iter_delete
-                        corrected = corrected.astype(int)
-                        print("saving numpy file")
-                        np.save('../pred/' + filename + 'Corrected.npy', corrected)
-                        np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
+                        for j in range(self.num_iter):
+                            pred_add = pred[:,:,:12]
+                            pred_delete = pred[:,:,-12:]
+                            pred_add *= (1-corrected)
+                            pred_delete *= corrected
+                            pred_add, pred_delete = smooth(pred_add), smooth(pred_delete)
+                            max_add, max_delete = np.amax(pred_add), np.amax(pred_delete)
+                            corrected[pred_add==max_add] = 1
+                            corrected[pred_delete==max_delete] = 0
+                            np.save('../pred/' + filename + 'Corrected' + str(j) +'.npy', corrected)
+                            np.save('../pred/' + filename + 'CorrectedAvg' + str(j) + '.npy', smooth(corrected))
+                            x_test_correct = np.concatenate((test_melody[idx], corrected), 2)
+                            pred = np.array(model.predict(x_test_correct)).reshape((nb_test, 128, 24))
+
 
                     bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
