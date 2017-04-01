@@ -189,12 +189,6 @@ class IterativeImproveStrategy(TrainingStrategy):
             for i in range(nb_epoch):
                 sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
                 sys.stdout.flush()
-                print train.sw.shape
-                print train.yAdd.shape
-                print train.yDelete.shape
-                print test.sw.shape
-                print test.yAdd.shape
-                print test.yDelete.shape
                 hist = model.fit(train.x, {'add': train.yAdd, 'delete': train.yDelete},
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size, 
