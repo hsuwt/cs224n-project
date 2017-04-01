@@ -222,7 +222,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                         corrected = corrected.astype(int)
                         print("saving numpy file")
                         np.save('../pred/' + filename + 'Corrected.npy', corrected)
-                        np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
+                        np.save('../pred/' + filename + 'CorrectedAvg.npy', np.round(smooth(corrected)))
 
                     bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
