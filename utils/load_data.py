@@ -62,7 +62,7 @@ class PairedInputParser(InputParser):
         X = np.concatenate((MC_pos, MC_neg), 0)
 
         YAdd    = np.concatenate((np.tile(Zeros, 12), add), 0)
-        YDelete = np.concagtenate((np.tile(Zeros, 12), delete), 0)
+        YDelete = np.concatenate((np.tile(Zeros, 12), delete), 0)
         return X, YAdd, YDelete
 
 def get_test(args, m, M, C):
@@ -90,7 +90,7 @@ def get_test(args, m, M, C):
     elif args.strategy == 'LM':
         return m
     else:
-        raise ValueError('Invalid strategy %s' % strategy)
+        raise ValueError('Invalid strategy %s' % args.strategy)
 
 def rep(m, C):
     nb_test = m.shape[0]
