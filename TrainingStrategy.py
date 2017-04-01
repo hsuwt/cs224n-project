@@ -161,7 +161,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.trainset = DataSet(x, y, train_data.sw)
         x, y = self.ip.get_XY(test_data.melody, test_data.chord)
         self.testset = DataSet(x, y, test_data.sw)
-        self.x_test = get_test(args.strategy, test_data.melody, train_data.chord)
+        self.x_test = get_test(args.strategy, m=test_data.melody, M=train_data.melody, C=train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]

@@ -70,25 +70,39 @@ class PairedInputParser(InputParser):
         return X, Y
 
 
-def get_test(strategy, m, C):
-    # x_te are the final testing features to match m to C
-    if strategy == 'pair' or strategy == 'correct':
-        m_rep, C_rep = rep(m, C)
+def get_test(strategy, m, M, C, ratio=100):
+    """
+    Compute the testing features to match melody to chord
+    :param strategy:
+    :param m:
+    :param M:
+    :param C:
+    :return:
+    """
+    if strategy == 'pair':
+        best_indexes = select_closest_n(m, M, ratio)
+        C_rep = C[best_indexes.ravel()]
+        m_rep = np.repeat(m, ratio, axis=0)
         return np.concatenate((m_rep, C_rep), 2)
     elif strategy == 'LM':
         return m
     else:
         raise ValueError('Invalid strategy %s' % strategy)
 
-def rep(m, C):
+def select_closest_n(m, M, n=100):
+    """
+    Given test melody and train melody, return {n} indexes of train melody that are closest
+    to each test songs
+    This does so by computing
+    :param m: test melody     (nb_test,  128, 12)
+    :param M: train melody    (nb_train, 128, 12)
+    :param thresh: a threshold for
+    :return: indexes of {n} best matching training songs for each teset songs (nb_test, n)
+    """
     nb_test = m.shape[0]
-    nb_train = C.shape[0]
-    C_rep = np.tile(C, (nb_test, 1, 1))
-    m_rep = np.tile(m, (nb_train, 1, 1))
-    m_rep = np.reshape(m_rep, (nb_train, nb_test, 128, 12))
-    m_rep = np.swapaxes(m_rep, 1, 0)
-    m_rep = np.reshape(m_rep, (nb_test * nb_train, 128, 12))
-    return m_rep, C_rep
+    best_match = np.array([(m[i] * M).sum(axis=(1,2)).argsort()[::-1][:n] for i in range(nb_test)])
+    return best_match
+
 
 def parse_data(alg, max_length):
     with open('csv/npy-exists.config') as keyvaluefile:
