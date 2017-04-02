@@ -3,15 +3,16 @@ from collections import namedtuple
 import numpy as np
 import csv
 import os
-
+from util import dataAug, rotateNotes
 
 Data = namedtuple('Data', ['melody', 'chord', 'sw'])
 
 
 def load_data(alg, nb_test):
     chord, melody, sw = parse_data(alg, 128)
-    return {'train': Data(melody=melody[:-nb_test], chord=chord[:-nb_test], sw=sw[:-nb_test]),
-            'test': Data(melody=melody[-nb_test:], chord=chord[-nb_test:], sw=sw[-nb_test:])}
+    tmp = dataAug(chord)
+    return {'train': Data(melody=dataAug(melody[:-nb_test]), chord=dataAug(chord[:-nb_test]), sw=np.tile(sw[:-nb_test], (12,1))),
+            'test': Data(melody=dataAug(melody[-nb_test:]), chord=dataAug(chord[-nb_test:]), sw=np.tile(sw[-nb_test:], (12,1)))}
 
 
 class InputParser(object):

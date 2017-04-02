@@ -10,7 +10,6 @@ def rotate(Chroma, semitone):
         return Chroma
     return np.concatenate((Chroma[-semitone:], Chroma[:Chroma.shape[0] - semitone]), axis=0)
 
-
 def hamDis(chroma1, chroma2):
     assert chroma1.shape == chroma2.shape
     return float(np.count_nonzero(chroma1 != chroma2))
@@ -361,3 +360,14 @@ def smooth(C):
     ret = C.reshape((-1, 128 / 8, 8, ydim))
     ret = np.average(ret, axis=2)
     return np.repeat(ret, 8, axis=1)
+
+def rotateNotes(C, semitone):
+    if semitone == 0:
+        return C
+    return np.concatenate((C[:,:,-semitone:], C[:,:,:12-semitone]), axis=2)
+
+def dataAug(C):
+    newC = C+0
+    for i in range(11):
+        newC = np.concatenate((newC, rotateNotes(C, i+1)), axis=0)
+    return newC
