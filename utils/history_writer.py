@@ -7,12 +7,12 @@ import os
 # record and save models after nb_epoch_pred epochs)
 class HistoryWriterPair(object):
     def __init__(self, csv_file):
-        cols = ('epoch', 'loss', 'val_loss', 'errCntAvg', 'uniq_idx', 'norm', 'knn_errCntAvg')
+        cols = ('epoch', 'loss', 'val_loss', 'errCntAvg', 'uniq_idx', 'norm')
         self.state = {k: list() for k in cols}
         self.new_state = {k: None for k in cols}
         self.writer = csv.DictWriter(csv_file, fieldnames=cols, lineterminator=os.linesep)
 
-    def write_history(self, hist, epoch, err_count_avg, uniq_idx, norm, knn_err):
+    def write_history(self, hist, epoch, err_count_avg, uniq_idx, norm):
         state = self.new_state
         state['epoch'] = epoch
         state['loss'] = round(hist.history['loss'][0], 2)
@@ -20,7 +20,6 @@ class HistoryWriterPair(object):
         state['errCntAvg'] = round(err_count_avg, 2)
         state['uniq_idx'] = uniq_idx
         state['norm'] = norm
-        state['knn_errCntAvg'] = knn_err
         self.writer.writerow(state)
         for k, v in state.items():
             self.state[k].append(v)
@@ -59,3 +58,17 @@ class HistoryWriterLM(object):
         print "epoch: {epoch}, train1: {train1}, train12: {train12}, " \
               "val1: {val1}, val12: {val12}. " \
               "err1: {err1}, err12: {err12}, err1Avg: {err1Avg}, err12Avg: {err12Avg}".format(**self.new_state)
+
+
+class OneOffHistoryWriter(object):
+    def __init__(self, filename):
+        self.filename = filename
+        self.written = False
+
+    def write(self, contents):
+        if self.written:
+            raise RuntimeError('The file has already been written to! Writing again will overwrite previous results')
+
+        with open(self.filename, 'w') as ofile:
+            for k, v in contents.items():
+                ofile.write("{}={}\n".format(k, repr(v)))
