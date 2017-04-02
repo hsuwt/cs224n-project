@@ -63,7 +63,8 @@ class PairedInputParser(InputParser):
 
         YAdd    = np.concatenate((np.tile(Zeros, 12), add), 0)
         YDelete = np.concatenate((np.tile(Zeros, 12), delete), 0)
-        return X, YAdd, YDelete
+        Y = np.concatenate((YAdd, YDelete), 2)
+        return X, Y
 
 def get_test(args, m, M, C):
     """

@@ -57,7 +57,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         # Y = training ground truth
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
-        nb_test = 100
+        nb_test = args.nb_test
         data = load_data(args, nb_test)
         train_data = data['train']
         test_data = data['test']
@@ -82,7 +82,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
             nb_epoch = 1
         batch_size = self.args.batch_size
         seq_len = self.seq_len
-        nb_test = 100  # FIXME: Magic Number!!
+        nb_test = self.nb_test
 
         train = self.trainset
         test = self.testset
@@ -149,24 +149,24 @@ class IterativeImproveStrategy(TrainingStrategy):
         # Y = training ground truth
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
-        self.nb_test = 100
+        self.nb_test = args.nb_test
         data = load_data(args, self.nb_test)
         train_data = data['train']
         test_data = data['test']
 
-        DataSet = namedtuple('DataSet', ['x', 'y_add', 'y_delete', 'sw'])
-        x, y_add, y_delete = self.ip.get_XY(train_data.melody, train_data.chord)
-        self.trainset = DataSet(x, y_add, y_delete, np.tile(train_data.sw, (2, 1)))
-        x, y_add, y_delete = self.ip.get_XY(test_data.melody, test_data.chord)
-        self.testset = DataSet(x, y_add, y_delete, np.tile(test_data.sw, (2, 1)))
+        DataSet = namedtuple('DataSet', ['x', 'y', 'sw'])
+        x, y = self.ip.get_XY(train_data.melody, train_data.chord)
+        self.trainset = DataSet(x, y, np.tile(train_data.sw, (2, 1)))
+        x, y = self.ip.get_XY(test_data.melody, test_data.chord)
+        self.testset = DataSet(x, y, np.tile(test_data.sw, (2, 1)))
         self.x_test = get_test(args, m=test_data.melody, M=train_data.melody, C=train_data.chord)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.test_melody, self.test_melody = test_data.melody, train_data.melody
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]
         self.test_freq = 20
-        self.num_iter = 50
-
+        self.num_iter = 20
+        
         # KNN baseline
         best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
         best1 = best_matches[:, 0].ravel()
@@ -198,60 +198,41 @@ class IterativeImproveStrategy(TrainingStrategy):
             pbar = trange(nb_epoch)
             pbar.set_postfix(train_loss='_', test_loss='_', errCntAvg='_')
             for i in pbar:
-                hist = model.fit(train.x, {'add': train.y_add, 'delete': train.y_delete},
+                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
+                sys.stdout.flush()
+                hist = model.fit(train.x, train.y,
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size, 
-                                 sample_weight={'add': train.sw, 'delete': train.sw},
-                                 validation_data=(test.x, 
-                                                  {'add': test.y_add, 'delete': test.y_delete},
-                                                  {'add': test.sw, 'delete': test.sw}))
-                if i % test_freq == test_freq - 1:
-                    pred_add, pred_delete = np.array(model.predict(x_test))
-                    pred_add = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
-                    pred_delete = pred_add.reshape((nb_test, -1, 128 * 12))   # 100, 1000, 128 x 12
-                    errs = np.sum(np.abs(pred_add), axis=2) + np.sum(np.abs(pred_delete), axis=2)  # 100, 1000
+                                 validation_data=(test.x, test.y))
+                if i % self.test_freq == self.test_freq - 1:
+                    pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))
+                    errs = np.sum(pred, axis=(2,3))
                     idx = np.argmin(errs, axis=1)  # 100,
-                    c_hat = train_chord[idx]  # 100, 128, 12
-                    corrected = c_hat + 0.0
-
+                    c_hat = train_chord[idx].astype(int)  # 100, 128, 12
                     if 'correct' in args.model:
-                        pred_add = pred_add[np.arange(nb_test), idx].reshape((nb_test, 128, 12))
-                        pred_delete = pred_delete[np.arange(nb_test), idx].reshape((nb_test, 128, 12))
-                        # 100, 128, 12.    0.5 means delete notes, -0.5 means add notes
-                        pred_add *= (1-corrected)
-                        pred_delete *= corrected
-                        pred_add, pred_delete = smooth(pred_add), smooth(pred_delete)
-                        max_add, max_delete = np.amax(pred_add), np.amax(pred_delete)
-                        pred_add[pred_add < max_add] = 0
-                        pred_add[pred_add == max_add] = 1
-                        pred_delete[pred_delete < max_delete] = 0
-                        pred_delete[pred_delete == max_delete] = 1
-                        
-                        corrected += pred_add
-                        corrected -= pred_delete
-
+                        corrected = c_hat + 0
+                        print np.sum(corrected)
+                        pred = pred[np.arange(nb_test), idx]
                         # iteratively improve corrected
-                        for _ in range(self.num_iter):
-                            x_iter = np.concatenate((test_melody[idx], corrected), 2)
-                            pred_iter_add, pred_iter_delete = np.array(model.predict(x_iter))
-                            pred_iter_add *= (1-corrected)
-                            pred_iter_delete *= corrected                            
-                            pred_iter_add, pred_iter_delete = smooth(pred_iter_add), smooth(pred_iter_delete)
-                            max_iter_add, max_iter_delete = np.amax(pred_iter_add), np.amax(pred_iter_delete)
-                            pred_iter_add[pred_iter_add < max_iter_add] = 0
-                            pred_iter_add[pred_iter_add == max_iter_add] = 1
-                            pred_iter_delete[pred_iter_delete < max_iter_delete] = 0
-                            pred_iter_delete[pred_iter_delete == max_iter_delete] = 1
-                            
-                            corrected += pred_iter_add
-                            corrected -= pred_iter_delete
-                        corrected = corrected.astype(int)
-                        np.save('../pred/' + filename + 'Corrected.npy', corrected)
-                        np.save('../pred/' + filename + 'CorrectedAvg.npy', smooth(corrected))
-
-                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, 1)
+                        for j in range(self.num_iter):
+                            pred_add = pred[:,:,:12]
+                            pred_delete = pred[:,:,-12:]
+                            pred_add *= (1-corrected)
+                            pred_delete *= corrected
+                            pred_add, pred_delete = smooth(pred_add), smooth(pred_delete)
+                            max_add, max_delete = np.amax(pred_add), np.amax(pred_delete)
+                            corrected[pred_add==max_add] = 1
+                            corrected[pred_delete==max_delete] = 0
+                            np.save('../pred/' + filename + 'Corrected' + str(j) +'.npy', corrected)
+                            np.save('../pred/' + filename + 'CorrectedAvg' + str(j) + '.npy', smooth(corrected))
+                            x_test_correct = np.concatenate((test_melody[idx], corrected), 2)
+                            pred = np.array(model.predict(x_test_correct)).reshape((nb_test, 128, 24))
+                            err_count_avg = np.average(np.abs(corrected - test_chord)) * 12
+                            print err_count_avg
+                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
-                    np.save('../pred/' + filename + '.npy', c_hat.astype(int))
+                    print err_count_avg
+                    np.save('../pred/' + filename + '.npy', c_hat)
 
                     history.write_history(hist, i+1, err_count_avg, uniq_idx, norm, self.knn_err_count_avg)
                     pbar.set_postfix(train_loss=history.new_state['loss'],
