@@ -168,9 +168,9 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.num_iter = 20
         
         # KNN baseline
-        best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
-        best1 = best_matches[:, 0].ravel()
-        self.knn_err_count_avg = np.average(np.abs(train_data.chord[best1] - test_data.chord)) * 12
+        self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
+        self.best1 = self.best_matches[:, 0].ravel()
+        self.knn_err_count_avg = np.average(np.abs(train_data.chord[self.best1] - test_data.chord)) * 12
 
     def train(self, model):
         if self.args.debug:
@@ -192,7 +192,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         nb_train, nb_test = self.nb_train, self.nb_test
 
         filename = self.get_filename(self.args)
-        print "Result will be written to history/{}.csv".format(filename)
+        print "Result will be written to history/{0}.csv and {0}-results.txt".format(filename)
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterPair(csvfile)
             pbar = trange(nb_epoch)
@@ -202,7 +202,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size, 
                                  validation_data=(test.x, test.y))
-                if i % self.test_freq == self.test_freq - 1:
+                if i % self.test_freq == test_freq - 1:
                     pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))
                     errs = np.sum(pred, axis=(2,3))
                     idx = np.argmin(errs, axis=1)  # 100,
@@ -229,7 +229,15 @@ class IterativeImproveStrategy(TrainingStrategy):
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
                     np.save('../pred/' + filename + '.npy', c_hat)
 
-                    history.write_history(hist, i+1, err_count_avg, uniq_idx, norm, self.knn_err_count_avg)
+                    history.write_history(hist, i+1, err_count_avg, uniq_idx, norm)
                     pbar.set_postfix(train_loss=history.new_state['loss'],
                                      test_loss=history.new_state['val_loss'],
                                      errCntAvg=history.new_state['errCntAvg'])
+
+        knn_precision = (idx == self.best1).sum() / float(nb_test)
+        knn_recall = sum(1 for i in range(nb_test) if idx[i] in self.best_matches[i]) / float(nb_test)
+        results = OneOffHistoryWriter('history/' + filename + '-results.txt')
+        results.write({'knn_errCntAvg (How much KNN best matches defer from real ground truth)': self.knn_err_count_avg,
+                       'Precision (Portion of KNN best matches that agree with NN result)': knn_precision,
+                       'Recall (How many NN results are included in the 100 songs selected by KNN)': knn_recall,
+                       'idx': idx})
