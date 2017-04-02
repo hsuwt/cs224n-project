@@ -68,7 +68,7 @@ class OneOffHistoryWriter(object):
     def write(self, contents):
         if self.written:
             raise RuntimeError('The file has already been written to! Writing again will overwrite previous results')
-
+        self.written = True
         with open(self.filename, 'w') as ofile:
             for k, v in contents.items():
                 ofile.write("{}={}\n".format(k, repr(v)))
