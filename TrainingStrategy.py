@@ -71,6 +71,8 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         self.x_test = test_data.melody
         self.seq_len = 128
         self.ydim = self.trainset.y_onehot.shape[2]
+        self.nb_train = train_data.melody.shape[0]
+        self.nb_test = test_data.melody.shape[0]
 
     def get_ydim(self):
         return self.ydim
@@ -83,11 +85,9 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         batch_size = self.args.batch_size
         seq_len = self.seq_len
         nb_test = self.nb_test
-
         train = self.trainset
         test = self.testset
         x_test = self.x_test
-
         filename = self.get_filename(self.args)
 
         Pair = namedtuple('Pair', ['onehot', 'chroma'])
@@ -164,6 +164,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.test_melody, self.test_melody = test_data.melody, train_data.melody
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]
+        self.nb_test = test_data.melody.shape[0]
         self.test_freq = 20
         self.num_iter = 20
         
@@ -183,7 +184,6 @@ class IterativeImproveStrategy(TrainingStrategy):
             test_freq = self.test_freq
 
         args = self.args
-
         train = self.trainset
         test = self.testset
         x_test = self.x_test
