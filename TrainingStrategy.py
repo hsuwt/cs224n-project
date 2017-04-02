@@ -198,8 +198,6 @@ class IterativeImproveStrategy(TrainingStrategy):
             pbar = trange(nb_epoch)
             pbar.set_postfix(train_loss='_', test_loss='_', errCntAvg='_')
             for i in pbar:
-                sys.stdout.write("Alg=%s, epoch=%d\r" % (self.args, i))
-                sys.stdout.flush()
                 hist = model.fit(train.x, train.y,
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size, 
@@ -211,7 +209,6 @@ class IterativeImproveStrategy(TrainingStrategy):
                     c_hat = train_chord[idx].astype(int)  # 100, 128, 12
                     if 'correct' in args.model:
                         corrected = c_hat + 0
-                        print np.sum(corrected)
                         pred = pred[np.arange(nb_test), idx]
                         # iteratively improve corrected
                         for j in range(self.num_iter):
@@ -227,11 +224,9 @@ class IterativeImproveStrategy(TrainingStrategy):
                             np.save('../pred/' + filename + 'CorrectedAvg' + str(j) + '.npy', smooth(corrected))
                             x_test_correct = np.concatenate((test_melody[idx], corrected), 2)
                             pred = np.array(model.predict(x_test_correct)).reshape((nb_test, 128, 24))
-                            err_count_avg = np.average(np.abs(corrected - test_chord)) * 12
-                            print err_count_avg
-                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, False, 1)
+                            # err_count_avg = np.average(np.abs(corrected - test_chord)) * 12
+                    bestN, uniq_idx, norm = print_result(c_hat, test_chord, train_chord, args, 1)
                     err_count_avg = np.average(np.abs(c_hat - test_chord)) * 12
-                    print err_count_avg
                     np.save('../pred/' + filename + '.npy', c_hat)
 
                     history.write_history(hist, i+1, err_count_avg, uniq_idx, norm, self.knn_err_count_avg)
