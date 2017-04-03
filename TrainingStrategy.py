@@ -99,6 +99,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterLM(csvfile)
             pbar = trange(nb_epoch)
+            print test.x.shape
             for i in pbar:
                 hist = model.fit(train.x, {'one-hot': train.y_onehot, 'chroma': train.y_chroma},
                                  nb_epoch=1, verbose=0,
@@ -167,7 +168,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.nb_test = test_data.melody.shape[0]
         self.test_freq = 20
         self.num_iter = 20
-        
+
         # KNN baseline
         self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
         self.best1 = self.best_matches[:, 0].ravel()
@@ -188,7 +189,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         test = self.testset
         x_test = self.x_test
         test_chord, train_chord = self.test_chord, self.train_chord
-        test_melody = self.test_melody        
+        test_melody = self.test_melody
         nb_train, nb_test = self.nb_train, self.nb_test
 
         filename = self.get_filename(self.args)
@@ -200,7 +201,7 @@ class IterativeImproveStrategy(TrainingStrategy):
             for i in pbar:
                 hist = model.fit(train.x, train.y,
                                  nb_epoch=1, verbose=0,
-                                 batch_size=batch_size, 
+                                 batch_size=batch_size,
                                  validation_data=(test.x, test.y))
                 if i % self.test_freq == test_freq - 1:
                     pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))

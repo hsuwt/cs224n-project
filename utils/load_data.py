@@ -15,10 +15,11 @@ def load_data(alg, nb_test):
     chord = np.concatenate((chord, chord_us[:,:128,:], chord_us[:,128:,:]), axis=0)
     melody = np.concatenate((melody, melody_us[:,:128,:], chord_us[:,128:,:]), axis=0)
     sw = np.concatenate((sw, sw_us[:,:128], sw_us[:,128:]), axis=0)
-    
-    tmp = dataAug(chord)
-    return {'train': Data(melody=dataAug(melody[:-nb_test]), chord=dataAug(chord[:-nb_test]), sw=np.tile(sw[:-nb_test], (12,1))),
-            'test': Data(melody=dataAug(melody[-nb_test:]), chord=dataAug(chord[-nb_test:]), sw=np.tile(sw[-nb_test:], (12,1)))}
+    nb_test *= 3
+    return {'train': Data(melody=melody[:-nb_test], chord=chord[:-nb_test], sw=sw[:-nb_test]),
+            'test': Data(melody=melody[-nb_test:], chord=chord[-nb_test:], sw=sw[-nb_test:])}
+    #return {'train': Data(melody=dataAug(melody[:-nb_test]), chord=dataAug(chord[:-nb_test]), sw=np.tile(sw[:-nb_test], (12,1))),
+    #        'test': Data(melody=dataAug(melody[-nb_test:]), chord=dataAug(chord[-nb_test:]), sw=np.tile(sw[-nb_test:], (12,1)))}
 
 
 class InputParser(object):
