@@ -169,7 +169,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.num_iter = 20
         
         # KNN baseline
-        self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
+        self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody, n=self.nb_train)
         self.best1 = self.best_matches[:, 0].ravel()
         self.knn_err_count_avg = np.average(np.abs(train_data.chord[self.best1] - test_data.chord)) * 12
 
