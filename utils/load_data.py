@@ -117,7 +117,7 @@ def select_closest_n(m, M, n):
     :return: indexes of {n} best matching training songs for each teset songs (nb_test, n)
     """
     nb_test = m.shape[0]
-    best_match = np.array([(m[i] * M).sum(axis=(1, 2)).argsort()[::-1][:nb_test] for i in range(nb_test)], dtype=np.int)
+    best_match = np.array([(m[i] * M).sum(axis=(1, 2)).argsort()[::-1][:n] for i in range(nb_test)], dtype=np.int)
     return best_match
 
 
