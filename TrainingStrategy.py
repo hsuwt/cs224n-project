@@ -115,13 +115,14 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
 
                 # signature here refers to theo output feature vector to be used for training
                 c_hat = Triple(onehot=self.chord2signatureOnehot(pred.onehot),
-                               chroma=self.chord2signatureOnehot(pred.chroma),
-                               ensemble=self.chord2signatureOnehot(
-                                   (pred.onehot + self.chroma2WeightedOnehot(pred.chroma)) / 2.))
+                               chroma=self.chord2signatureChroma(pred.chroma),
+                               ensemble=self.chord2signatureChroma(
+                                   (pred.chroma + self.chroma2WeightedOnehot(pred.onehot)) / 2.))
                 c_hat_avg = Triple(onehot=self.chord2signatureOnehot(pred_avg.onehot),
-                                   chroma=self.chord2signatureOnehot(pred_avg.chroma),
-                                   ensemble=self.chord2signatureOnehot(
-                                       (pred_avg.onehot + self.chroma2WeightedOnehot(pred_avg.chroma)) / 2.))
+                                   chroma=self.chord2signatureChroma(pred_avg.chroma),
+                                   ensemble=self.chord2signatureChroma(
+                                       (pred_avg.chroma + self.chroma2WeightedOnehot(pred_avg.onehot)) / 2.))
+                
                 err_count_avg = apply_triple(lambda chat: np.average(np.abs(test.y_chroma - chat)) * 12, c_hat)
                 err_count_avg_avg = apply_triple(lambda chat_avg: np.average(np.abs(test.y_chroma - chat_avg)) * 12,
                                                  c_hat_avg)
@@ -132,7 +133,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                 for cavg, fn in zip(c_hat_avg, ('OnehotAvg', 'ChromaAvg', 'EnsembleAvg')):
                     np.save(base.format(fn), cavg.astype(int).reshape((nb_test, seq_len, 12)))
 
-                history.write_history(hist, i+1, {'err_count': err_count_avg, 'err_count_avg_avg': err_count_avg_avg})
+                history.write_history(hist, i+1, {'err_count_avg': err_count_avg, 'err_count_avg_avg': err_count_avg_avg})
                 ns = history.new_state
                 pbar.set_postfix(train_loss=(ns['train1'], ns['train12']),
                                  test_loss=(ns['val1'], ns['val12']),
