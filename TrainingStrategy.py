@@ -237,7 +237,10 @@ class IterativeImproveStrategy(TrainingStrategy):
         knn_precision = (idx == self.best1).sum() / float(nb_test)
         knn_recall = sum(1 for i in range(nb_test) if idx[i] in self.best_matches[i]) / float(nb_test)
         results = OneOffHistoryWriter('history/' + filename + '-results.txt')
-        results.write({'knn_errCntAvg (How much KNN best matches defer from real ground truth)': self.knn_err_count_avg,
+        results.write({'nb_test': nb_test,
+                       'K': nb_train,
+                       'best_matches': self.best_matches,
+                       'knn_errCntAvg (How much KNN best matches defer from real ground truth)': self.knn_err_count_avg,
                        'Precision (Portion of KNN best matches that agree with NN result)': knn_precision,
                        'Recall (How many NN results are included in the 100 songs selected by KNN)': knn_recall,
                        'idx': idx})
