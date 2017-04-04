@@ -88,7 +88,7 @@ def get_test(args, m, M, C):
     """
     if args.strategy == 'pair' and 'knn' in args.model:
         nb_test = m.shape[0]
-        best_indexes = select_closest_n(m, M, args.M.shape[0])
+        best_indexes = select_closest_n(m, M, M.shape[0])
         chord_expanded = C[best_indexes.ravel()]
         melody_repeated = np.repeat(m, nb_test, axis=0)
         return np.concatenate((melody_repeated, chord_expanded), 2)  # (nb_test * nb_test, 128, 24)
