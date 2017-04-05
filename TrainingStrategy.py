@@ -33,7 +33,7 @@ class TrainingStrategy(object):
         if 'sample-biased' in _alg.model:
             fn += '_' + 'sb'
         fn += '_nodes' + str(_alg.nodes1)
-        if 'mtl_ratio' in _alg:
+        if 'mtl_ratio' in _alg and _alg.mtl_ratio != 0:
             fn += '_' + str(_alg.mtl_ratio)
         return fn
 
@@ -46,20 +46,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         self.chord2signatureOnehot = get_onehot2chordnotes_transcoder()
         self.chroma2WeightedOnehot = get_onehot2weighted_chords_transcoder()
         self.chord2signatureChroma = top3notes
-
-        # Naming Guide:
-        # M = training melody
-        # m = testing melody
-        # C = training chord progression
-        # c = testing chord progression
         self.ip = LanguageModelInputParser()
-
-        # Naming Guide
-        # X = training features
-        # x = validation features (to evaluate val_loss & val_acc)
-        # Y = training ground truth
-        # y = validation ground truth
-        # x_test = testing features (to evaluate unique_idx & norms)
         nb_test = args.nb_test
         data = load_data(args, nb_test)
         train_data = data['train']
@@ -155,12 +142,6 @@ class IterativeImproveStrategy(TrainingStrategy):
         super(IterativeImproveStrategy, self).__init__()
         self.args = args
         self.ip = PairedInputParser(args)
-        # Naming Guide
-        # X = training features
-        # x = validation features (to evaluate val_loss & val_acc)
-        # Y = training ground truth
-        # y = validation ground truth
-        # x_test = testing features (to evaluate unique_idx & norms)
         self.nb_test = args.nb_test
         self.c2o_transcoder = ChordNotes2OneHotTranscoder()
         data = load_data(args, self.nb_test)
@@ -178,13 +159,13 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]
         self.nb_test = test_data.melody.shape[0]
-        self.test_freq = 20
-        self.num_iter = 0
+        self.test_freq = 10
+        self.num_iter = 20
 
         # KNN baseline
-        self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
-        self.best1 = self.best_matches[:, 0].ravel()
-        self.knn_err_count_avg = np.average(np.abs(train_data.chord[self.best1] - test_data.chord)) * 12
+        # self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
+        # self.best1 = self.best_matches[:, 0].ravel()
+        # self.knn_err_count_avg = np.average(np.abs(train_data.chord[self.best1] - test_data.chord)) * 12
 
     def train(self, model):
         if self.args.debug:
@@ -269,10 +250,10 @@ class IterativeImproveStrategy(TrainingStrategy):
                     
                     
 
-        knn_precision = (idx == self.best1).sum() / float(nb_test)
-        knn_recall = sum(1 for i in range(nb_test) if idx[i] in self.best_matches[i]) / float(nb_test)
-        results = OneOffHistoryWriter('history/' + filename + '-results.txt')
-        results.write({'knn_errCntAvg (How much KNN best matches defer from real ground truth)': self.knn_err_count_avg,
-                       'Precision (Portion of KNN best matches that agree with NN result)': knn_precision,
-                       'Recall (How many NN results are included in the 100 songs selected by KNN)': knn_recall,
-                       'idx': idx})
+        # knn_precision = (idx == self.best1).sum() / float(nb_test)
+        # knn_recall = sum(1 for i in range(nb_test) if idx[i] in self.best_matches[i]) / float(nb_test)
+        # results = OneOffHistoryWriter('history/' + filename + '-results.txt')
+        # results.write({'knn_errCntAvg (How much KNN best matches defer from real ground truth)': self.knn_err_count_avg,
+        #                'Precision (Portion of KNN best matches that agree with NN result)': knn_precision,
+        #                'Recall (How many NN results are included in the 100 songs selected by KNN)': knn_recall,
+        #                'idx': idx})
