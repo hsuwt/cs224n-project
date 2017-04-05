@@ -2,7 +2,10 @@ import argparse
 import tensorflow as tf
 tf.python.control_flow_ops = tf
 from model import *
+import matplotlib
+matplotlib.use('Agg')
 from TrainingStrategy import *
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model.')

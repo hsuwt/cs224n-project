@@ -4,6 +4,9 @@ from utils.load_data import *
 from utils.build_chord_repr import *
 from utils.history_writer import *
 from tqdm import trange
+from sklearn.metrics import classification_report,confusion_matrix
+from collections import Counter
+import matplotlib.pyplot as plt
 
 
 class TrainingStrategy(object):
@@ -112,7 +115,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                 pred = Pair(*model.predict(x_test))
                 pred_avg = Pair(onehot=smooth(np.array(pred.onehot)),
                                 chroma=smooth(np.array(pred.chroma)))
-
+            
                 # signature here refers to theo output feature vector to be used for training
                 c_hat = Triple(onehot=self.chord2signatureOnehot(pred.onehot),
                                chroma=self.chord2signatureChroma(pred.chroma),
@@ -138,6 +141,13 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                 pbar.set_postfix(train_loss=(ns['train1'], ns['train12']),
                                  test_loss=(ns['val1'], ns['val12']),
                                  errCntAvg=(ns['err1'], ns['err12']))
+                
+                # error analysis
+                pred_oh_erranaly = np.argmax(pred.onehot, axis=2).flatten() # (30 x 128,)
+                test_y_oh_erranaly = np.argmax(test.y_onehot,axis=2).flatten() # (30 x 128,)
+                print classification_report(test_y_oh_erranaly, pred_oh_erranaly)
+                print confusion_matrix(test_y_oh_erranaly,pred_oh_erranaly)                    
+                
 
 
 class IterativeImproveStrategy(TrainingStrategy):
@@ -152,6 +162,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         # y = validation ground truth
         # x_test = testing features (to evaluate unique_idx & norms)
         self.nb_test = args.nb_test
+        self.c2o_transcoder = ChordNotes2OneHotTranscoder()
         data = load_data(args, self.nb_test)
         train_data = data['train']
         test_data = data['test']
@@ -168,7 +179,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.nb_train = train_data.melody.shape[0]
         self.nb_test = test_data.melody.shape[0]
         self.test_freq = 20
-        self.num_iter = 20
+        self.num_iter = 0
 
         # KNN baseline
         self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
@@ -192,6 +203,16 @@ class IterativeImproveStrategy(TrainingStrategy):
         test_chord, train_chord = self.test_chord, self.train_chord
         test_melody = self.test_melody
         nb_train, nb_test = self.nb_train, self.nb_test
+        
+        # generate frequency histogram
+        test_chord_oh = self.c2o_transcoder.transcode(test_chord)
+        test_chord_oh = np.argmax(test_chord_oh, axis=2)    
+        hg_labels, hg_values = zip(*Counter(test_chord_oh.flatten()).items())
+        hg_indexes = np.arange(len(hg_labels))
+        width = 0.5
+        plt.bar(hg_indexes, hg_values, width)
+        plt.xticks(hg_indexes + width * 0.5-0.25, hg_labels, fontsize=7) 
+        plt.savefig("freq_histogram.png")
 
         filename = self.get_filename(self.args)
         print "Result will be written to history/{0}.csv and {0}-results.txt".format(filename)
@@ -204,7 +225,7 @@ class IterativeImproveStrategy(TrainingStrategy):
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size,
                                  validation_data=(test.x, test.y))
-                if i % self.test_freq == test_freq - 1:
+                if i % self.test_freq == 0: #test_freq - 1:
                     pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))
                     errs = np.sum(pred, axis=(2,3))
                     idx = np.argmin(errs, axis=1)  # 100,
@@ -235,6 +256,18 @@ class IterativeImproveStrategy(TrainingStrategy):
                     pbar.set_postfix(train_loss=history.new_state['loss'],
                                      test_loss=history.new_state['val_loss'],
                                      errCntAvg=history.new_state['errCntAvg'])
+                    
+                    # error analysis
+                    c_hat_oh = self.c2o_transcoder.transcode(c_hat)
+                    c_hat_oh = np.argmax(c_hat_oh, axis=2)
+            
+                    print (c_hat_oh== test_chord_oh).sum()
+                    print c_hat_oh
+                    print test_chord_oh
+                    print classification_report(c_hat_oh.flatten(), test_chord_oh.flatten())
+                    print confusion_matrix(c_hat_oh.flatten(), test_chord_oh.flatten()).shape                    
+                    
+                    
 
         knn_precision = (idx == self.best1).sum() / float(nb_test)
         knn_recall = sum(1 for i in range(nb_test) if idx[i] in self.best_matches[i]) / float(nb_test)
