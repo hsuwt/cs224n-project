@@ -142,11 +142,11 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                                  test_loss=(ns['val1'], ns['val12']),
                                  errCntAvg=(ns['err1'], ns['err12']))
                 
-                # error analysis
-                pred_oh_erranaly = np.argmax(pred.onehot, axis=2).flatten() # (30 x 128,)
-                test_y_oh_erranaly = np.argmax(test.y_onehot,axis=2).flatten() # (30 x 128,)
-                print classification_report(test_y_oh_erranaly, pred_oh_erranaly)
-                print confusion_matrix(test_y_oh_erranaly,pred_oh_erranaly)                    
+                ## error analysis
+                #pred_oh_erranaly = np.argmax(pred.onehot, axis=2).flatten() # (30 x 128,)
+                #test_y_oh_erranaly = np.argmax(test.y_onehot,axis=2).flatten() # (30 x 128,)
+                #print classification_report(test_y_oh_erranaly, pred_oh_erranaly)
+                #print confusion_matrix(test_y_oh_erranaly,pred_oh_erranaly)                    
                 
 
 
@@ -257,15 +257,15 @@ class IterativeImproveStrategy(TrainingStrategy):
                                      test_loss=history.new_state['val_loss'],
                                      errCntAvg=history.new_state['errCntAvg'])
                     
-                    # error analysis
-                    c_hat_oh = self.c2o_transcoder.transcode(c_hat)
-                    c_hat_oh = np.argmax(c_hat_oh, axis=2)
+                    ## error analysis
+                    #c_hat_oh = self.c2o_transcoder.transcode(c_hat)
+                    #c_hat_oh = np.argmax(c_hat_oh, axis=2)
             
-                    print (c_hat_oh== test_chord_oh).sum()
-                    print c_hat_oh
-                    print test_chord_oh
-                    print classification_report(c_hat_oh.flatten(), test_chord_oh.flatten())
-                    print confusion_matrix(c_hat_oh.flatten(), test_chord_oh.flatten()).shape                    
+                    #print (c_hat_oh== test_chord_oh).sum()
+                    #print c_hat_oh
+                    #print test_chord_oh
+                    #print classification_report(c_hat_oh.flatten(), test_chord_oh.flatten())
+                    #print confusion_matrix(c_hat_oh.flatten(), test_chord_oh.flatten()).shape                    
                     
                     
 
