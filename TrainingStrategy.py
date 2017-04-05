@@ -69,9 +69,9 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
 
     def train(self, model):
         if self.args.debug:
-            nb_epoch = self.args.nb_epoch
-        else:
             nb_epoch = 1
+        else:
+            nb_epoch = self.args.nb_epoch
         batch_size = self.args.batch_size
         seq_len = self.seq_len
         nb_test = self.nb_test
@@ -89,7 +89,6 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
         with open('history/' + filename + '.csv', 'w') as csvfile:
             history = HistoryWriterLM(csvfile)
             pbar = trange(nb_epoch)
-            print test.x.shape
             for i in pbar:
                 hist = model.fit(train.x, {'one-hot': train.y_onehot, 'chroma': train.y_chroma},
                                  nb_epoch=1, verbose=0,
@@ -102,7 +101,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                 pred = Pair(*model.predict(x_test))
                 pred_avg = Pair(onehot=smooth(np.array(pred.onehot)),
                                 chroma=smooth(np.array(pred.chroma)))
-            
+
                 # signature here refers to theo output feature vector to be used for training
                 c_hat = Triple(onehot=self.chord2signatureOnehot(pred.onehot),
                                chroma=self.chord2signatureChroma(pred.chroma),
@@ -112,7 +111,7 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                                    chroma=self.chord2signatureChroma(pred_avg.chroma),
                                    ensemble=self.chord2signatureChroma(
                                        (pred_avg.chroma + self.chroma2WeightedOnehot(pred_avg.onehot)) / 2.))
-                
+
                 err_count_avg = apply_triple(lambda chat: np.average(np.abs(test.y_chroma - chat)) * 12, c_hat)
                 err_count_avg_avg = apply_triple(lambda chat_avg: np.average(np.abs(test.y_chroma - chat_avg)) * 12,
                                                  c_hat_avg)
@@ -128,13 +127,13 @@ class LanguageModelTrainingStrategy(TrainingStrategy):
                 pbar.set_postfix(train_loss=(ns['train1'], ns['train12']),
                                  test_loss=(ns['val1'], ns['val12']),
                                  errCntAvg=(ns['err1'], ns['err12']))
-                
+
                 ## error analysis
                 #pred_oh_erranaly = np.argmax(pred.onehot, axis=2).flatten() # (30 x 128,)
                 #test_y_oh_erranaly = np.argmax(test.y_onehot,axis=2).flatten() # (30 x 128,)
                 #print classification_report(test_y_oh_erranaly, pred_oh_erranaly)
-                #print confusion_matrix(test_y_oh_erranaly,pred_oh_erranaly)                    
-                
+                #print confusion_matrix(test_y_oh_erranaly,pred_oh_erranaly)
+
 
 
 class IterativeImproveStrategy(TrainingStrategy):
@@ -184,15 +183,15 @@ class IterativeImproveStrategy(TrainingStrategy):
         test_chord, train_chord = self.test_chord, self.train_chord
         test_melody = self.test_melody
         nb_train, nb_test = self.nb_train, self.nb_test
-        
+
         # generate frequency histogram
         test_chord_oh = self.c2o_transcoder.transcode(test_chord)
-        test_chord_oh = np.argmax(test_chord_oh, axis=2)    
+        test_chord_oh = np.argmax(test_chord_oh, axis=2)
         hg_labels, hg_values = zip(*Counter(test_chord_oh.flatten()).items())
         hg_indexes = np.arange(len(hg_labels))
         width = 0.5
         plt.bar(hg_indexes, hg_values, width)
-        plt.xticks(hg_indexes + width * 0.5-0.25, hg_labels, fontsize=7) 
+        plt.xticks(hg_indexes + width * 0.5-0.25, hg_labels, fontsize=7)
         plt.savefig("freq_histogram.png")
 
         filename = self.get_filename(self.args)
@@ -237,18 +236,18 @@ class IterativeImproveStrategy(TrainingStrategy):
                     pbar.set_postfix(train_loss=history.new_state['loss'],
                                      test_loss=history.new_state['val_loss'],
                                      errCntAvg=history.new_state['errCntAvg'])
-                    
+
                     ## error analysis
                     #c_hat_oh = self.c2o_transcoder.transcode(c_hat)
                     #c_hat_oh = np.argmax(c_hat_oh, axis=2)
-            
+
                     #print (c_hat_oh== test_chord_oh).sum()
                     #print c_hat_oh
                     #print test_chord_oh
                     #print classification_report(c_hat_oh.flatten(), test_chord_oh.flatten())
-                    #print confusion_matrix(c_hat_oh.flatten(), test_chord_oh.flatten()).shape                    
-                    
-                    
+                    #print confusion_matrix(c_hat_oh.flatten(), test_chord_oh.flatten()).shape
+
+
 
         # knn_precision = (idx == self.best1).sum() / float(nb_test)
         # knn_recall = sum(1 for i in range(nb_test) if idx[i] in self.best_matches[i]) / float(nb_test)
