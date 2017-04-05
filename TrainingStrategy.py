@@ -142,6 +142,7 @@ class IterativeImproveStrategy(TrainingStrategy):
     def __init__(self, args):
         super(IterativeImproveStrategy, self).__init__()
         self.args = args
+        self.k = 500
         self.ip = PairedInputParser(args)
         # Naming Guide
         # X = training features
@@ -159,7 +160,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.trainset = DataSet(x, y, np.tile(train_data.sw, (2, 1)))
         x, y = self.ip.get_XY(test_data.melody, test_data.chord)
         self.testset = DataSet(x, y, np.tile(test_data.sw, (2, 1)))
-        self.x_test = get_test(args, m=test_data.melody, M=train_data.melody, C=train_data.chord)
+        self.x_test = get_test(args, m=test_data.melody, M=train_data.melody, C=train_data.chord, k=self.k)
         self.test_chord, self.train_chord = test_data.chord, train_data.chord
         self.test_melody, self.test_melody = test_data.melody, train_data.melody
         self.seq_len = 128
@@ -167,9 +168,9 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.nb_test = test_data.melody.shape[0]
         self.test_freq = 20
         self.num_iter = 20
-        
-        # KNN baseline
-        self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody, n=self.nb_train)
+
+        # KNN baselin
+        self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody, n=self.k)
         self.best1 = self.best_matches[:, 0].ravel()
         self.knn_err_count_avg = np.average(np.abs(train_data.chord[self.best1] - test_data.chord)) * 12
 
@@ -188,7 +189,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         test = self.testset
         x_test = self.x_test
         test_chord, train_chord = self.test_chord, self.train_chord
-        test_melody = self.test_melody        
+        test_melody = self.test_melody
         nb_train, nb_test = self.nb_train, self.nb_test
 
         filename = self.get_filename(self.args)
@@ -200,7 +201,7 @@ class IterativeImproveStrategy(TrainingStrategy):
             for i in pbar:
                 hist = model.fit(train.x, train.y,
                                  nb_epoch=1, verbose=0,
-                                 batch_size=batch_size, 
+                                 batch_size=batch_size,
                                  validation_data=(test.x, test.y))
                 if i % self.test_freq == test_freq - 1:
                     pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))
@@ -238,8 +239,7 @@ class IterativeImproveStrategy(TrainingStrategy):
         knn_recall = sum(1 for i in range(nb_test) if idx[i] in self.best_matches[i]) / float(nb_test)
         results = OneOffHistoryWriter('history/' + filename + '-results.txt')
         results.write({'nb_test': nb_test,
-                       'K': nb_train,
-                       'best_matches': self.best_matches,
+                       'K': self.k,
                        'knn_errCntAvg (How much KNN best matches defer from real ground truth)': self.knn_err_count_avg,
                        'Precision (Portion of KNN best matches that agree with NN result)': knn_precision,
                        'Recall (How many NN results are included in the 100 songs selected by KNN)': knn_recall,

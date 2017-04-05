@@ -74,7 +74,7 @@ class PairedInputParser(InputParser):
         Y = np.concatenate((YAdd, YDelete), 2)
         return X, Y
 
-def get_test(args, m, M, C):
+def get_test(args, m, M, C, k=None):
     """
     Create a testing feature for training
     :param strategy:
@@ -90,9 +90,11 @@ def get_test(args, m, M, C):
     if args.strategy == 'pair' and 'knn' in args.model:
         nb_test = m.shape[0]
         nb_train = M.shape[0]
-        best_indexes = select_closest_n(m, M, M.shape[0])
+        k = nb_train if k is None else k
+        print "Using KNN where k = ", k
+        best_indexes = select_closest_n(m, M, k)
         chord_expanded = C[best_indexes.ravel()]
-        melody_repeated = np.repeat(m, nb_train, axis=0)
+        melody_repeated = np.repeat(m, k, axis=0)
         return np.concatenate((melody_repeated, chord_expanded), 2)  # (nb_test * nb_test, 128, 24)
     elif args.strategy == 'pair':
         m_rep, C_rep = rep(m, C)
