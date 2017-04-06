@@ -25,7 +25,7 @@ class TrainingStrategy(object):
         minor = 'onehot' if 'one-hot' in _alg.model else ''
         rnn = 'RNN' if 'RNN' in _alg.model else "GRU" if "GRU" in _alg.model else "LSTM" if "LSTM" in _alg.model else ''
         if 'Bidirectional' in _alg.model:
-            rnn += 'B'
+            rnn = 'B' + rnn
 
         fn = rnn + '_' + major
         if minor:
