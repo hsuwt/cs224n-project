@@ -16,9 +16,11 @@ def load_data(alg, nb_test):
     # melody = np.concatenate((melody, melody_us[:,:128,:], chord_us[:,128:,:]), axis=0)
     # sw = np.concatenate((sw, sw_us[:,:128], sw_us[:,128:]), axis=0)
     # nb_test *= 3
-    melody = np.flipud(melody)
-    chord = np.flipud(chord)
-    sw = np.flipud(sw)
+    checkAllZero = np.sum(chord, axis=(1,2))!=0
+    chord = chord[checkAllZero]
+    melody = melody[checkAllZero]
+    sw = sw[checkAllZero]
+    print chord.shape
     return {'train': Data(melody=melody[:-nb_test], chord=chord[:-nb_test], sw=sw[:-nb_test]),
             'test': Data(melody=melody[-nb_test:], chord=chord[-nb_test:], sw=sw[-nb_test:])}
     #return {'train': Data(melody=dataAug(melody[:-nb_test]), chord=dataAug(chord[:-nb_test]), sw=np.tile(sw[:-nb_test], (12,1))),
