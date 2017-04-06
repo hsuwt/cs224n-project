@@ -6,7 +6,7 @@ from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
 from keras.layers import LSTM, GRU, SimpleRNN, TimeDistributed, Lambda
 from keras.models import Model, model_from_json
-from keras.optimizers import Adam
+from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping
 from keras import backend as K
 
@@ -51,7 +51,7 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
         # Input dimension
         model = AttentionSeq2Seq(output_length=128, output_dim=12, input_dim=12)
         loss = 'categorical_crossentropy' if alg.strategy == 'LM' and 'one-hot' in alg.model else 'binary_crossentropy'
-        model.compile(optimizer=Adam(), loss=loss, sample_weight_mode="temporal")
+        model.compile(optimizer=RMSprop(), loss=loss, sample_weight_mode="temporal")
         return model
     if alg.strategy == 'LM':
         input = gen_input('melody', seq_len)
@@ -59,7 +59,7 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
         outputOneHot = TimeDistributed(Dense(alg.one_hot_dim, activation='softmax'), name='one-hot')(M)
         outputChroma = TimeDistributed(Dense(12, activation='sigmoid'), name='chroma')(M)
         model = Model(input=input, output=[outputOneHot, outputChroma])
-        model.compile(optimizer=Adam(), loss={'one-hot':'categorical_crossentropy', 'chroma':'binary_crossentropy'}, \
+        model.compile(optimizer=RMSprop(), loss={'one-hot':'categorical_crossentropy', 'chroma':'binary_crossentropy'}, \
             sample_weight_mode="temporal", loss_weights={'one-hot': alg.mtl_ratio, 'chroma': 5*(1 - alg.mtl_ratio)})
         return model
     elif alg.strategy == 'pair':
@@ -67,7 +67,7 @@ def build_model(alg, nodes1, nodes2, drp, seq_len):
         M = build(alg, input, nodes1, drp)
         output = TimeDistributed(Dense(24 , activation='sigmoid'))(M)
         model = Model(input=input, output=output)
-        model.compile(optimizer=Adam(), loss='binary_crossentropy', sample_weight_mode="temporal")
+        model.compile(optimizer=RMSprop(), loss='binary_crossentropy', sample_weight_mode="temporal")
         return model
 
 def record(model, rec):
