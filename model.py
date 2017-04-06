@@ -6,7 +6,7 @@ from keras.layers import Input, Dense, Dropout, Reshape, Permute, merge, Flatten
 from keras.layers import Convolution2D, Convolution3D, ZeroPadding2D, ZeroPadding3D
 from keras.layers import LSTM, GRU, SimpleRNN, TimeDistributed, Lambda
 from keras.models import Model, model_from_json
-from keras.optimizers import Adam, RMSprop
+from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping
 from keras import backend as K
 
