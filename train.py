@@ -25,11 +25,11 @@ if __name__ == "__main__":
     args.model = args.model if args.model else 'GRU correct'
     args.nodes1 = args.nodes1 if args.nodes1 else 128
     args.nodes2 = args.nodes2 if args.nodes2 else 0
-    args.nb_epoch = args.nb_epoch if args.nb_epoch else 60
+    args.nb_epoch = args.nb_epoch if args.nb_epoch else 10
     args.nb_test = args.nb_test if args.nb_test else 100
     args.dropout_rate = args.dropout_rate if args.dropout_rate else 0.5
-    args.batch_size = args.batch_size if args.batch_size else 250
-    args.mtl_ratio = args.mtl_ratio if args.mtl_ratio else 0
+    args.batch_size = args.batch_size if args.batch_size else 20
+    args.mtl_ratio = args.mtl_ratio if args.mtl_ratio else 1.0
     print args
 
     strategies = {'pair': IterativeImproveStrategy, 'LM': LanguageModelTrainingStrategy}

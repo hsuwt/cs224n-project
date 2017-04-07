@@ -43,8 +43,22 @@ def build(alg, input, nodes, drp):
     M2 = Dropout(drp)(M2)
     if 'Bidirectional' in alg.model:
         M1 = merge([M1, M2], mode='concat')
-    return M1
+    #return M1
 
+    if 'RNN' in alg.model:
+        M2 = SimpleRNN(nodes, return_sequences=return_sequences, go_backwards=True)(M1)
+        M1 = SimpleRNN(nodes, return_sequences=return_sequences)(M1)
+    elif 'GRU' in alg.model:
+        M2 = GRU(nodes, return_sequences=return_sequences, go_backwards=True)(M1)
+        M1 = GRU(nodes, return_sequences=return_sequences)(M1)
+    elif 'LSTM' in alg.model:
+        M2 = LSTM(nodes, return_sequences=return_sequences, go_backwards=True)(M1)
+        M1 = LSTM(nodes, return_sequences=return_sequences)(M1)
+    M1 = Dropout(drp)(M1)
+    M2 = Dropout(drp)(M2)
+    if 'Bidirectional' in alg.model:
+        M1 = merge([M1, M2], mode='concat')
+    return M1
 def build_model(alg, nodes1, nodes2, drp, seq_len):
     if alg.strategy == 'attention':
         # FIXME: do something about this

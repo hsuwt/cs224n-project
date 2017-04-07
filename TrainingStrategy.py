@@ -33,7 +33,7 @@ class TrainingStrategy(object):
         if 'sample-biased' in _alg.model:
             fn += '_' + 'sb'
         fn += '_nodes' + str(_alg.nodes1)
-        if 'mtl_ratio' in _alg and _alg.mtl_ratio != 0:
+        if 'mtl_ratio' in _alg and _alg.mtl_ratio != 0 and _alg.strategy == 'LM':
             fn += '_' + str(_alg.mtl_ratio)
         return fn
 
@@ -158,8 +158,8 @@ class IterativeImproveStrategy(TrainingStrategy):
         self.seq_len = 128
         self.nb_train = train_data.melody.shape[0]
         self.nb_test = test_data.melody.shape[0]
-        self.test_freq = 10
-        self.num_iter = 20
+        self.test_freq = 1
+        self.num_iter = 5
 
         # KNN baseline
         # self.best_matches = select_closest_n(m=test_data.melody, M=train_data.melody)
@@ -205,12 +205,12 @@ class IterativeImproveStrategy(TrainingStrategy):
                                  nb_epoch=1, verbose=0,
                                  batch_size=batch_size,
                                  validation_data=(test.x, test.y))
-                if i % self.test_freq == 0: #test_freq - 1:
+                if i % self.test_freq == 0:
                     pred = np.array(model.predict(x_test)).reshape((nb_test, -1, 128, 24))
                     errs = np.sum(pred, axis=(2,3))
                     idx = np.argmin(errs, axis=1)  # 100,
                     c_hat = train_chord[idx].astype(int)  # 100, 128, 12
-                    if 'correct' in args.model:
+                    if 'correct' in args.model and i == nb_epoch - 1:
                         corrected = c_hat + 0
                         pred = pred[np.arange(nb_test), idx]
                         # iteratively improve corrected

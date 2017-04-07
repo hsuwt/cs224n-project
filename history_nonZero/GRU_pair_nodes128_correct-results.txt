@@ -1,0 +1,4 @@
+Recall (How many NN results are included in the 100 songs selected by KNN)=0.0
+knn_errCntAvg (How much KNN best matches defer from real ground truth)=1.9156249999999999
+idx=array([476, 562, 727, 476, 849, 535, 476, 480, 451, 124])
+Precision (Portion of KNN best matches that agree with NN result)=0.0
