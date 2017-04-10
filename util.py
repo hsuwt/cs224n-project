@@ -371,3 +371,38 @@ def dataAug(C):
     for i in range(11):
         newC = np.concatenate((newC, rotateNotes(C, i+1)), axis=0)
     return newC
+
+def smooth_v2(M, C):
+    """
+    Smooth the chords by allowing the chords to change where melody changes. 
+    The chord is determined by the most frequent chord appear amongst the time interval
+    
+    input C must be in one-hot encoding
+    """
+    # finding the indices at which melody changes for each song, shape will be (num_test, count of note changes)
+    intervals = [(np.nonzero(m)[0] + 1).astype(np.int32).tolist() for m in M[:,:-1]!=M[:,1:]]
+    # converts one-hot to indices
+    C_oh = np.argmax(C, axis=2)
+    
+    oh_dim = C.shape[2]
+    for test_i in range(len(intervals)):
+        interval = intervals[test_i]
+        for ts_i in range(len(interval)):
+            if ts_i ==0:
+                most_freq_ind = np.argmax(np.bincount(C_oh[test_i, :interval[ts_i]]))
+                most_freq_c = numpy.zeros(oh_dim)
+                most_freq_c[most_freq_ind] = 1
+                C[test_i, :interval[ts_i], :] = most_freq_c             
+            elif ts_i == len(interval)-1:
+                most_freq_ind = np.argmax(np.bincount(C_oh[test_i, interval[ts_i]:]))
+                most_freq_c = numpy.zeros(oh_dim)
+                most_freq_c[most_freq_ind] = 1
+                C[test_i, interval[ts_i]:, :] = most_freq_c                
+            else:
+                most_freq_ind = np.argmax(np.bincount(C_oh[test_i, interval[ts_i-1]: interval[ts_i]]))
+                most_freq_c = numpy.zeros(oh_dim)
+                most_freq_c[most_freq_ind] = 1
+                C[test_i, interval[ts_i-1]: interval[ts_i], :] = most_freq_c                 
+
+    
+    return M, C
