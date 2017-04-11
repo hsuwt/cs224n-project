@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pretty_midi
 import csv
+from utils.build_chord_repr import *
 
 
 def rotate(Chroma, semitone):
@@ -379,30 +380,38 @@ def smooth_v2(M, C):
     
     input C must be in one-hot encoding
     """
+    c2o_transcoder = ChordNotes2OneHotTranscoder()
+    o2c_transcoder = get_onehot2chordnotes_transcoder()
+    if C.shape[2] != 119:
+        inChroma = True
+        C = c2o_transcoder.transcode(C)
+        
+    
     # finding the indices at which melody changes for each song, shape will be (num_test, count of note changes)
     intervals = [(np.nonzero(m)[0] + 1).astype(np.int32).tolist() for m in M[:,:-1]!=M[:,1:]]
     # converts one-hot to indices
     C_oh = np.argmax(C, axis=2)
     
-    oh_dim = C.shape[2]
+    
     for test_i in range(len(intervals)):
         interval = intervals[test_i]
         for ts_i in range(len(interval)):
             if ts_i ==0:
                 most_freq_ind = np.argmax(np.bincount(C_oh[test_i, :interval[ts_i]]))
-                most_freq_c = numpy.zeros(oh_dim)
+                most_freq_c = numpy.zeros(119)
                 most_freq_c[most_freq_ind] = 1
                 C[test_i, :interval[ts_i], :] = most_freq_c             
             elif ts_i == len(interval)-1:
                 most_freq_ind = np.argmax(np.bincount(C_oh[test_i, interval[ts_i]:]))
-                most_freq_c = numpy.zeros(oh_dim)
+                most_freq_c = numpy.zeros(119)
                 most_freq_c[most_freq_ind] = 1
                 C[test_i, interval[ts_i]:, :] = most_freq_c                
             else:
                 most_freq_ind = np.argmax(np.bincount(C_oh[test_i, interval[ts_i-1]: interval[ts_i]]))
-                most_freq_c = numpy.zeros(oh_dim)
+                most_freq_c = numpy.zeros(119)
                 most_freq_c[most_freq_ind] = 1
                 C[test_i, interval[ts_i-1]: interval[ts_i], :] = most_freq_c                 
 
-    
+    if inChroma:
+        C = o2c_transcoder(C)
     return M, C
