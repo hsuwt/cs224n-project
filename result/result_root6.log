@@ -1,280 +1,0 @@
-Alg=GRU_root6, epoch=1Alg=GRU_root6, epoch=2Alg=GRU_root6, epoch=3Alg=GRU_root6, epoch=4Alg=GRU_root6, epoch=5Alg=GRU_root6, epoch=6Alg=GRU_root6, epoch=7Alg=GRU_root6, epoch=8Alg=GRU_root6, epoch=9Alg=GRU_root6, epoch=10Alg=GRU_root6, epoch=11Alg=GRU_root6, epoch=12Alg=GRU_root6, epoch=13Alg=GRU_root6, epoch=14Alg=GRU_root6, epoch=15Alg=GRU_root6, epoch=16Alg=GRU_root6, epoch=17Alg=GRU_root6, epoch=18Alg=GRU_root6, epoch=19Alg=GRU_root6, epoch=20
-Alg: GRU_root6
-unique idx: 33/948
-hamDis before mapping  = 6.721
-hamDis after mapping   = 6.721
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 33/948
-hamDis before mapping  = 3.234
-hamDis after mapping   = 3.234
-hamDis lower bound     = 0.878
-trn_loss=0.170, trn_acc=0.910
-val_loss=0.230, val_acc=0.980
-Alg=GRU_root6, epoch=21Alg=GRU_root6, epoch=22Alg=GRU_root6, epoch=23Alg=GRU_root6, epoch=24Alg=GRU_root6, epoch=25Alg=GRU_root6, epoch=26Alg=GRU_root6, epoch=27Alg=GRU_root6, epoch=28Alg=GRU_root6, epoch=29Alg=GRU_root6, epoch=30Alg=GRU_root6, epoch=31Alg=GRU_root6, epoch=32Alg=GRU_root6, epoch=33Alg=GRU_root6, epoch=34Alg=GRU_root6, epoch=35Alg=GRU_root6, epoch=36Alg=GRU_root6, epoch=37Alg=GRU_root6, epoch=38Alg=GRU_root6, epoch=39Alg=GRU_root6, epoch=40
-Alg: GRU_root6
-unique idx: 47/948
-hamDis before mapping  = 6.396
-hamDis after mapping   = 6.396
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 47/948
-hamDis before mapping  = 3.091
-hamDis after mapping   = 3.091
-hamDis lower bound     = 0.878
-trn_loss=0.130, trn_acc=0.930
-val_loss=0.260, val_acc=0.950
-Alg=GRU_root6, epoch=41Alg=GRU_root6, epoch=42Alg=GRU_root6, epoch=43Alg=GRU_root6, epoch=44Alg=GRU_root6, epoch=45Alg=GRU_root6, epoch=46Alg=GRU_root6, epoch=47Alg=GRU_root6, epoch=48Alg=GRU_root6, epoch=49Alg=GRU_root6, epoch=50Alg=GRU_root6, epoch=51Alg=GRU_root6, epoch=52Alg=GRU_root6, epoch=53Alg=GRU_root6, epoch=54Alg=GRU_root6, epoch=55Alg=GRU_root6, epoch=56Alg=GRU_root6, epoch=57Alg=GRU_root6, epoch=58Alg=GRU_root6, epoch=59Alg=GRU_root6, epoch=60
-Alg: GRU_root6
-unique idx: 59/948
-hamDis before mapping  = 6.534
-hamDis after mapping   = 6.534
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 59/948
-hamDis before mapping  = 3.191
-hamDis after mapping   = 3.191
-hamDis lower bound     = 0.878
-trn_loss=0.120, trn_acc=0.940
-val_loss=1.250, val_acc=0.630
-Alg=GRU_root6, epoch=61Alg=GRU_root6, epoch=62Alg=GRU_root6, epoch=63Alg=GRU_root6, epoch=64Alg=GRU_root6, epoch=65Alg=GRU_root6, epoch=66Alg=GRU_root6, epoch=67Alg=GRU_root6, epoch=68Alg=GRU_root6, epoch=69Alg=GRU_root6, epoch=70Alg=GRU_root6, epoch=71Alg=GRU_root6, epoch=72Alg=GRU_root6, epoch=73Alg=GRU_root6, epoch=74Alg=GRU_root6, epoch=75Alg=GRU_root6, epoch=76Alg=GRU_root6, epoch=77Alg=GRU_root6, epoch=78Alg=GRU_root6, epoch=79Alg=GRU_root6, epoch=80
-Alg: GRU_root6
-unique idx: 81/948
-hamDis before mapping  = 6.139
-hamDis after mapping   = 6.139
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 81/948
-hamDis before mapping  = 2.831
-hamDis after mapping   = 2.831
-hamDis lower bound     = 0.878
-trn_loss=0.110, trn_acc=0.940
-val_loss=1.010, val_acc=0.630
-Alg=GRU_root6, epoch=81Alg=GRU_root6, epoch=82Alg=GRU_root6, epoch=83Alg=GRU_root6, epoch=84Alg=GRU_root6, epoch=85Alg=GRU_root6, epoch=86Alg=GRU_root6, epoch=87Alg=GRU_root6, epoch=88Alg=GRU_root6, epoch=89Alg=GRU_root6, epoch=90Alg=GRU_root6, epoch=91Alg=GRU_root6, epoch=92Alg=GRU_root6, epoch=93Alg=GRU_root6, epoch=94Alg=GRU_root6, epoch=95Alg=GRU_root6, epoch=96Alg=GRU_root6, epoch=97Alg=GRU_root6, epoch=98Alg=GRU_root6, epoch=99Alg=GRU_root6, epoch=100
-Alg: GRU_root6
-unique idx: 77/948
-hamDis before mapping  = 6.211
-hamDis after mapping   = 6.211
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 77/948
-hamDis before mapping  = 2.905
-hamDis after mapping   = 2.905
-hamDis lower bound     = 0.878
-trn_loss=0.090, trn_acc=0.950
-val_loss=1.390, val_acc=0.640
-Alg=GRU_root6, epoch=101Alg=GRU_root6, epoch=102Alg=GRU_root6, epoch=103Alg=GRU_root6, epoch=104Alg=GRU_root6, epoch=105Alg=GRU_root6, epoch=106Alg=GRU_root6, epoch=107Alg=GRU_root6, epoch=108Alg=GRU_root6, epoch=109Alg=GRU_root6, epoch=110Alg=GRU_root6, epoch=111Alg=GRU_root6, epoch=112Alg=GRU_root6, epoch=113Alg=GRU_root6, epoch=114Alg=GRU_root6, epoch=115Alg=GRU_root6, epoch=116Alg=GRU_root6, epoch=117Alg=GRU_root6, epoch=118Alg=GRU_root6, epoch=119Alg=GRU_root6, epoch=120
-Alg: GRU_root6
-unique idx: 73/948
-hamDis before mapping  = 6.193
-hamDis after mapping   = 6.193
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 73/948
-hamDis before mapping  = 2.920
-hamDis after mapping   = 2.920
-hamDis lower bound     = 0.878
-trn_loss=0.090, trn_acc=0.950
-val_loss=1.250, val_acc=0.700
-Alg=GRU_root6, epoch=121Alg=GRU_root6, epoch=122Alg=GRU_root6, epoch=123Alg=GRU_root6, epoch=124Alg=GRU_root6, epoch=125Alg=GRU_root6, epoch=126Alg=GRU_root6, epoch=127Alg=GRU_root6, epoch=128Alg=GRU_root6, epoch=129Alg=GRU_root6, epoch=130Alg=GRU_root6, epoch=131Alg=GRU_root6, epoch=132Alg=GRU_root6, epoch=133Alg=GRU_root6, epoch=134Alg=GRU_root6, epoch=135Alg=GRU_root6, epoch=136Alg=GRU_root6, epoch=137Alg=GRU_root6, epoch=138Alg=GRU_root6, epoch=139Alg=GRU_root6, epoch=140
-Alg: GRU_root6
-unique idx: 78/948
-hamDis before mapping  = 6.089
-hamDis after mapping   = 6.089
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 78/948
-hamDis before mapping  = 2.825
-hamDis after mapping   = 2.825
-hamDis lower bound     = 0.878
-trn_loss=0.080, trn_acc=0.960
-val_loss=1.350, val_acc=0.680
-Alg=GRU_root6, epoch=141Alg=GRU_root6, epoch=142Alg=GRU_root6, epoch=143Alg=GRU_root6, epoch=144Alg=GRU_root6, epoch=145Alg=GRU_root6, epoch=146Alg=GRU_root6, epoch=147Alg=GRU_root6, epoch=148Alg=GRU_root6, epoch=149Alg=GRU_root6, epoch=150Alg=GRU_root6, epoch=151Alg=GRU_root6, epoch=152Alg=GRU_root6, epoch=153Alg=GRU_root6, epoch=154Alg=GRU_root6, epoch=155Alg=GRU_root6, epoch=156Alg=GRU_root6, epoch=157Alg=GRU_root6, epoch=158Alg=GRU_root6, epoch=159Alg=GRU_root6, epoch=160
-Alg: GRU_root6
-unique idx: 81/948
-hamDis before mapping  = 6.053
-hamDis after mapping   = 6.053
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 81/948
-hamDis before mapping  = 2.875
-hamDis after mapping   = 2.875
-hamDis lower bound     = 0.878
-trn_loss=0.080, trn_acc=0.950
-val_loss=1.890, val_acc=0.660
-Alg=GRU_root6, epoch=161Alg=GRU_root6, epoch=162Alg=GRU_root6, epoch=163Alg=GRU_root6, epoch=164Alg=GRU_root6, epoch=165Alg=GRU_root6, epoch=166Alg=GRU_root6, epoch=167Alg=GRU_root6, epoch=168Alg=GRU_root6, epoch=169Alg=GRU_root6, epoch=170Alg=GRU_root6, epoch=171Alg=GRU_root6, epoch=172Alg=GRU_root6, epoch=173Alg=GRU_root6, epoch=174Alg=GRU_root6, epoch=175Alg=GRU_root6, epoch=176Alg=GRU_root6, epoch=177Alg=GRU_root6, epoch=178Alg=GRU_root6, epoch=179Alg=GRU_root6, epoch=180
-Alg: GRU_root6
-unique idx: 82/948
-hamDis before mapping  = 5.890
-hamDis after mapping   = 5.890
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 82/948
-hamDis before mapping  = 2.824
-hamDis after mapping   = 2.824
-hamDis lower bound     = 0.878
-trn_loss=0.080, trn_acc=0.960
-val_loss=2.140, val_acc=0.590
-Alg=GRU_root6, epoch=181Alg=GRU_root6, epoch=182Alg=GRU_root6, epoch=183Alg=GRU_root6, epoch=184Alg=GRU_root6, epoch=185Alg=GRU_root6, epoch=186Alg=GRU_root6, epoch=187Alg=GRU_root6, epoch=188Alg=GRU_root6, epoch=189Alg=GRU_root6, epoch=190Alg=GRU_root6, epoch=191Alg=GRU_root6, epoch=192Alg=GRU_root6, epoch=193Alg=GRU_root6, epoch=194Alg=GRU_root6, epoch=195Alg=GRU_root6, epoch=196Alg=GRU_root6, epoch=197Alg=GRU_root6, epoch=198Alg=GRU_root6, epoch=199Alg=GRU_root6, epoch=200
-Alg: GRU_root6
-unique idx: 83/948
-hamDis before mapping  = 6.104
-hamDis after mapping   = 6.104
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 83/948
-hamDis before mapping  = 2.844
-hamDis after mapping   = 2.844
-hamDis lower bound     = 0.878
-trn_loss=0.080, trn_acc=0.960
-val_loss=1.770, val_acc=0.680
-Alg=GRU_root6, epoch=201Alg=GRU_root6, epoch=202Alg=GRU_root6, epoch=203Alg=GRU_root6, epoch=204Alg=GRU_root6, epoch=205Alg=GRU_root6, epoch=206Alg=GRU_root6, epoch=207Alg=GRU_root6, epoch=208Alg=GRU_root6, epoch=209Alg=GRU_root6, epoch=210Alg=GRU_root6, epoch=211Alg=GRU_root6, epoch=212Alg=GRU_root6, epoch=213Alg=GRU_root6, epoch=214Alg=GRU_root6, epoch=215Alg=GRU_root6, epoch=216Alg=GRU_root6, epoch=217Alg=GRU_root6, epoch=218Alg=GRU_root6, epoch=219Alg=GRU_root6, epoch=220
-Alg: GRU_root6
-unique idx: 86/948
-hamDis before mapping  = 5.823
-hamDis after mapping   = 5.823
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 86/948
-hamDis before mapping  = 2.699
-hamDis after mapping   = 2.699
-hamDis lower bound     = 0.878
-trn_loss=0.080, trn_acc=0.960
-val_loss=3.640, val_acc=0.380
-Alg=GRU_root6, epoch=221Alg=GRU_root6, epoch=222Alg=GRU_root6, epoch=223Alg=GRU_root6, epoch=224Alg=GRU_root6, epoch=225Alg=GRU_root6, epoch=226Alg=GRU_root6, epoch=227Alg=GRU_root6, epoch=228Alg=GRU_root6, epoch=229Alg=GRU_root6, epoch=230Alg=GRU_root6, epoch=231Alg=GRU_root6, epoch=232Alg=GRU_root6, epoch=233Alg=GRU_root6, epoch=234Alg=GRU_root6, epoch=235Alg=GRU_root6, epoch=236Alg=GRU_root6, epoch=237Alg=GRU_root6, epoch=238Alg=GRU_root6, epoch=239Alg=GRU_root6, epoch=240
-Alg: GRU_root6
-unique idx: 85/948
-hamDis before mapping  = 6.143
-hamDis after mapping   = 6.143
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 85/948
-hamDis before mapping  = 2.919
-hamDis after mapping   = 2.919
-hamDis lower bound     = 0.878
-trn_loss=0.080, trn_acc=0.960
-val_loss=1.730, val_acc=0.670
-Alg=GRU_root6, epoch=241Alg=GRU_root6, epoch=242Alg=GRU_root6, epoch=243Alg=GRU_root6, epoch=244Alg=GRU_root6, epoch=245Alg=GRU_root6, epoch=246Alg=GRU_root6, epoch=247Alg=GRU_root6, epoch=248Alg=GRU_root6, epoch=249Alg=GRU_root6, epoch=250Alg=GRU_root6, epoch=251Alg=GRU_root6, epoch=252Alg=GRU_root6, epoch=253Alg=GRU_root6, epoch=254Alg=GRU_root6, epoch=255Alg=GRU_root6, epoch=256Alg=GRU_root6, epoch=257Alg=GRU_root6, epoch=258Alg=GRU_root6, epoch=259Alg=GRU_root6, epoch=260
-Alg: GRU_root6
-unique idx: 76/948
-hamDis before mapping  = 6.089
-hamDis after mapping   = 6.089
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 76/948
-hamDis before mapping  = 2.934
-hamDis after mapping   = 2.934
-hamDis lower bound     = 0.878
-trn_loss=0.070, trn_acc=0.960
-val_loss=3.030, val_acc=0.500
-Alg=GRU_root6, epoch=261Alg=GRU_root6, epoch=262Alg=GRU_root6, epoch=263Alg=GRU_root6, epoch=264Alg=GRU_root6, epoch=265Alg=GRU_root6, epoch=266Alg=GRU_root6, epoch=267Alg=GRU_root6, epoch=268Alg=GRU_root6, epoch=269Alg=GRU_root6, epoch=270Alg=GRU_root6, epoch=271Alg=GRU_root6, epoch=272Alg=GRU_root6, epoch=273Alg=GRU_root6, epoch=274Alg=GRU_root6, epoch=275Alg=GRU_root6, epoch=276Alg=GRU_root6, epoch=277Alg=GRU_root6, epoch=278Alg=GRU_root6, epoch=279Alg=GRU_root6, epoch=280
-Alg: GRU_root6
-unique idx: 79/948
-hamDis before mapping  = 5.714
-hamDis after mapping   = 5.714
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 79/948
-hamDis before mapping  = 2.741
-hamDis after mapping   = 2.741
-hamDis lower bound     = 0.878
-trn_loss=0.070, trn_acc=0.960
-val_loss=2.760, val_acc=0.510
-Alg=GRU_root6, epoch=281Alg=GRU_root6, epoch=282Alg=GRU_root6, epoch=283Alg=GRU_root6, epoch=284Alg=GRU_root6, epoch=285Alg=GRU_root6, epoch=286Alg=GRU_root6, epoch=287Alg=GRU_root6, epoch=288Alg=GRU_root6, epoch=289Alg=GRU_root6, epoch=290Alg=GRU_root6, epoch=291Alg=GRU_root6, epoch=292Alg=GRU_root6, epoch=293Alg=GRU_root6, epoch=294Alg=GRU_root6, epoch=295Alg=GRU_root6, epoch=296Alg=GRU_root6, epoch=297Alg=GRU_root6, epoch=298Alg=GRU_root6, epoch=299Alg=GRU_root6, epoch=300
-Alg: GRU_root6
-unique idx: 84/948
-hamDis before mapping  = 5.837
-hamDis after mapping   = 5.837
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 84/948
-hamDis before mapping  = 2.830
-hamDis after mapping   = 2.830
-hamDis lower bound     = 0.878
-trn_loss=0.070, trn_acc=0.960
-val_loss=2.000, val_acc=0.640
-Alg=GRU_root6, epoch=301Alg=GRU_root6, epoch=302Alg=GRU_root6, epoch=303Alg=GRU_root6, epoch=304Alg=GRU_root6, epoch=305Alg=GRU_root6, epoch=306Alg=GRU_root6, epoch=307Alg=GRU_root6, epoch=308Alg=GRU_root6, epoch=309Alg=GRU_root6, epoch=310Alg=GRU_root6, epoch=311Alg=GRU_root6, epoch=312Alg=GRU_root6, epoch=313Alg=GRU_root6, epoch=314Alg=GRU_root6, epoch=315Alg=GRU_root6, epoch=316Alg=GRU_root6, epoch=317Alg=GRU_root6, epoch=318Alg=GRU_root6, epoch=319Alg=GRU_root6, epoch=320
-Alg: GRU_root6
-unique idx: 87/948
-hamDis before mapping  = 5.995
-hamDis after mapping   = 5.995
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 87/948
-hamDis before mapping  = 2.884
-hamDis after mapping   = 2.884
-hamDis lower bound     = 0.878
-trn_loss=0.070, trn_acc=0.960
-val_loss=3.160, val_acc=0.500
-Alg=GRU_root6, epoch=321Alg=GRU_root6, epoch=322Alg=GRU_root6, epoch=323Alg=GRU_root6, epoch=324Alg=GRU_root6, epoch=325Alg=GRU_root6, epoch=326Alg=GRU_root6, epoch=327Alg=GRU_root6, epoch=328Alg=GRU_root6, epoch=329Alg=GRU_root6, epoch=330Alg=GRU_root6, epoch=331Alg=GRU_root6, epoch=332Alg=GRU_root6, epoch=333Alg=GRU_root6, epoch=334Alg=GRU_root6, epoch=335Alg=GRU_root6, epoch=336Alg=GRU_root6, epoch=337Alg=GRU_root6, epoch=338Alg=GRU_root6, epoch=339Alg=GRU_root6, epoch=340
-Alg: GRU_root6
-unique idx: 80/948
-hamDis before mapping  = 6.155
-hamDis after mapping   = 6.155
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 80/948
-hamDis before mapping  = 2.935
-hamDis after mapping   = 2.935
-hamDis lower bound     = 0.878
-trn_loss=0.070, trn_acc=0.960
-val_loss=2.390, val_acc=0.630
-Alg=GRU_root6, epoch=341Alg=GRU_root6, epoch=342Alg=GRU_root6, epoch=343Alg=GRU_root6, epoch=344Alg=GRU_root6, epoch=345Alg=GRU_root6, epoch=346Alg=GRU_root6, epoch=347Alg=GRU_root6, epoch=348Alg=GRU_root6, epoch=349Alg=GRU_root6, epoch=350Alg=GRU_root6, epoch=351Alg=GRU_root6, epoch=352Alg=GRU_root6, epoch=353Alg=GRU_root6, epoch=354Alg=GRU_root6, epoch=355Alg=GRU_root6, epoch=356Alg=GRU_root6, epoch=357Alg=GRU_root6, epoch=358Alg=GRU_root6, epoch=359Alg=GRU_root6, epoch=360
-Alg: GRU_root6
-unique idx: 82/948
-hamDis before mapping  = 6.075
-hamDis after mapping   = 6.075
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 82/948
-hamDis before mapping  = 2.889
-hamDis after mapping   = 2.889
-hamDis lower bound     = 0.878
-trn_loss=0.080, trn_acc=0.960
-val_loss=2.330, val_acc=0.610
-Alg=GRU_root6, epoch=361Alg=GRU_root6, epoch=362Alg=GRU_root6, epoch=363Alg=GRU_root6, epoch=364Alg=GRU_root6, epoch=365Alg=GRU_root6, epoch=366Alg=GRU_root6, epoch=367Alg=GRU_root6, epoch=368Alg=GRU_root6, epoch=369Alg=GRU_root6, epoch=370Alg=GRU_root6, epoch=371Alg=GRU_root6, epoch=372Alg=GRU_root6, epoch=373Alg=GRU_root6, epoch=374Alg=GRU_root6, epoch=375Alg=GRU_root6, epoch=376Alg=GRU_root6, epoch=377Alg=GRU_root6, epoch=378Alg=GRU_root6, epoch=379Alg=GRU_root6, epoch=380
-Alg: GRU_root6
-unique idx: 89/948
-hamDis before mapping  = 5.724
-hamDis after mapping   = 5.724
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 89/948
-hamDis before mapping  = 2.725
-hamDis after mapping   = 2.725
-hamDis lower bound     = 0.878
-trn_loss=0.070, trn_acc=0.960
-val_loss=3.400, val_acc=0.480
-Alg=GRU_root6, epoch=381Alg=GRU_root6, epoch=382Alg=GRU_root6, epoch=383Alg=GRU_root6, epoch=384Alg=GRU_root6, epoch=385Alg=GRU_root6, epoch=386Alg=GRU_root6, epoch=387Alg=GRU_root6, epoch=388Alg=GRU_root6, epoch=389Alg=GRU_root6, epoch=390Alg=GRU_root6, epoch=391Alg=GRU_root6, epoch=392Alg=GRU_root6, epoch=393Alg=GRU_root6, epoch=394Alg=GRU_root6, epoch=395Alg=GRU_root6, epoch=396Alg=GRU_root6, epoch=397Alg=GRU_root6, epoch=398Alg=GRU_root6, epoch=399Alg=GRU_root6, epoch=400
-Alg: GRU_root6
-unique idx: 88/948
-hamDis before mapping  = 5.675
-hamDis after mapping   = 5.675
-hamDis lower bound     = 1.907
-
-Alg: GRU_root6
-unique idx: 88/948
-hamDis before mapping  = 2.718
-hamDis after mapping   = 2.718
-hamDis lower bound     = 0.878
-trn_loss=0.070, trn_acc=0.960
-val_loss=2.570, val_acc=0.590

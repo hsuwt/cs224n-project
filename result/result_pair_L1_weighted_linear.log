@@ -1,155 +1,0 @@
-Alg=GRU_pair_L1_weighted_linear, epoch=1Alg=GRU_pair_L1_weighted_linear, epoch=2Alg=GRU_pair_L1_weighted_linear, epoch=3Alg=GRU_pair_L1_weighted_linear, epoch=4Alg=GRU_pair_L1_weighted_linear, epoch=5Alg=GRU_pair_L1_weighted_linear, epoch=6Alg=GRU_pair_L1_weighted_linear, epoch=7Alg=GRU_pair_L1_weighted_linear, epoch=8Alg=GRU_pair_L1_weighted_linear, epoch=9Alg=GRU_pair_L1_weighted_linear, epoch=10Alg=GRU_pair_L1_weighted_linear, epoch=11Alg=GRU_pair_L1_weighted_linear, epoch=12Alg=GRU_pair_L1_weighted_linear, epoch=13Alg=GRU_pair_L1_weighted_linear, epoch=14Alg=GRU_pair_L1_weighted_linear, epoch=15Alg=GRU_pair_L1_weighted_linear, epoch=16Alg=GRU_pair_L1_weighted_linear, epoch=17Alg=GRU_pair_L1_weighted_linear, epoch=18Alg=GRU_pair_L1_weighted_linear, epoch=19Alg=GRU_pair_L1_weighted_linear, epoch=20
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 1/948
-hamDis before mapping  = 11.151
-hamDis after mapping   = 11.151
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 1/948
-hamDis before mapping  = 5.457
-hamDis after mapping   = 5.457
-hamDis lower bound     = 0.878
-trn_loss=-6970.360, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=21Alg=GRU_pair_L1_weighted_linear, epoch=22Alg=GRU_pair_L1_weighted_linear, epoch=23Alg=GRU_pair_L1_weighted_linear, epoch=24Alg=GRU_pair_L1_weighted_linear, epoch=25Alg=GRU_pair_L1_weighted_linear, epoch=26Alg=GRU_pair_L1_weighted_linear, epoch=27Alg=GRU_pair_L1_weighted_linear, epoch=28Alg=GRU_pair_L1_weighted_linear, epoch=29Alg=GRU_pair_L1_weighted_linear, epoch=30Alg=GRU_pair_L1_weighted_linear, epoch=31Alg=GRU_pair_L1_weighted_linear, epoch=32Alg=GRU_pair_L1_weighted_linear, epoch=33Alg=GRU_pair_L1_weighted_linear, epoch=34Alg=GRU_pair_L1_weighted_linear, epoch=35Alg=GRU_pair_L1_weighted_linear, epoch=36Alg=GRU_pair_L1_weighted_linear, epoch=37Alg=GRU_pair_L1_weighted_linear, epoch=38Alg=GRU_pair_L1_weighted_linear, epoch=39Alg=GRU_pair_L1_weighted_linear, epoch=40
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 3/948
-hamDis before mapping  = 11.139
-hamDis after mapping   = 11.139
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 3/948
-hamDis before mapping  = 5.432
-hamDis after mapping   = 5.432
-hamDis lower bound     = 0.878
-trn_loss=-3270.790, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=41Alg=GRU_pair_L1_weighted_linear, epoch=42Alg=GRU_pair_L1_weighted_linear, epoch=43Alg=GRU_pair_L1_weighted_linear, epoch=44Alg=GRU_pair_L1_weighted_linear, epoch=45Alg=GRU_pair_L1_weighted_linear, epoch=46Alg=GRU_pair_L1_weighted_linear, epoch=47Alg=GRU_pair_L1_weighted_linear, epoch=48Alg=GRU_pair_L1_weighted_linear, epoch=49Alg=GRU_pair_L1_weighted_linear, epoch=50Alg=GRU_pair_L1_weighted_linear, epoch=51Alg=GRU_pair_L1_weighted_linear, epoch=52Alg=GRU_pair_L1_weighted_linear, epoch=53Alg=GRU_pair_L1_weighted_linear, epoch=54Alg=GRU_pair_L1_weighted_linear, epoch=55Alg=GRU_pair_L1_weighted_linear, epoch=56Alg=GRU_pair_L1_weighted_linear, epoch=57Alg=GRU_pair_L1_weighted_linear, epoch=58Alg=GRU_pair_L1_weighted_linear, epoch=59Alg=GRU_pair_L1_weighted_linear, epoch=60
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3272.260, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=61Alg=GRU_pair_L1_weighted_linear, epoch=62Alg=GRU_pair_L1_weighted_linear, epoch=63Alg=GRU_pair_L1_weighted_linear, epoch=64Alg=GRU_pair_L1_weighted_linear, epoch=65Alg=GRU_pair_L1_weighted_linear, epoch=66Alg=GRU_pair_L1_weighted_linear, epoch=67Alg=GRU_pair_L1_weighted_linear, epoch=68Alg=GRU_pair_L1_weighted_linear, epoch=69Alg=GRU_pair_L1_weighted_linear, epoch=70Alg=GRU_pair_L1_weighted_linear, epoch=71Alg=GRU_pair_L1_weighted_linear, epoch=72Alg=GRU_pair_L1_weighted_linear, epoch=73Alg=GRU_pair_L1_weighted_linear, epoch=74Alg=GRU_pair_L1_weighted_linear, epoch=75Alg=GRU_pair_L1_weighted_linear, epoch=76Alg=GRU_pair_L1_weighted_linear, epoch=77Alg=GRU_pair_L1_weighted_linear, epoch=78Alg=GRU_pair_L1_weighted_linear, epoch=79Alg=GRU_pair_L1_weighted_linear, epoch=80
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3313.790, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=81Alg=GRU_pair_L1_weighted_linear, epoch=82Alg=GRU_pair_L1_weighted_linear, epoch=83Alg=GRU_pair_L1_weighted_linear, epoch=84Alg=GRU_pair_L1_weighted_linear, epoch=85Alg=GRU_pair_L1_weighted_linear, epoch=86Alg=GRU_pair_L1_weighted_linear, epoch=87Alg=GRU_pair_L1_weighted_linear, epoch=88Alg=GRU_pair_L1_weighted_linear, epoch=89Alg=GRU_pair_L1_weighted_linear, epoch=90Alg=GRU_pair_L1_weighted_linear, epoch=91Alg=GRU_pair_L1_weighted_linear, epoch=92Alg=GRU_pair_L1_weighted_linear, epoch=93Alg=GRU_pair_L1_weighted_linear, epoch=94Alg=GRU_pair_L1_weighted_linear, epoch=95Alg=GRU_pair_L1_weighted_linear, epoch=96Alg=GRU_pair_L1_weighted_linear, epoch=97Alg=GRU_pair_L1_weighted_linear, epoch=98Alg=GRU_pair_L1_weighted_linear, epoch=99Alg=GRU_pair_L1_weighted_linear, epoch=100
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3260.890, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=101Alg=GRU_pair_L1_weighted_linear, epoch=102Alg=GRU_pair_L1_weighted_linear, epoch=103Alg=GRU_pair_L1_weighted_linear, epoch=104Alg=GRU_pair_L1_weighted_linear, epoch=105Alg=GRU_pair_L1_weighted_linear, epoch=106Alg=GRU_pair_L1_weighted_linear, epoch=107Alg=GRU_pair_L1_weighted_linear, epoch=108Alg=GRU_pair_L1_weighted_linear, epoch=109Alg=GRU_pair_L1_weighted_linear, epoch=110Alg=GRU_pair_L1_weighted_linear, epoch=111Alg=GRU_pair_L1_weighted_linear, epoch=112Alg=GRU_pair_L1_weighted_linear, epoch=113Alg=GRU_pair_L1_weighted_linear, epoch=114Alg=GRU_pair_L1_weighted_linear, epoch=115Alg=GRU_pair_L1_weighted_linear, epoch=116Alg=GRU_pair_L1_weighted_linear, epoch=117Alg=GRU_pair_L1_weighted_linear, epoch=118Alg=GRU_pair_L1_weighted_linear, epoch=119Alg=GRU_pair_L1_weighted_linear, epoch=120
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3260.260, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=121Alg=GRU_pair_L1_weighted_linear, epoch=122Alg=GRU_pair_L1_weighted_linear, epoch=123Alg=GRU_pair_L1_weighted_linear, epoch=124Alg=GRU_pair_L1_weighted_linear, epoch=125Alg=GRU_pair_L1_weighted_linear, epoch=126Alg=GRU_pair_L1_weighted_linear, epoch=127Alg=GRU_pair_L1_weighted_linear, epoch=128Alg=GRU_pair_L1_weighted_linear, epoch=129Alg=GRU_pair_L1_weighted_linear, epoch=130Alg=GRU_pair_L1_weighted_linear, epoch=131Alg=GRU_pair_L1_weighted_linear, epoch=132Alg=GRU_pair_L1_weighted_linear, epoch=133Alg=GRU_pair_L1_weighted_linear, epoch=134Alg=GRU_pair_L1_weighted_linear, epoch=135Alg=GRU_pair_L1_weighted_linear, epoch=136Alg=GRU_pair_L1_weighted_linear, epoch=137Alg=GRU_pair_L1_weighted_linear, epoch=138Alg=GRU_pair_L1_weighted_linear, epoch=139Alg=GRU_pair_L1_weighted_linear, epoch=140
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3287.690, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=141Alg=GRU_pair_L1_weighted_linear, epoch=142Alg=GRU_pair_L1_weighted_linear, epoch=143Alg=GRU_pair_L1_weighted_linear, epoch=144Alg=GRU_pair_L1_weighted_linear, epoch=145Alg=GRU_pair_L1_weighted_linear, epoch=146Alg=GRU_pair_L1_weighted_linear, epoch=147Alg=GRU_pair_L1_weighted_linear, epoch=148Alg=GRU_pair_L1_weighted_linear, epoch=149Alg=GRU_pair_L1_weighted_linear, epoch=150Alg=GRU_pair_L1_weighted_linear, epoch=151Alg=GRU_pair_L1_weighted_linear, epoch=152Alg=GRU_pair_L1_weighted_linear, epoch=153Alg=GRU_pair_L1_weighted_linear, epoch=154Alg=GRU_pair_L1_weighted_linear, epoch=155Alg=GRU_pair_L1_weighted_linear, epoch=156Alg=GRU_pair_L1_weighted_linear, epoch=157Alg=GRU_pair_L1_weighted_linear, epoch=158Alg=GRU_pair_L1_weighted_linear, epoch=159Alg=GRU_pair_L1_weighted_linear, epoch=160
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3250.210, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=161Alg=GRU_pair_L1_weighted_linear, epoch=162Alg=GRU_pair_L1_weighted_linear, epoch=163Alg=GRU_pair_L1_weighted_linear, epoch=164Alg=GRU_pair_L1_weighted_linear, epoch=165Alg=GRU_pair_L1_weighted_linear, epoch=166Alg=GRU_pair_L1_weighted_linear, epoch=167Alg=GRU_pair_L1_weighted_linear, epoch=168Alg=GRU_pair_L1_weighted_linear, epoch=169Alg=GRU_pair_L1_weighted_linear, epoch=170Alg=GRU_pair_L1_weighted_linear, epoch=171Alg=GRU_pair_L1_weighted_linear, epoch=172Alg=GRU_pair_L1_weighted_linear, epoch=173Alg=GRU_pair_L1_weighted_linear, epoch=174Alg=GRU_pair_L1_weighted_linear, epoch=175Alg=GRU_pair_L1_weighted_linear, epoch=176Alg=GRU_pair_L1_weighted_linear, epoch=177Alg=GRU_pair_L1_weighted_linear, epoch=178Alg=GRU_pair_L1_weighted_linear, epoch=179Alg=GRU_pair_L1_weighted_linear, epoch=180
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3302.150, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=181Alg=GRU_pair_L1_weighted_linear, epoch=182Alg=GRU_pair_L1_weighted_linear, epoch=183Alg=GRU_pair_L1_weighted_linear, epoch=184Alg=GRU_pair_L1_weighted_linear, epoch=185Alg=GRU_pair_L1_weighted_linear, epoch=186Alg=GRU_pair_L1_weighted_linear, epoch=187Alg=GRU_pair_L1_weighted_linear, epoch=188Alg=GRU_pair_L1_weighted_linear, epoch=189Alg=GRU_pair_L1_weighted_linear, epoch=190Alg=GRU_pair_L1_weighted_linear, epoch=191Alg=GRU_pair_L1_weighted_linear, epoch=192Alg=GRU_pair_L1_weighted_linear, epoch=193Alg=GRU_pair_L1_weighted_linear, epoch=194Alg=GRU_pair_L1_weighted_linear, epoch=195Alg=GRU_pair_L1_weighted_linear, epoch=196Alg=GRU_pair_L1_weighted_linear, epoch=197Alg=GRU_pair_L1_weighted_linear, epoch=198Alg=GRU_pair_L1_weighted_linear, epoch=199Alg=GRU_pair_L1_weighted_linear, epoch=200
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 10.280
-hamDis after mapping   = 10.280
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 6/948
-hamDis before mapping  = 4.999
-hamDis after mapping   = 4.999
-hamDis lower bound     = 0.878
-trn_loss=-3246.080, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=201Alg=GRU_pair_L1_weighted_linear, epoch=202Alg=GRU_pair_L1_weighted_linear, epoch=203Alg=GRU_pair_L1_weighted_linear, epoch=204Alg=GRU_pair_L1_weighted_linear, epoch=205Alg=GRU_pair_L1_weighted_linear, epoch=206Alg=GRU_pair_L1_weighted_linear, epoch=207Alg=GRU_pair_L1_weighted_linear, epoch=208Alg=GRU_pair_L1_weighted_linear, epoch=209Alg=GRU_pair_L1_weighted_linear, epoch=210Alg=GRU_pair_L1_weighted_linear, epoch=211Alg=GRU_pair_L1_weighted_linear, epoch=212Alg=GRU_pair_L1_weighted_linear, epoch=213Alg=GRU_pair_L1_weighted_linear, epoch=214Alg=GRU_pair_L1_weighted_linear, epoch=215Alg=GRU_pair_L1_weighted_linear, epoch=216Alg=GRU_pair_L1_weighted_linear, epoch=217Alg=GRU_pair_L1_weighted_linear, epoch=218Alg=GRU_pair_L1_weighted_linear, epoch=219Alg=GRU_pair_L1_weighted_linear, epoch=220
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 8/948
-hamDis before mapping  = 9.573
-hamDis after mapping   = 9.573
-hamDis lower bound     = 2.072
-
-Alg: GRU_pair_L1_weighted_linear
-unique idx: 8/948
-hamDis before mapping  = 4.610
-hamDis after mapping   = 4.610
-hamDis lower bound     = 0.878
-trn_loss=-3219.270, trn_acc=0.000
-val_loss=0.000, val_acc=0.000
-Alg=GRU_pair_L1_weighted_linear, epoch=221Alg=GRU_pair_L1_weighted_linear, epoch=222Alg=GRU_pair_L1_weighted_linear, epoch=223Alg=GRU_pair_L1_weighted_linear, epoch=224Alg=GRU_pair_L1_weighted_linear, epoch=225Alg=GRU_pair_L1_weighted_linear, epoch=226Alg=GRU_pair_L1_weighted_linear, epoch=227Alg=GRU_pair_L1_weighted_linear, epoch=228

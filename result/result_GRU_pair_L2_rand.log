@@ -1,160 +1,0 @@
-Alg=GRU_pair_L2_rand, epoch=1Alg=GRU_pair_L2_rand, epoch=2Alg=GRU_pair_L2_rand, epoch=3Alg=GRU_pair_L2_rand, epoch=4Alg=GRU_pair_L2_rand, epoch=5Alg=GRU_pair_L2_rand, epoch=6Alg=GRU_pair_L2_rand, epoch=7Alg=GRU_pair_L2_rand, epoch=8Alg=GRU_pair_L2_rand, epoch=9Alg=GRU_pair_L2_rand, epoch=10Alg=GRU_pair_L2_rand, epoch=11Alg=GRU_pair_L2_rand, epoch=12Alg=GRU_pair_L2_rand, epoch=13Alg=GRU_pair_L2_rand, epoch=14Alg=GRU_pair_L2_rand, epoch=15Alg=GRU_pair_L2_rand, epoch=16Alg=GRU_pair_L2_rand, epoch=17Alg=GRU_pair_L2_rand, epoch=18Alg=GRU_pair_L2_rand, epoch=19Alg=GRU_pair_L2_rand, epoch=20
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 10/100
-num of unique idx2  = 10/100
-norm1 after mapping = 3.419
-norm2 after mapping = 0.016
-trn_loss=0.660, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=21Alg=GRU_pair_L2_rand, epoch=22Alg=GRU_pair_L2_rand, epoch=23Alg=GRU_pair_L2_rand, epoch=24Alg=GRU_pair_L2_rand, epoch=25Alg=GRU_pair_L2_rand, epoch=26Alg=GRU_pair_L2_rand, epoch=27Alg=GRU_pair_L2_rand, epoch=28Alg=GRU_pair_L2_rand, epoch=29Alg=GRU_pair_L2_rand, epoch=30Alg=GRU_pair_L2_rand, epoch=31Alg=GRU_pair_L2_rand, epoch=32Alg=GRU_pair_L2_rand, epoch=33Alg=GRU_pair_L2_rand, epoch=34Alg=GRU_pair_L2_rand, epoch=35Alg=GRU_pair_L2_rand, epoch=36Alg=GRU_pair_L2_rand, epoch=37Alg=GRU_pair_L2_rand, epoch=38Alg=GRU_pair_L2_rand, epoch=39Alg=GRU_pair_L2_rand, epoch=40
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 13/100
-num of unique idx2  = 13/100
-norm1 after mapping = 3.355
-norm2 after mapping = 0.016
-trn_loss=0.660, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=41Alg=GRU_pair_L2_rand, epoch=42Alg=GRU_pair_L2_rand, epoch=43Alg=GRU_pair_L2_rand, epoch=44Alg=GRU_pair_L2_rand, epoch=45Alg=GRU_pair_L2_rand, epoch=46Alg=GRU_pair_L2_rand, epoch=47Alg=GRU_pair_L2_rand, epoch=48Alg=GRU_pair_L2_rand, epoch=49Alg=GRU_pair_L2_rand, epoch=50Alg=GRU_pair_L2_rand, epoch=51Alg=GRU_pair_L2_rand, epoch=52Alg=GRU_pair_L2_rand, epoch=53Alg=GRU_pair_L2_rand, epoch=54Alg=GRU_pair_L2_rand, epoch=55Alg=GRU_pair_L2_rand, epoch=56Alg=GRU_pair_L2_rand, epoch=57Alg=GRU_pair_L2_rand, epoch=58Alg=GRU_pair_L2_rand, epoch=59Alg=GRU_pair_L2_rand, epoch=60
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 12/100
-num of unique idx2  = 12/100
-norm1 after mapping = 3.299
-norm2 after mapping = 0.016
-trn_loss=0.670, trn_acc=0.040
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=61Alg=GRU_pair_L2_rand, epoch=62Alg=GRU_pair_L2_rand, epoch=63Alg=GRU_pair_L2_rand, epoch=64Alg=GRU_pair_L2_rand, epoch=65Alg=GRU_pair_L2_rand, epoch=66Alg=GRU_pair_L2_rand, epoch=67Alg=GRU_pair_L2_rand, epoch=68Alg=GRU_pair_L2_rand, epoch=69Alg=GRU_pair_L2_rand, epoch=70Alg=GRU_pair_L2_rand, epoch=71Alg=GRU_pair_L2_rand, epoch=72Alg=GRU_pair_L2_rand, epoch=73Alg=GRU_pair_L2_rand, epoch=74Alg=GRU_pair_L2_rand, epoch=75Alg=GRU_pair_L2_rand, epoch=76Alg=GRU_pair_L2_rand, epoch=77Alg=GRU_pair_L2_rand, epoch=78Alg=GRU_pair_L2_rand, epoch=79Alg=GRU_pair_L2_rand, epoch=80
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 17/100
-num of unique idx2  = 17/100
-norm1 after mapping = 3.146
-norm2 after mapping = 0.016
-trn_loss=0.660, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=81Alg=GRU_pair_L2_rand, epoch=82Alg=GRU_pair_L2_rand, epoch=83Alg=GRU_pair_L2_rand, epoch=84Alg=GRU_pair_L2_rand, epoch=85Alg=GRU_pair_L2_rand, epoch=86Alg=GRU_pair_L2_rand, epoch=87Alg=GRU_pair_L2_rand, epoch=88Alg=GRU_pair_L2_rand, epoch=89Alg=GRU_pair_L2_rand, epoch=90Alg=GRU_pair_L2_rand, epoch=91Alg=GRU_pair_L2_rand, epoch=92Alg=GRU_pair_L2_rand, epoch=93Alg=GRU_pair_L2_rand, epoch=94Alg=GRU_pair_L2_rand, epoch=95Alg=GRU_pair_L2_rand, epoch=96Alg=GRU_pair_L2_rand, epoch=97Alg=GRU_pair_L2_rand, epoch=98Alg=GRU_pair_L2_rand, epoch=99Alg=GRU_pair_L2_rand, epoch=100
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 3/100
-num of unique idx2  = 3/100
-norm1 after mapping = 3.189
-norm2 after mapping = 0.016
-trn_loss=0.660, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=101Alg=GRU_pair_L2_rand, epoch=102Alg=GRU_pair_L2_rand, epoch=103Alg=GRU_pair_L2_rand, epoch=104Alg=GRU_pair_L2_rand, epoch=105Alg=GRU_pair_L2_rand, epoch=106Alg=GRU_pair_L2_rand, epoch=107Alg=GRU_pair_L2_rand, epoch=108Alg=GRU_pair_L2_rand, epoch=109Alg=GRU_pair_L2_rand, epoch=110Alg=GRU_pair_L2_rand, epoch=111Alg=GRU_pair_L2_rand, epoch=112Alg=GRU_pair_L2_rand, epoch=113Alg=GRU_pair_L2_rand, epoch=114Alg=GRU_pair_L2_rand, epoch=115Alg=GRU_pair_L2_rand, epoch=116Alg=GRU_pair_L2_rand, epoch=117Alg=GRU_pair_L2_rand, epoch=118Alg=GRU_pair_L2_rand, epoch=119Alg=GRU_pair_L2_rand, epoch=120
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 11/100
-num of unique idx2  = 11/100
-norm1 after mapping = 2.914
-norm2 after mapping = 0.015
-trn_loss=0.660, trn_acc=0.050
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=121Alg=GRU_pair_L2_rand, epoch=122Alg=GRU_pair_L2_rand, epoch=123Alg=GRU_pair_L2_rand, epoch=124Alg=GRU_pair_L2_rand, epoch=125Alg=GRU_pair_L2_rand, epoch=126Alg=GRU_pair_L2_rand, epoch=127Alg=GRU_pair_L2_rand, epoch=128Alg=GRU_pair_L2_rand, epoch=129Alg=GRU_pair_L2_rand, epoch=130Alg=GRU_pair_L2_rand, epoch=131Alg=GRU_pair_L2_rand, epoch=132Alg=GRU_pair_L2_rand, epoch=133Alg=GRU_pair_L2_rand, epoch=134Alg=GRU_pair_L2_rand, epoch=135Alg=GRU_pair_L2_rand, epoch=136Alg=GRU_pair_L2_rand, epoch=137Alg=GRU_pair_L2_rand, epoch=138Alg=GRU_pair_L2_rand, epoch=139Alg=GRU_pair_L2_rand, epoch=140
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 19/100
-num of unique idx2  = 19/100
-norm1 after mapping = 3.059
-norm2 after mapping = 0.015
-trn_loss=0.660, trn_acc=0.050
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=141Alg=GRU_pair_L2_rand, epoch=142Alg=GRU_pair_L2_rand, epoch=143Alg=GRU_pair_L2_rand, epoch=144Alg=GRU_pair_L2_rand, epoch=145Alg=GRU_pair_L2_rand, epoch=146Alg=GRU_pair_L2_rand, epoch=147Alg=GRU_pair_L2_rand, epoch=148Alg=GRU_pair_L2_rand, epoch=149Alg=GRU_pair_L2_rand, epoch=150Alg=GRU_pair_L2_rand, epoch=151Alg=GRU_pair_L2_rand, epoch=152Alg=GRU_pair_L2_rand, epoch=153Alg=GRU_pair_L2_rand, epoch=154Alg=GRU_pair_L2_rand, epoch=155Alg=GRU_pair_L2_rand, epoch=156Alg=GRU_pair_L2_rand, epoch=157Alg=GRU_pair_L2_rand, epoch=158Alg=GRU_pair_L2_rand, epoch=159Alg=GRU_pair_L2_rand, epoch=160
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 20/100
-num of unique idx2  = 20/100
-norm1 after mapping = 2.868
-norm2 after mapping = 0.015
-trn_loss=0.670, trn_acc=0.040
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=161Alg=GRU_pair_L2_rand, epoch=162Alg=GRU_pair_L2_rand, epoch=163Alg=GRU_pair_L2_rand, epoch=164Alg=GRU_pair_L2_rand, epoch=165Alg=GRU_pair_L2_rand, epoch=166Alg=GRU_pair_L2_rand, epoch=167Alg=GRU_pair_L2_rand, epoch=168Alg=GRU_pair_L2_rand, epoch=169Alg=GRU_pair_L2_rand, epoch=170Alg=GRU_pair_L2_rand, epoch=171Alg=GRU_pair_L2_rand, epoch=172Alg=GRU_pair_L2_rand, epoch=173Alg=GRU_pair_L2_rand, epoch=174Alg=GRU_pair_L2_rand, epoch=175Alg=GRU_pair_L2_rand, epoch=176Alg=GRU_pair_L2_rand, epoch=177Alg=GRU_pair_L2_rand, epoch=178Alg=GRU_pair_L2_rand, epoch=179Alg=GRU_pair_L2_rand, epoch=180
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 25/100
-num of unique idx2  = 25/100
-norm1 after mapping = 2.795
-norm2 after mapping = 0.015
-trn_loss=0.660, trn_acc=0.050
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=181Alg=GRU_pair_L2_rand, epoch=182Alg=GRU_pair_L2_rand, epoch=183Alg=GRU_pair_L2_rand, epoch=184Alg=GRU_pair_L2_rand, epoch=185Alg=GRU_pair_L2_rand, epoch=186Alg=GRU_pair_L2_rand, epoch=187Alg=GRU_pair_L2_rand, epoch=188Alg=GRU_pair_L2_rand, epoch=189Alg=GRU_pair_L2_rand, epoch=190Alg=GRU_pair_L2_rand, epoch=191Alg=GRU_pair_L2_rand, epoch=192Alg=GRU_pair_L2_rand, epoch=193Alg=GRU_pair_L2_rand, epoch=194Alg=GRU_pair_L2_rand, epoch=195Alg=GRU_pair_L2_rand, epoch=196Alg=GRU_pair_L2_rand, epoch=197Alg=GRU_pair_L2_rand, epoch=198Alg=GRU_pair_L2_rand, epoch=199Alg=GRU_pair_L2_rand, epoch=200
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 25/100
-num of unique idx2  = 25/100
-norm1 after mapping = 2.744
-norm2 after mapping = 0.015
-trn_loss=0.650, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=201Alg=GRU_pair_L2_rand, epoch=202Alg=GRU_pair_L2_rand, epoch=203Alg=GRU_pair_L2_rand, epoch=204Alg=GRU_pair_L2_rand, epoch=205Alg=GRU_pair_L2_rand, epoch=206Alg=GRU_pair_L2_rand, epoch=207Alg=GRU_pair_L2_rand, epoch=208Alg=GRU_pair_L2_rand, epoch=209Alg=GRU_pair_L2_rand, epoch=210Alg=GRU_pair_L2_rand, epoch=211Alg=GRU_pair_L2_rand, epoch=212Alg=GRU_pair_L2_rand, epoch=213Alg=GRU_pair_L2_rand, epoch=214Alg=GRU_pair_L2_rand, epoch=215Alg=GRU_pair_L2_rand, epoch=216Alg=GRU_pair_L2_rand, epoch=217Alg=GRU_pair_L2_rand, epoch=218Alg=GRU_pair_L2_rand, epoch=219Alg=GRU_pair_L2_rand, epoch=220
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 31/100
-num of unique idx2  = 31/100
-norm1 after mapping = 2.609
-norm2 after mapping = 0.014
-trn_loss=0.660, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=221Alg=GRU_pair_L2_rand, epoch=222Alg=GRU_pair_L2_rand, epoch=223Alg=GRU_pair_L2_rand, epoch=224Alg=GRU_pair_L2_rand, epoch=225Alg=GRU_pair_L2_rand, epoch=226Alg=GRU_pair_L2_rand, epoch=227Alg=GRU_pair_L2_rand, epoch=228Alg=GRU_pair_L2_rand, epoch=229Alg=GRU_pair_L2_rand, epoch=230Alg=GRU_pair_L2_rand, epoch=231Alg=GRU_pair_L2_rand, epoch=232Alg=GRU_pair_L2_rand, epoch=233Alg=GRU_pair_L2_rand, epoch=234Alg=GRU_pair_L2_rand, epoch=235Alg=GRU_pair_L2_rand, epoch=236Alg=GRU_pair_L2_rand, epoch=237Alg=GRU_pair_L2_rand, epoch=238Alg=GRU_pair_L2_rand, epoch=239Alg=GRU_pair_L2_rand, epoch=240
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 45/100
-num of unique idx2  = 45/100
-norm1 after mapping = 2.595
-norm2 after mapping = 0.014
-trn_loss=0.660, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=241Alg=GRU_pair_L2_rand, epoch=242Alg=GRU_pair_L2_rand, epoch=243Alg=GRU_pair_L2_rand, epoch=244Alg=GRU_pair_L2_rand, epoch=245Alg=GRU_pair_L2_rand, epoch=246Alg=GRU_pair_L2_rand, epoch=247Alg=GRU_pair_L2_rand, epoch=248Alg=GRU_pair_L2_rand, epoch=249Alg=GRU_pair_L2_rand, epoch=250Alg=GRU_pair_L2_rand, epoch=251Alg=GRU_pair_L2_rand, epoch=252Alg=GRU_pair_L2_rand, epoch=253Alg=GRU_pair_L2_rand, epoch=254Alg=GRU_pair_L2_rand, epoch=255Alg=GRU_pair_L2_rand, epoch=256Alg=GRU_pair_L2_rand, epoch=257Alg=GRU_pair_L2_rand, epoch=258Alg=GRU_pair_L2_rand, epoch=259Alg=GRU_pair_L2_rand, epoch=260
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 38/100
-num of unique idx2  = 38/100
-norm1 after mapping = 2.554
-norm2 after mapping = 0.014
-trn_loss=0.650, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=261Alg=GRU_pair_L2_rand, epoch=262Alg=GRU_pair_L2_rand, epoch=263Alg=GRU_pair_L2_rand, epoch=264Alg=GRU_pair_L2_rand, epoch=265Alg=GRU_pair_L2_rand, epoch=266Alg=GRU_pair_L2_rand, epoch=267Alg=GRU_pair_L2_rand, epoch=268Alg=GRU_pair_L2_rand, epoch=269Alg=GRU_pair_L2_rand, epoch=270Alg=GRU_pair_L2_rand, epoch=271Alg=GRU_pair_L2_rand, epoch=272Alg=GRU_pair_L2_rand, epoch=273Alg=GRU_pair_L2_rand, epoch=274Alg=GRU_pair_L2_rand, epoch=275Alg=GRU_pair_L2_rand, epoch=276Alg=GRU_pair_L2_rand, epoch=277Alg=GRU_pair_L2_rand, epoch=278Alg=GRU_pair_L2_rand, epoch=279Alg=GRU_pair_L2_rand, epoch=280
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 53/100
-num of unique idx2  = 53/100
-norm1 after mapping = 2.617
-norm2 after mapping = 0.014
-trn_loss=0.660, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=281Alg=GRU_pair_L2_rand, epoch=282Alg=GRU_pair_L2_rand, epoch=283Alg=GRU_pair_L2_rand, epoch=284Alg=GRU_pair_L2_rand, epoch=285Alg=GRU_pair_L2_rand, epoch=286Alg=GRU_pair_L2_rand, epoch=287Alg=GRU_pair_L2_rand, epoch=288Alg=GRU_pair_L2_rand, epoch=289Alg=GRU_pair_L2_rand, epoch=290Alg=GRU_pair_L2_rand, epoch=291Alg=GRU_pair_L2_rand, epoch=292Alg=GRU_pair_L2_rand, epoch=293Alg=GRU_pair_L2_rand, epoch=294Alg=GRU_pair_L2_rand, epoch=295Alg=GRU_pair_L2_rand, epoch=296Alg=GRU_pair_L2_rand, epoch=297Alg=GRU_pair_L2_rand, epoch=298Alg=GRU_pair_L2_rand, epoch=299Alg=GRU_pair_L2_rand, epoch=300
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 43/100
-num of unique idx2  = 43/100
-norm1 after mapping = 2.630
-norm2 after mapping = 0.014
-trn_loss=0.650, trn_acc=0.060
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=301Alg=GRU_pair_L2_rand, epoch=302Alg=GRU_pair_L2_rand, epoch=303Alg=GRU_pair_L2_rand, epoch=304Alg=GRU_pair_L2_rand, epoch=305Alg=GRU_pair_L2_rand, epoch=306Alg=GRU_pair_L2_rand, epoch=307Alg=GRU_pair_L2_rand, epoch=308Alg=GRU_pair_L2_rand, epoch=309Alg=GRU_pair_L2_rand, epoch=310Alg=GRU_pair_L2_rand, epoch=311Alg=GRU_pair_L2_rand, epoch=312Alg=GRU_pair_L2_rand, epoch=313Alg=GRU_pair_L2_rand, epoch=314Alg=GRU_pair_L2_rand, epoch=315Alg=GRU_pair_L2_rand, epoch=316Alg=GRU_pair_L2_rand, epoch=317Alg=GRU_pair_L2_rand, epoch=318Alg=GRU_pair_L2_rand, epoch=319Alg=GRU_pair_L2_rand, epoch=320
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 48/100
-num of unique idx2  = 48/100
-norm1 after mapping = 2.548
-norm2 after mapping = 0.014
-trn_loss=0.660, trn_acc=0.050
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=321Alg=GRU_pair_L2_rand, epoch=322Alg=GRU_pair_L2_rand, epoch=323Alg=GRU_pair_L2_rand, epoch=324Alg=GRU_pair_L2_rand, epoch=325Alg=GRU_pair_L2_rand, epoch=326Alg=GRU_pair_L2_rand, epoch=327Alg=GRU_pair_L2_rand, epoch=328Alg=GRU_pair_L2_rand, epoch=329Alg=GRU_pair_L2_rand, epoch=330Alg=GRU_pair_L2_rand, epoch=331Alg=GRU_pair_L2_rand, epoch=332Alg=GRU_pair_L2_rand, epoch=333Alg=GRU_pair_L2_rand, epoch=334Alg=GRU_pair_L2_rand, epoch=335Alg=GRU_pair_L2_rand, epoch=336Alg=GRU_pair_L2_rand, epoch=337Alg=GRU_pair_L2_rand, epoch=338Alg=GRU_pair_L2_rand, epoch=339Alg=GRU_pair_L2_rand, epoch=340
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 52/100
-num of unique idx2  = 52/100
-norm1 after mapping = 2.548
-norm2 after mapping = 0.014
-trn_loss=0.660, trn_acc=0.050
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=341Alg=GRU_pair_L2_rand, epoch=342Alg=GRU_pair_L2_rand, epoch=343Alg=GRU_pair_L2_rand, epoch=344Alg=GRU_pair_L2_rand, epoch=345Alg=GRU_pair_L2_rand, epoch=346Alg=GRU_pair_L2_rand, epoch=347Alg=GRU_pair_L2_rand, epoch=348Alg=GRU_pair_L2_rand, epoch=349Alg=GRU_pair_L2_rand, epoch=350Alg=GRU_pair_L2_rand, epoch=351Alg=GRU_pair_L2_rand, epoch=352Alg=GRU_pair_L2_rand, epoch=353Alg=GRU_pair_L2_rand, epoch=354Alg=GRU_pair_L2_rand, epoch=355Alg=GRU_pair_L2_rand, epoch=356Alg=GRU_pair_L2_rand, epoch=357Alg=GRU_pair_L2_rand, epoch=358Alg=GRU_pair_L2_rand, epoch=359Alg=GRU_pair_L2_rand, epoch=360
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 56/100
-num of unique idx2  = 56/100
-norm1 after mapping = 2.559
-norm2 after mapping = 0.014
-trn_loss=0.660, trn_acc=0.040
-val_loss=0.690, val_acc=0.000
-Alg=GRU_pair_L2_rand, epoch=361Alg=GRU_pair_L2_rand, epoch=362Alg=GRU_pair_L2_rand, epoch=363Alg=GRU_pair_L2_rand, epoch=364Alg=GRU_pair_L2_rand, epoch=365Alg=GRU_pair_L2_rand, epoch=366Alg=GRU_pair_L2_rand, epoch=367Alg=GRU_pair_L2_rand, epoch=368Alg=GRU_pair_L2_rand, epoch=369Alg=GRU_pair_L2_rand, epoch=370Alg=GRU_pair_L2_rand, epoch=371Alg=GRU_pair_L2_rand, epoch=372Alg=GRU_pair_L2_rand, epoch=373Alg=GRU_pair_L2_rand, epoch=374Alg=GRU_pair_L2_rand, epoch=375Alg=GRU_pair_L2_rand, epoch=376Alg=GRU_pair_L2_rand, epoch=377Alg=GRU_pair_L2_rand, epoch=378Alg=GRU_pair_L2_rand, epoch=379Alg=GRU_pair_L2_rand, epoch=380
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 60/100
-num of unique idx2  = 60/100
-norm1 after mapping = 2.424
-norm2 after mapping = 0.014
-trn_loss=0.650, trn_acc=0.060
-val_loss=0.690, val_acc=0.010
-Alg=GRU_pair_L2_rand, epoch=381Alg=GRU_pair_L2_rand, epoch=382Alg=GRU_pair_L2_rand, epoch=383Alg=GRU_pair_L2_rand, epoch=384Alg=GRU_pair_L2_rand, epoch=385Alg=GRU_pair_L2_rand, epoch=386Alg=GRU_pair_L2_rand, epoch=387Alg=GRU_pair_L2_rand, epoch=388Alg=GRU_pair_L2_rand, epoch=389Alg=GRU_pair_L2_rand, epoch=390Alg=GRU_pair_L2_rand, epoch=391Alg=GRU_pair_L2_rand, epoch=392Alg=GRU_pair_L2_rand, epoch=393Alg=GRU_pair_L2_rand, epoch=394Alg=GRU_pair_L2_rand, epoch=395Alg=GRU_pair_L2_rand, epoch=396Alg=GRU_pair_L2_rand, epoch=397Alg=GRU_pair_L2_rand, epoch=398Alg=GRU_pair_L2_rand, epoch=399Alg=GRU_pair_L2_rand, epoch=400
-Alg: GRU_pair_L2_rand
-num of unique idx1  = 61/100
-num of unique idx2  = 61/100
-norm1 after mapping = 2.411
-norm2 after mapping = 0.014
-trn_loss=0.660, trn_acc=0.050
-val_loss=0.690, val_acc=0.000

@@ -1,14 +1,0 @@
-Using Theano backend.
-Alg=BLSTM_pair, epoch=1Alg=BLSTM_pair, epoch=2Alg=BLSTM_pair, epoch=3Alg=BLSTM_pair, epoch=4Alg=BLSTM_pair, epoch=5Alg=BLSTM_pair, epoch=6Alg=BLSTM_pair, epoch=7Alg=BLSTM_pair, epoch=8Alg=BLSTM_pair, epoch=9Alg=BLSTM_pair, epoch=10Alg=BLSTM_pair, epoch=11Alg=BLSTM_pair, epoch=12Alg=BLSTM_pair, epoch=13Alg=BLSTM_pair, epoch=14Alg=BLSTM_pair, epoch=15Alg=BLSTM_pair, epoch=16Alg=BLSTM_pair, epoch=17Alg=BLSTM_pair, epoch=18Alg=BLSTM_pair, epoch=19Alg=BLSTM_pair, epoch=20
-Alg: BLSTM_pair
-num of unique idx  = 4/65
-norm after mapping = 4.956
-trn_loss=0.470, trn_acc=0.780
-val_loss=0.630, val_acc=0.620
-Alg=BLSTM_pair, epoch=21Alg=BLSTM_pair, epoch=22Alg=BLSTM_pair, epoch=23Alg=BLSTM_pair, epoch=24Alg=BLSTM_pair, epoch=25Alg=BLSTM_pair, epoch=26Alg=BLSTM_pair, epoch=27Alg=BLSTM_pair, epoch=28Alg=BLSTM_pair, epoch=29Alg=BLSTM_pair, epoch=30Alg=BLSTM_pair, epoch=31Alg=BLSTM_pair, epoch=32Alg=BLSTM_pair, epoch=33Alg=BLSTM_pair, epoch=34Alg=BLSTM_pair, epoch=35Alg=BLSTM_pair, epoch=36Alg=BLSTM_pair, epoch=37Alg=BLSTM_pair, epoch=38Alg=BLSTM_pair, epoch=39Alg=BLSTM_pair, epoch=40
-Alg: BLSTM_pair
-num of unique idx  = 23/65
-norm after mapping = 4.011
-trn_loss=0.410, trn_acc=0.820
-val_loss=0.590, val_acc=0.680
-Alg=BLSTM_pair, epoch=41Alg=BLSTM_pair, epoch=42Alg=BLSTM_pair, epoch=43Alg=BLSTM_pair, epoch=44Alg=BLSTM_pair, epoch=45Alg=BLSTM_pair, epoch=46Alg=BLSTM_pair, epoch=47Alg=BLSTM_pair, epoch=48Alg=BLSTM_pair, epoch=49Alg=BLSTM_pair, epoch=50Alg=BLSTM_pair, epoch=51Alg=BLSTM_pair, epoch=52Alg=BLSTM_pair, epoch=53Alg=BLSTM_pair, epoch=54Alg=BLSTM_pair, epoch=55Alg=BLSTM_pair, epoch=56
